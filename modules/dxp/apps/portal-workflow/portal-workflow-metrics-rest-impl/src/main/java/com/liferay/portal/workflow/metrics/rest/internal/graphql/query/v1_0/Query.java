@@ -229,7 +229,7 @@ public class Query {
 	/**
 	 * Invoke this method with the command line:
 	 *
-	 * curl -H 'Content-Type: text/plain; charset=utf-8' -X 'POST' 'http://localhost:8080/o/graphql' -d $'{"query": "query {processInstances(assigneeIds: ___, classPKs: ___, completed: ___, dateEnd: ___, dateStart: ___, page: ___, pageSize: ___, processId: ___, slaStatuses: ___, taskNames: ___){items {__}, page, pageSize, totalCount}}"}' -u 'test@liferay.com:test'
+	 * curl -H 'Content-Type: text/plain; charset=utf-8' -X 'POST' 'http://localhost:8080/o/graphql' -d $'{"query": "query {processInstances(assigneeIds: ___, classPKs: ___, completed: ___, dateEnd: ___, dateStart: ___, page: ___, pageSize: ___, pending: ___, processId: ___, slaStatuses: ___, taskNames: ___){items {__}, page, pageSize, totalCount}}"}' -u 'test@liferay.com:test'
 	 */
 	@GraphQLField
 	public InstancePage processInstances(
@@ -237,6 +237,7 @@ public class Query {
 			@GraphQLName("assigneeIds") Long[] assigneeIds,
 			@GraphQLName("classPKs") Long[] classPKs,
 			@GraphQLName("completed") Boolean completed,
+			@GraphQLName("pending") Boolean pending,
 			@GraphQLName("dateEnd") Date dateEnd,
 			@GraphQLName("dateStart") Date dateStart,
 			@GraphQLName("slaStatuses") String[] slaStatuses,
@@ -250,8 +251,8 @@ public class Query {
 			this::_populateResourceContext,
 			instanceResource -> new InstancePage(
 				instanceResource.getProcessInstancesPage(
-					processId, assigneeIds, classPKs, completed, dateEnd,
-					dateStart, slaStatuses, taskNames,
+					processId, assigneeIds, classPKs, completed, pending,
+					dateEnd, dateStart, slaStatuses, taskNames,
 					Pagination.of(page, pageSize))));
 	}
 
@@ -748,6 +749,7 @@ public class Query {
 				@GraphQLName("assigneeIds") Long[] assigneeIds,
 				@GraphQLName("classPKs") Long[] classPKs,
 				@GraphQLName("completed") Boolean completed,
+				@GraphQLName("pending") Boolean pending,
 				@GraphQLName("dateEnd") Date dateEnd,
 				@GraphQLName("dateStart") Date dateStart,
 				@GraphQLName("slaStatuses") String[] slaStatuses,
@@ -762,7 +764,7 @@ public class Query {
 				instanceResource -> new InstancePage(
 					instanceResource.getProcessInstancesPage(
 						_process.getId(), assigneeIds, classPKs, completed,
-						dateEnd, dateStart, slaStatuses, taskNames,
+						pending, dateEnd, dateStart, slaStatuses, taskNames,
 						Pagination.of(page, pageSize))));
 		}
 

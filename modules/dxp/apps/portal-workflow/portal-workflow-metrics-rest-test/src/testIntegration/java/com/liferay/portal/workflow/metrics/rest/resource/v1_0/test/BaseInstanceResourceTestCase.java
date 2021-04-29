@@ -201,7 +201,7 @@ public abstract class BaseInstanceResourceTestCase {
 	@Test
 	public void testGetProcessInstancesPage() throws Exception {
 		Page<Instance> page = instanceResource.getProcessInstancesPage(
-			testGetProcessInstancesPage_getProcessId(), null, null, null,
+			testGetProcessInstancesPage_getProcessId(), null, null, null, null,
 			RandomTestUtil.nextDate(), RandomTestUtil.nextDate(), null, null,
 			Pagination.of(1, 2));
 
@@ -218,7 +218,7 @@ public abstract class BaseInstanceResourceTestCase {
 
 			page = instanceResource.getProcessInstancesPage(
 				irrelevantProcessId, null, null, null, null, null, null, null,
-				Pagination.of(1, 2));
+				null, Pagination.of(1, 2));
 
 			Assert.assertEquals(1, page.getTotalCount());
 
@@ -235,7 +235,7 @@ public abstract class BaseInstanceResourceTestCase {
 			processId, randomInstance());
 
 		page = instanceResource.getProcessInstancesPage(
-			processId, null, null, null, null, null, null, null,
+			processId, null, null, null, null, null, null, null, null,
 			Pagination.of(1, 2));
 
 		Assert.assertEquals(2, page.getTotalCount());
@@ -260,7 +260,7 @@ public abstract class BaseInstanceResourceTestCase {
 			processId, randomInstance());
 
 		Page<Instance> page1 = instanceResource.getProcessInstancesPage(
-			processId, null, null, null, null, null, null, null,
+			processId, null, null, null, null, null, null, null, null,
 			Pagination.of(1, 2));
 
 		List<Instance> instances1 = (List<Instance>)page1.getItems();
@@ -268,7 +268,7 @@ public abstract class BaseInstanceResourceTestCase {
 		Assert.assertEquals(instances1.toString(), 2, instances1.size());
 
 		Page<Instance> page2 = instanceResource.getProcessInstancesPage(
-			processId, null, null, null, null, null, null, null,
+			processId, null, null, null, null, null, null, null, null,
 			Pagination.of(2, 2));
 
 		Assert.assertEquals(3, page2.getTotalCount());
@@ -278,7 +278,7 @@ public abstract class BaseInstanceResourceTestCase {
 		Assert.assertEquals(instances2.toString(), 1, instances2.size());
 
 		Page<Instance> page3 = instanceResource.getProcessInstancesPage(
-			processId, null, null, null, null, null, null, null,
+			processId, null, null, null, null, null, null, null, null,
 			Pagination.of(1, 3));
 
 		assertEqualsIgnoringOrder(

@@ -45,14 +45,16 @@ public interface InstanceResource {
 
 	public Page<Instance> getProcessInstancesPage(
 			Long processId, Long[] assigneeIds, Long[] classPKs,
-			Boolean completed, java.util.Date dateEnd, java.util.Date dateStart,
-			String[] slaStatuses, String[] taskNames, Pagination pagination)
+			Boolean completed, Boolean pending, java.util.Date dateEnd,
+			java.util.Date dateStart, String[] slaStatuses, String[] taskNames,
+			Pagination pagination)
 		throws Exception;
 
 	public HttpInvoker.HttpResponse getProcessInstancesPageHttpResponse(
 			Long processId, Long[] assigneeIds, Long[] classPKs,
-			Boolean completed, java.util.Date dateEnd, java.util.Date dateStart,
-			String[] slaStatuses, String[] taskNames, Pagination pagination)
+			Boolean completed, Boolean pending, java.util.Date dateEnd,
+			java.util.Date dateStart, String[] slaStatuses, String[] taskNames,
+			Pagination pagination)
 		throws Exception;
 
 	public Instance postProcessInstance(Long processId, Instance instance)
@@ -173,15 +175,15 @@ public interface InstanceResource {
 
 		public Page<Instance> getProcessInstancesPage(
 				Long processId, Long[] assigneeIds, Long[] classPKs,
-				Boolean completed, java.util.Date dateEnd,
+				Boolean completed, Boolean pending, java.util.Date dateEnd,
 				java.util.Date dateStart, String[] slaStatuses,
 				String[] taskNames, Pagination pagination)
 			throws Exception {
 
 			HttpInvoker.HttpResponse httpResponse =
 				getProcessInstancesPageHttpResponse(
-					processId, assigneeIds, classPKs, completed, dateEnd,
-					dateStart, slaStatuses, taskNames, pagination);
+					processId, assigneeIds, classPKs, completed, pending,
+					dateEnd, dateStart, slaStatuses, taskNames, pagination);
 
 			String content = httpResponse.getContent();
 
@@ -222,7 +224,7 @@ public interface InstanceResource {
 
 		public HttpInvoker.HttpResponse getProcessInstancesPageHttpResponse(
 				Long processId, Long[] assigneeIds, Long[] classPKs,
-				Boolean completed, java.util.Date dateEnd,
+				Boolean completed, Boolean pending, java.util.Date dateEnd,
 				java.util.Date dateStart, String[] slaStatuses,
 				String[] taskNames, Pagination pagination)
 			throws Exception {
@@ -267,6 +269,10 @@ public interface InstanceResource {
 
 			if (completed != null) {
 				httpInvoker.parameter("completed", String.valueOf(completed));
+			}
+
+			if (pending != null) {
+				httpInvoker.parameter("pending", String.valueOf(pending));
 			}
 
 			if (dateEnd != null) {
