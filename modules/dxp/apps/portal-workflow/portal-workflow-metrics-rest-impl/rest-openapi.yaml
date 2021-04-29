@@ -941,6 +941,10 @@ paths:
                       format: date-time
                       type: string
                 - in: query
+                  name: pending
+                  schema:
+                      type: boolean
+                - in: query
                   name: slaStatuses
                   schema:
                       items:
