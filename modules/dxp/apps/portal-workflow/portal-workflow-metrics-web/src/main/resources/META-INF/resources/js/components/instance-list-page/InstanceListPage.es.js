@@ -11,21 +11,21 @@
 
 import React from 'react';
 
-import {useFetch} from '../../shared/hooks/useFetch.es';
-import {useFilter} from '../../shared/hooks/useFilter.es';
-import {useProcessTitle} from '../../shared/hooks/useProcessTitle.es';
-import {processStatusConstants} from '../filter/ProcessStatusFilter.es';
-import {useTimeRangeFetch} from '../filter/hooks/useTimeRangeFetch.es';
-import {getTimeRangeParams} from '../filter/util/timeRangeUtil.es';
+import { useFetch } from '../../shared/hooks/useFetch.es';
+import { useFilter } from '../../shared/hooks/useFilter.es';
+import { useProcessTitle } from '../../shared/hooks/useProcessTitle.es';
+import { processStatusConstants } from '../filter/ProcessStatusFilter.es';
+import { useTimeRangeFetch } from '../filter/hooks/useTimeRangeFetch.es';
+import { getTimeRangeParams } from '../filter/util/timeRangeUtil.es';
 import Body from './InstanceListPageBody.es';
 import Header from './InstanceListPageHeader.es';
 import InstanceListPageProvider from './InstanceListPageProvider.es';
 import ModalProvider from './modal/ModalProvider.es';
 
-function InstanceListPage({routeParams}) {
+function InstanceListPage({ routeParams }) {
 	useTimeRangeFetch();
 
-	const {page, pageSize, processId} = routeParams;
+	const { page, pageSize, processId } = routeParams;
 
 	useProcessTitle(processId, Liferay.Language.get('all-items'));
 
@@ -48,18 +48,25 @@ function InstanceListPage({routeParams}) {
 		},
 		prefixedKeys,
 		selectedFilters,
-	} = useFilter({filterKeys});
+	} = useFilter({ filterKeys });
+
+	console.log(statuses);
 
 	const completed = statuses?.some(
 		(status) => status === processStatusConstants.completed
 	);
 
+	const pending = statuses?.some(
+		(status) => status === processStatusConstants.pending
+	);
+
 	const timeRange = completed ? getTimeRangeParams(dateStart, dateEnd) : {};
 
-	const {data, fetchData} = useFetch({
+	const { data, fetchData } = useFetch({
 		params: {
 			assigneeIds,
 			completed,
+			pending,
 			page,
 			pageSize,
 			slaStatuses,
