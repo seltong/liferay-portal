@@ -528,7 +528,7 @@ public class TaskWorkflowMetricsIndexerImpl
 
 		return document;
 	}
-
+	
 	private void _deleteTask(long companyId, long taskId) {
 		ScriptBuilder scriptBuilder = scripts.builder();
 
