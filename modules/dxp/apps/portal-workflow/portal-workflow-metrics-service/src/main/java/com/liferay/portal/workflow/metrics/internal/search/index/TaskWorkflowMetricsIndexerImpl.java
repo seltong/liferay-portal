@@ -33,6 +33,7 @@ import java.time.Duration;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
@@ -528,7 +529,125 @@ public class TaskWorkflowMetricsIndexerImpl
 
 		return document;
 	}
-	
+
+	@Override
+	public Document updateTask(
+		Map<Locale, String> assetTitleMap, Map<Locale, String> assetTypeMap,
+		Map<Long, List<Long>> assigneeGroupIds, String assigneeType,
+		long companyId, Date modifiedDate, long taskId, long userId) {
+
+		DocumentBuilder documentBuilder = documentBuilderFactory.builder();
+
+		List<Long> assigneeIds = new ArrayList<>();
+		List<Long> groupIds = new ArrayList<>();
+
+		for (Map.Entry<Long, List<Long>> assigneeId :
+				assigneeGroupIds.entrySet()) {
+
+			if (assigneeId.getValue() != null) {
+				for (Long groupId : assigneeId.getValue()) {
+					assigneeIds.add(assigneeId.getKey());
+					groupIds.add(groupId);
+				}
+			}
+			else {
+				assigneeIds.add(assigneeId.getKey());
+			}
+		}
+
+		if (!assigneeIds.isEmpty()) {
+			documentBuilder.setLongs(
+				"assigneeIds", assigneeIds.toArray(new Long[0]));
+			documentBuilder.setString("assigneeType", assigneeType);
+		}
+
+		documentBuilder.setLong(
+			"companyId", companyId
+		).setDate(
+			"modifiedDate", getDate(modifiedDate)
+		).setLong(
+			"taskId", taskId
+		).setString(
+			"uid", digest(companyId, taskId)
+		).setLong(
+			"userId", userId
+		);
+
+		setLocalizedField(documentBuilder, "assetTitle", assetTitleMap);
+		setLocalizedField(documentBuilder, "assetType", assetTypeMap);
+
+		Document document = documentBuilder.build();
+
+		workflowMetricsPortalExecutor.execute(
+			() -> {
+				updateDocument(document);
+
+				if (Objects.isNull(document.getLongs("assigneeIds"))) {
+					return;
+				}
+
+				BooleanQuery booleanQuery = queries.booleanQuery();
+
+				booleanQuery.addMustQueryClauses(
+					queries.term("companyId", document.getLong("companyId")),
+					queries.term("taskId", document.getLong("taskId")));
+
+				_slaTaskResultWorkflowMetricsIndexer.updateDocuments(
+					companyId,
+					HashMapBuilder.<String, Object>put(
+						"assigneeIds", assigneeIds
+					).put(
+						"assigneeType", assigneeType
+					).build(),
+					booleanQuery);
+
+				ScriptBuilder scriptBuilder = scripts.builder();
+
+				scriptBuilder.idOrCode(
+					StringUtil.read(
+						getClass(),
+						"dependencies/workflow-metrics-update-task-" +
+							"script.painless")
+				).language(
+					"painless"
+				).putParameter(
+					"assigneeGroupIds", groupIds
+				).putParameter(
+					"assigneeIds", assigneeIds
+				);
+
+				if (Objects.equals(assigneeType, User.class.getName()) &&
+					!assigneeIds.isEmpty()) {
+
+					User user = _userLocalService.fetchUser(assigneeIds.get(0));
+
+					scriptBuilder.putParameter(
+						"assigneeName", user.getFullName());
+				}
+
+				scriptBuilder.putParameter(
+					"assigneeType", assigneeType
+				).putParameter(
+					"taskId", taskId
+				).scriptType(
+					ScriptType.INLINE
+				);
+
+				UpdateByQueryDocumentRequest updateByQueryDocumentRequest =
+					new UpdateByQueryDocumentRequest(
+						queries.nested(
+							"tasks", queries.term("tasks.taskId", taskId)),
+						scriptBuilder.build(),
+						_instanceWorkflowMetricsIndex.getIndexName(companyId));
+
+				updateByQueryDocumentRequest.setRefresh(true);
+
+				searchEngineAdapter.execute(updateByQueryDocumentRequest);
+			});
+
+		return document;
+	}
+
 	private void _deleteTask(long companyId, long taskId) {
 		ScriptBuilder scriptBuilder = scripts.builder();
 
