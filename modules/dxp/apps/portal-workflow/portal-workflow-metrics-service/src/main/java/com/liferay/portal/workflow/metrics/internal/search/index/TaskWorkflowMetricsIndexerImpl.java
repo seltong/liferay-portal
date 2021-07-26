@@ -431,7 +431,7 @@ public class TaskWorkflowMetricsIndexerImpl
 	public String getIndexType() {
 		return _taskWorkflowMetricsIndex.getIndexType();
 	}
-
+	
 	@Override
 	public Document updateTask(
 		Map<Locale, String> assetTitleMap, Map<Locale, String> assetTypeMap,
