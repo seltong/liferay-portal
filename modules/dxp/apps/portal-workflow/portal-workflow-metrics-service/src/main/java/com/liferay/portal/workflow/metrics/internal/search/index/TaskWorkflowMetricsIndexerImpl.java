@@ -33,9 +33,11 @@ import java.time.Duration;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -47,6 +49,11 @@ import org.osgi.service.component.annotations.Reference;
 public class TaskWorkflowMetricsIndexerImpl
 	extends BaseWorkflowMetricsIndexer implements TaskWorkflowMetricsIndexer {
 
+	/**
+	 * @deprecated As of Cavanaugh (7.4.x), replaced by {@link
+	 *    #addTask(Map, Map, Map, String, String, long, long, boolean, Date, Long, Date, boolean, Date, long, Date, String, long, long, String, long, long)}}
+	 */
+	@Deprecated
 	@Override
 	public Document addTask(
 		Map<Locale, String> assetTitleMap, Map<Locale, String> assetTypeMap,
@@ -430,7 +437,12 @@ public class TaskWorkflowMetricsIndexerImpl
 	public String getIndexType() {
 		return _taskWorkflowMetricsIndex.getIndexType();
 	}
-	
+
+	/**
+	 * @deprecated As of Cavanaugh (7.4.x), replaced by {@link #updateTask(Map,
+	 *             Map, Map, String, long, Date, long, long)}}
+	 */
+	@Deprecated
 	@Override
 	public Document updateTask(
 		Map<Locale, String> assetTitleMap, Map<Locale, String> assetTypeMap,
@@ -528,7 +540,7 @@ public class TaskWorkflowMetricsIndexerImpl
 
 		return document;
 	}
-	
+
 	@Override
 	public Document updateTask(
 		Map<Locale, String> assetTitleMap, Map<Locale, String> assetTypeMap,
@@ -548,7 +560,7 @@ public class TaskWorkflowMetricsIndexerImpl
 		Long[] assigneeIds = assigneeGroupKeys.toArray(new Long[0]);
 
 		documentBuilder.setLongs("assigneeIds", assigneeIds);
-		
+
 		documentBuilder.setString("assigneeType", assigneeType);
 
 		documentBuilder.setLong(
