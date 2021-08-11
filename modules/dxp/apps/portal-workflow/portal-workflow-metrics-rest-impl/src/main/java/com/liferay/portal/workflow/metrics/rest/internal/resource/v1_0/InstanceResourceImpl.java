@@ -892,36 +892,46 @@ public class InstanceResourceImpl
 					task.get("assigneeType"), User.class.getName())) {
 
 				for (Object assigneeId : (List<?>)task.get("assigneeIds")) {
-					Assignee assignee = AssigneeUtil.toAssignee(
-						_language, _portal,
-						ResourceBundleUtil.getModuleAndPortalResourceBundle(
-							contextAcceptLanguage.getPreferredLocale(),
-							InstanceResourceImpl.class),
-						GetterUtil.getLong(assigneeId),
-						_userLocalService::fetchUser);
-
-					if (assignee != null) {
-						assignees.add(assignee);
-					}
+					assignees.add(
+						AssigneeUtil.toAssignee(
+							_language, _portal,
+							ResourceBundleUtil.getModuleAndPortalResourceBundle(
+								contextAcceptLanguage.getPreferredLocale(),
+								InstanceResourceImpl.class),
+							GetterUtil.getLong(assigneeId),
+							_userLocalService::fetchUser));
 				}
 			}
 			else if (Objects.equals(
 						task.get("assigneeType"), Role.class.getName())) {
 
-				boolean reviewer = false;
+				List<Long> userRoleIds = ListUtil.concat(
+					Stream.of(
+						ListUtil.fromArray(contextUser.getGroupIds())
+					).flatMap(
+						List::stream
+					).map(
+						groupId -> ListUtil.concat(
+							roleLocalService.getUserGroupRoles(
+								contextUser.getUserId(), groupId),
+							roleLocalService.getUserGroupGroupRoles(
+								contextUser.getUserId(), groupId))
+					).flatMap(
+						List::stream
+					).map(
+						Role::getRoleId
+					).collect(
+						Collectors.toList()
+					),
+					ListUtil.fromArray(contextUser.getRoleIds()));
 
-				for (Object assigneeId : (List<?>)task.get("assigneeIds")) {
-					if (ArrayUtil.contains(
-							contextUser.getRoleIds(),
-							GetterUtil.getLong(assigneeId))) {
-
-						reviewer = true;
-
-						break;
-					}
-				}
-
-				assignees.add(_createAssignee(reviewer));
+				assignees.add(
+					_createAssignee(
+						!Collections.disjoint(
+							userRoleIds,
+							ListUtil.toList(
+								(List<?>)task.get("assigneeIds"),
+								GetterUtil::getLong))));
 			}
 
 			taskNames.add(
