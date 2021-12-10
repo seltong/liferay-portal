@@ -101,6 +101,31 @@ public class SLAResultResourceTest extends BaseSLAResultResourceTestCase {
 		assertValid(getSLAResult);
 	}
 
+	@Test
+	public void testGetProcessLastSLAResultWithDeleted() throws Exception {
+		SLAResult slaResult1 = randomSLAResult();
+
+		_workflowMetricsRESTTestHelper.addSLAInstanceResults(
+			testGroup.getCompanyId(), true, _instance, slaResult1);
+
+		SLAResult getSLAResult = slaResultResource.getProcessLastSLAResult(
+			_process.getId());
+
+		assertEquals(slaResult1, getSLAResult);
+		assertValid(getSLAResult);
+
+		SLAResult slaResult2 = randomSLAResult();
+
+		_workflowMetricsRESTTestHelper.addSLAInstanceResults(
+			testGroup.getCompanyId(), false, _instance, slaResult2);
+
+		getSLAResult = slaResultResource.getProcessLastSLAResult(
+			_process.getId());
+
+		assertEquals(slaResult2, getSLAResult);
+		assertValid(getSLAResult);
+	}
+
 	@Override
 	@Test
 	public void testGraphQLGetProcessLastSLAResult() throws Exception {
