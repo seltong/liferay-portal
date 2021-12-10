@@ -156,7 +156,7 @@ public class InstanceResourceTest extends BaseInstanceResourceTestCase {
 		testGetProcessInstancesPage_addInstance(_process.getId(), instance1);
 
 		_workflowMetricsRESTTestHelper.addSLAInstanceResults(
-			testGroup.getCompanyId(), instance1,
+			testGroup.getCompanyId(), false, instance1,
 			_toSLAResult(true, SLAResult.Status.STOPPED),
 			_toSLAResult(true, SLAResult.Status.PAUSED));
 
@@ -578,7 +578,8 @@ public class InstanceResourceTest extends BaseInstanceResourceTestCase {
 		}
 
 		_workflowMetricsRESTTestHelper.addSLAInstanceResults(
-			testGroup.getCompanyId(), instance, instance.getSlaResults());
+			testGroup.getCompanyId(), false, instance,
+			instance.getSlaResults());
 
 		_instances.add(instance);
 

@@ -88,7 +88,7 @@ public class SLAResultResourceTest extends BaseSLAResultResourceTestCase {
 		slaResult2.setDateModified(dateModified);
 
 		_workflowMetricsRESTTestHelper.addSLAInstanceResults(
-			testGroup.getCompanyId(), _instance, slaResult1, slaResult2);
+			testGroup.getCompanyId(), false, _instance, slaResult1, slaResult2);
 
 		SLAResult getSLAResult = slaResultResource.getProcessLastSLAResult(
 			_process.getId());
@@ -151,7 +151,7 @@ public class SLAResultResourceTest extends BaseSLAResultResourceTestCase {
 		SLAResult slaResult = randomSLAResult();
 
 		_workflowMetricsRESTTestHelper.addSLAInstanceResults(
-			testGroup.getCompanyId(), _instance, slaResult);
+			testGroup.getCompanyId(), false, _instance, slaResult);
 
 		return slaResult;
 	}

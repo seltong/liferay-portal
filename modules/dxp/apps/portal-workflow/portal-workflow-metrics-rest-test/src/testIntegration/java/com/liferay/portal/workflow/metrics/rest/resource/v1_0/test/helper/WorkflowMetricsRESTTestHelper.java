@@ -374,7 +374,7 @@ public class WorkflowMetricsRESTTestHelper {
 
 			if (onTimeInstanceCount > 0) {
 				addSLAInstanceResults(
-					companyId, instance,
+					companyId, false, instance,
 					new SLAResult() {
 						{
 							dateModified = DateUtils.truncate(
@@ -393,7 +393,7 @@ public class WorkflowMetricsRESTTestHelper {
 			}
 			else if (overdueInstanceCount > 0) {
 				addSLAInstanceResults(
-					companyId, instance,
+					companyId, false, instance,
 					new SLAResult() {
 						{
 							dateModified = DateUtils.truncate(
@@ -443,19 +443,20 @@ public class WorkflowMetricsRESTTestHelper {
 	}
 
 	public void addSLAInstanceResults(
-			long companyId, Instance instance, SLAResult... slaResults)
+			long companyId, boolean deleted, Instance instance,
+			SLAResult... slaResults)
 		throws Exception {
 
 		for (SLAResult slaResult : slaResults) {
 			_invokeAddDocument(
 				_getIndexer(_CLASS_NAME_SLA_INSTANCE_RESULT_INDEXER),
 				_creatWorkflowMetricsSLAInstanceResultDocument(
-					companyId, instance, slaResult));
+					companyId, deleted, instance, slaResult));
 
 			_assertCount(
 				_slaInstanceResultWorkflowMetricsIndexNameBuilder.getIndexName(
 					companyId),
-				"companyId", companyId, "deleted", false, "instanceCompleted",
+				"companyId", companyId, "deleted", deleted, "instanceCompleted",
 				Objects.nonNull(instance.getDateCompletion()), "instanceId",
 				instance.getId(), "onTime", slaResult.getOnTime(), "processId",
 				instance.getProcessId(), "remainingTime",
@@ -1043,7 +1044,8 @@ public class WorkflowMetricsRESTTestHelper {
 	}
 
 	private Document _creatWorkflowMetricsSLAInstanceResultDocument(
-		long companyId, Instance instance, SLAResult slaResult) {
+		long companyId, boolean deleted, Instance instance,
+		SLAResult slaResult) {
 
 		DocumentBuilder documentBuilder = _documentBuilderFactory.builder();
 
@@ -1052,7 +1054,7 @@ public class WorkflowMetricsRESTTestHelper {
 		).setValue(
 			"companyId", companyId
 		).setValue(
-			"deleted", false
+			"deleted", deleted
 		).setValue(
 			"elapsedTime", slaResult.getOnTime() ? 1000 : -1000
 		).setValue(
