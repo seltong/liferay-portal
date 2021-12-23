@@ -63,4 +63,8 @@ public interface WorkflowMetricsSLADefinition
 
 			};
 
+	public boolean isBlocked();
+
+	public void setBlocked(boolean blocked);
+
 }

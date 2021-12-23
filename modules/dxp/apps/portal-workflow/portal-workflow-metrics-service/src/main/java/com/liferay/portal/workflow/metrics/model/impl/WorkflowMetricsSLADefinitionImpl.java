@@ -19,4 +19,15 @@ package com.liferay.portal.workflow.metrics.model.impl;
  */
 public class WorkflowMetricsSLADefinitionImpl
 	extends WorkflowMetricsSLADefinitionBaseImpl {
+
+	public boolean isBlocked() {
+		return _blocked;
+	}
+
+	public void setBlocked(boolean blocked) {
+		_blocked = blocked;
+	}
+
+	private boolean _blocked;
+
 }

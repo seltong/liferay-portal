@@ -519,6 +519,11 @@ public class WorkflowMetricsSLADefinitionWrapper
 		return model.isApproved();
 	}
 
+	@Override
+	public boolean isBlocked() {
+		return model.isBlocked();
+	}
+
 	/**
 	 * Returns <code>true</code> if this workflow metrics sla definition is denied.
 	 *
@@ -602,6 +607,11 @@ public class WorkflowMetricsSLADefinitionWrapper
 	@Override
 	public void setActive(boolean active) {
 		model.setActive(active);
+	}
+
+	@Override
+	public void setBlocked(boolean blocked) {
+		model.setBlocked(blocked);
 	}
 
 	/**
