@@ -297,9 +297,17 @@ public class WorkflowMetricsSLADefinitionLocalServiceImpl
 		long companyId = workflowMetricsSLADefinition.getCompanyId();
 		long processId = workflowMetricsSLADefinition.getProcessId();
 
-		_workflowMetricsPortalExecutor.execute(
-			() -> _slaInstanceResultWorkflowMetricsIndexer.deleteDocuments(
-				companyId, processId, workflowMetricsSLADefinitionId));
+		if (status == WorkflowConstants.STATUS_DRAFT) {
+			workflowMetricsSLADefinition.setBlocked(true);
+			_workflowMetricsPortalExecutor.execute(
+				() -> _slaInstanceResultWorkflowMetricsIndexer.blockDocuments(
+					companyId, processId, workflowMetricsSLADefinitionId));
+		}
+		else {
+			_workflowMetricsPortalExecutor.execute(
+				() -> _slaInstanceResultWorkflowMetricsIndexer.deleteDocuments(
+					companyId, processId, workflowMetricsSLADefinitionId));
+		}
 
 		_workflowMetricsPortalExecutor.execute(
 			() -> _slaTaskResultWorkflowMetricsIndexer.deleteDocuments(
