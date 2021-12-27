@@ -208,6 +208,20 @@ public class WorkflowMetricsSLADefinitionLocalServiceTest
 					ServiceContextTestUtil.getServiceContext());
 
 		Assert.assertNotNull(workflowMetricsSLADefinition);
+		Assert.assertFalse(workflowMetricsSLADefinition.isBlocked());
+
+		workflowMetricsSLADefinition =
+			_workflowMetricsSLADefinitionLocalService.
+				updateWorkflowMetricsSLADefinition(
+					workflowMetricsSLADefinition.getPrimaryKey(),
+					StringPool.BLANK, StringPool.BLANK, 1, "Abc", new String[0],
+					new String[] {getInitialNodeKey(workflowDefinition)},
+					new String[] {getTerminalNodeKey(workflowDefinition)},
+					WorkflowConstants.STATUS_DRAFT,
+					ServiceContextTestUtil.getServiceContext());
+
+		Assert.assertNotNull(workflowMetricsSLADefinition);
+		Assert.assertTrue(workflowMetricsSLADefinition.isBlocked());
 	}
 
 	@Test(expected = WorkflowMetricsSLADefinitionDuplicateNameException.class)
