@@ -53,6 +53,7 @@ import com.liferay.portal.workflow.metrics.model.Assignment;
 import com.liferay.portal.workflow.metrics.model.DeleteProcessRequest;
 import com.liferay.portal.workflow.metrics.model.DeleteTransitionRequest;
 import com.liferay.portal.workflow.metrics.model.RoleAssignment;
+import com.liferay.portal.workflow.metrics.model.UpdateProcessRequest;
 import com.liferay.portal.workflow.metrics.model.UserAssignment;
 
 import java.util.ArrayList;
@@ -363,6 +364,35 @@ public class IndexerHelper {
 			kaleoTransition.getCompanyId()
 		).transitionId(
 			kaleoTransition.getKaleoTransitionId()
+		).build();
+	}
+
+	public UpdateProcessRequest createUpdateProcessRequest(
+		KaleoDefinition kaleoDefinition) {
+
+		UpdateProcessRequest.Builder builder =
+			new UpdateProcessRequest.Builder();
+
+		String defaultLanguageId = LocalizationUtil.getDefaultLanguageId(
+			kaleoDefinition.getTitle());
+
+		return builder.active(
+			kaleoDefinition.isActive()
+		).companyId(
+			kaleoDefinition.getCompanyId()
+		).description(
+			kaleoDefinition.getDescription()
+		).modifiedDate(
+			kaleoDefinition.getModifiedDate()
+		).processId(
+			kaleoDefinition.getKaleoDefinitionId()
+		).title(
+			kaleoDefinition.getTitle(defaultLanguageId)
+		).titleMap(
+			kaleoDefinition.getTitleMap()
+		).version(
+			StringBundler.concat(
+				kaleoDefinition.getVersion(), CharPool.PERIOD, 0)
 		).build();
 	}
 
