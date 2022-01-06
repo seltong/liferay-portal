@@ -16,6 +16,7 @@ package com.liferay.portal.workflow.metrics.rest.resource.v1_0.test.helper;
 
 import com.liferay.petra.function.UnsafeSupplier;
 import com.liferay.petra.reflect.ReflectionUtil;
+import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.language.LanguageUtil;
@@ -47,6 +48,7 @@ import com.liferay.portal.search.query.BooleanQuery;
 import com.liferay.portal.search.query.Queries;
 import com.liferay.portal.vulcan.util.LocalizedMapUtil;
 import com.liferay.portal.workflow.metrics.model.AddNodeRequest;
+import com.liferay.portal.workflow.metrics.model.AddProcessRequest;
 import com.liferay.portal.workflow.metrics.model.AddTaskRequest;
 import com.liferay.portal.workflow.metrics.model.Assignment;
 import com.liferay.portal.workflow.metrics.model.CompleteTaskRequest;
@@ -346,26 +348,12 @@ public class WorkflowMetricsRESTTestHelper {
 		throws Exception {
 
 		_processWorkflowMetricsIndexer.addProcess(
-			Optional.ofNullable(
-				process.getActive()
-			).orElseGet(
-				() -> Boolean.TRUE
-			),
-			companyId,
-			Optional.ofNullable(
-				process.getDateCreated()
-			).orElseGet(
-				Date::new
-			),
-			process.getDescription(),
-			Optional.ofNullable(
-				process.getDateModified()
-			).orElseGet(
-				Date::new
-			),
-			process.getName(), process.getId(), process.getTitle(),
-			LocalizedMapUtil.getLocalizedMap(process.getTitle_i18n()),
-			process.getVersion());
+			_createAddProcessRequest(
+				process.getActive(), companyId, process.getDateCreated(),
+				process.getDescription(), process.getDateModified(),
+				process.getName(), process.getId(), process.getTitle(),
+				LocalizedMapUtil.getLocalizedMap(process.getTitle_i18n()),
+				process.getVersion()));
 
 		_assertCount(
 			_processWorkflowMetricsIndexNameBuilder.getIndexName(companyId),
@@ -978,14 +966,15 @@ public class WorkflowMetricsRESTTestHelper {
 
 	public void restoreProcess(Document document) throws Exception {
 		_processWorkflowMetricsIndexer.addProcess(
-			document.getBoolean("active"), document.getLong("companyId"),
-			_parseDate(document.getDate("createDate")),
-			document.getString("description"),
-			_parseDate(document.getDate("modifiedDate")),
-			document.getString("name"), document.getLong("processId"),
-			document.getString("title"),
-			_createLocalizationMap(document.getString("title")),
-			document.getString("version"));
+			_createAddProcessRequest(
+				document.getBoolean("active"), document.getLong("companyId"),
+				_parseDate(document.getDate("createDate")),
+				document.getString("description"),
+				_parseDate(document.getDate("modifiedDate")),
+				document.getString("name"), document.getLong("processId"),
+				document.getString("title"),
+				_createLocalizationMap(document.getString("title")),
+				document.getString("version")));
 
 		_assertCount(
 			_processWorkflowMetricsIndexNameBuilder.getIndexName(
@@ -1056,6 +1045,51 @@ public class WorkflowMetricsRESTTestHelper {
 		throws Exception {
 
 		_assertCount(1, indexName, parameters);
+	}
+
+	private AddProcessRequest _createAddProcessRequest(
+		boolean active, long companyId, Date createDate, String description,
+		Date modifiedDate, String name, long processId, String title,
+		Map<Locale, String> titleMap, String version) {
+
+		AddProcessRequest.Builder builder = new AddProcessRequest.Builder();
+		String[] versions = {StringBundler.concat(version, CharPool.PERIOD, 0)};
+
+		return builder.active(
+			Optional.ofNullable(
+				active
+			).orElseGet(
+				() -> Boolean.TRUE
+			)
+		).companyId(
+			companyId
+		).createDate(
+			Optional.ofNullable(
+				createDate
+			).orElseGet(
+				Date::new
+			)
+		).description(
+			description
+		).modifiedDate(
+			Optional.ofNullable(
+				modifiedDate
+			).orElseGet(
+				Date::new
+			)
+		).name(
+			name
+		).processId(
+			processId
+		).title(
+			title
+		).titleMap(
+			titleMap
+		).version(
+			versions[0]
+		).versions(
+			versions
+		).build();
 	}
 
 	private Map<Locale, String> _createLocalizationMap(String value) {
