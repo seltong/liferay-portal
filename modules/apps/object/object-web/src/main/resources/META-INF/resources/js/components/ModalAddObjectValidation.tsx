@@ -35,9 +35,6 @@ function ModalAddObjectValidation({
 	observer,
 	onClose,
 }: IModal) {
-	objectValidationRuleEngines = objectValidationRuleEngines.filter(
-		(type) => type.name === 'groovy'
-	);
 
 	const [typeSelection, setTypeSelection] = useState<ObjectValidationType>({
 		label: '',
