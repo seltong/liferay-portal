@@ -22,14 +22,13 @@ import com.liferay.object.validation.rule.ObjectValidationRuleEngineServicesTrac
 import com.liferay.petra.function.UnsafeConsumer;
 import com.liferay.petra.portlet.url.builder.PortletURLBuilder;
 import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.json.JSONObject;
-import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.portlet.LiferayWindowState;
 import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermission;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -96,6 +95,8 @@ public class ObjectDefinitionsValidationsDisplayContext
 			).put(
 				"name", objectValidationRuleEngine.getName()
 			).build()
+		).sorted(
+			Comparator.comparing(p -> p.get("label"))
 		).collect(
 			Collectors.toList()
 		);
