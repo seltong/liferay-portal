@@ -220,12 +220,14 @@ public class ObjectValidationRuleLocalServiceImpl
 
 				if (GetterUtil.getBoolean(results.get("invalidScript"))) {
 					throw new ObjectValidationRuleScriptException(
-						"Script is invalid");
+						"There was an unexpected error in fields validation. " +
+							"Please contact support.");
 				}
 
 				if (GetterUtil.getBoolean(results.get("invalidFields"))) {
 					throw new ObjectValidationRuleEngineException(
-						"Script has invalid fields");
+						objectValidationRule.getErrorLabel(
+							LocaleUtil.getMostRelevantLocale()));
 				}
 			}
 			else {
@@ -234,7 +236,8 @@ public class ObjectValidationRuleLocalServiceImpl
 						objectValidationRule.getScript())) {
 
 					throw new ObjectValidationRuleEngineException(
-						"Unable to evaluate script");
+						objectValidationRule.getErrorLabel(
+							LocaleUtil.getMostRelevantLocale()));
 				}
 			}
 		}
