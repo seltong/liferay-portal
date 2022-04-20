@@ -18,21 +18,23 @@ import com.liferay.frontend.data.set.model.FDSActionDropdownItem;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.DropdownItem;
 import com.liferay.object.model.ObjectDefinition;
 import com.liferay.object.model.ObjectValidationRule;
+import com.liferay.object.service.ObjectFieldLocalServiceUtil;
 import com.liferay.object.validation.rule.ObjectValidationRuleEngineServicesTracker;
 import com.liferay.petra.function.UnsafeConsumer;
 import com.liferay.petra.portlet.url.builder.PortletURLBuilder;
 import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.json.JSONObject;
-import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.portlet.LiferayWindowState;
 import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermission;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -82,6 +84,57 @@ public class ObjectDefinitionsValidationsDisplayContext
 				"delete", "delete", "async"));
 	}
 
+	public List<HashMap<String, Object>> getObjectValidationRuleElements(
+		String engine) {
+
+		List<HashMap<String, Object>> elements = new ArrayList<>();
+
+		Collections.addAll(
+			elements,
+			HashMapBuilder.<String, Object>put(
+				"items",
+				Stream.of(
+					ObjectFieldLocalServiceUtil.getObjectFields(
+						getObjectDefinitionId())
+				).flatMap(
+					List::stream
+				).map(
+					field -> HashMapBuilder.put(
+						"content", field.getName()
+					).put(
+						"label", field.getLabel(objectRequestHelper.getLocale())
+					).put(
+						"tooltip", "placeholder"
+					).build()
+				).collect(
+					Collectors.toList()
+				)
+			).put(
+				"label", "Fields"
+			).build());
+
+		if (engine.equals("ddm")) {
+			Collections.addAll(
+				elements,
+				HashMapBuilder.<String, Object>put(
+					"items",
+					ValidationRuleElementOperatorItem.getValues(
+						objectRequestHelper.getLocale())
+				).put(
+					"label", "Operators"
+				).build(),
+				HashMapBuilder.<String, Object>put(
+					"items",
+					ValidationRuleElementFunctionItem.getValues(
+						objectRequestHelper.getLocale())
+				).put(
+					"label", "Functions"
+				).build());
+		}
+
+		return elements;
+	}
+
 	public List<Map<String, String>> getObjectValidationRuleEngines() {
 		return Stream.of(
 			_objectValidationRuleEngineServicesTracker.
@@ -104,41 +157,143 @@ public class ObjectDefinitionsValidationsDisplayContext
 		);
 	}
 
-	public JSONObject getObjectValidationRuleJSONObject(
-		ObjectValidationRule objectValidationRule) {
-
-		return JSONUtil.put(
-			"active", objectValidationRule.isActive()
-		).put(
-			"engine", objectValidationRule.getEngine()
-		).put(
-			"engineLabel",
-			LanguageUtil.get(
-				objectRequestHelper.getLocale(),
-				objectValidationRule.getEngine())
-		).put(
-			"errorLabel", objectValidationRule.getErrorLabel()
-		).put(
-			"id", objectValidationRule.getObjectValidationRuleId()
-		).put(
-			"name", objectValidationRule.getName()
-		).put(
-			"script", objectValidationRule.getScript()
-		);
-	}
-
 	public HashMap<String, Object> getProps(
 			ObjectValidationRule objectValidationRule)
 		throws PortalException {
 
 		return HashMapBuilder.<String, Object>put(
 			"objectValidationRule",
-			getObjectValidationRuleJSONObject(objectValidationRule)
+			HashMapBuilder.<String, Object>put(
+				"active", objectValidationRule.isActive()
+			).put(
+				"engine", objectValidationRule.getEngine()
+			).put(
+				"engineLabel",
+				LanguageUtil.get(
+					objectRequestHelper.getLocale(),
+					objectValidationRule.getEngine())
+			).put(
+				"errorLabel", objectValidationRule.getErrorLabel()
+			).put(
+				"id", objectValidationRule.getObjectValidationRuleId()
+			).put(
+				"name", objectValidationRule.getName()
+			).put(
+				"script", objectValidationRule.getScript()
+			).build()
+		).put(
+			"objectValidationRuleElements",
+			getObjectValidationRuleElements(objectValidationRule.getEngine())
 		).put(
 			"objectValidationRuleEngines", getObjectValidationRuleEngines()
 		).put(
 			"readOnly", !hasUpdateObjectDefinitionPermission()
 		).build();
+	}
+
+	public enum ValidationRuleElementFunctionItem {
+
+		CONCAT("concat(parameters)", "concat"),
+		CONTAINS("contains(field_reference, parameter)", "contains"),
+		DOES_NOT_CONTAIN(
+			"NOT(contains(field_reference, parameter))", "does-not-contain"),
+		FUTURE_DATES("futureDates(field_reference, parameter)", "future-dates"),
+		IS_A_URL("isURL(field_reference)", "is-a-url"),
+		IS_AN_EMAIL("isEmailAddress(field_reference)", "is-an-email"),
+		IS_DECIMAL("isDecimal(parameter)", "is-decimal"),
+		IS_EMPTY("isEmpty(parameter)", "is-empty"),
+		IS_EQUAL_TO("field_reference == parameter", "is-equal-to"),
+		IS_GREATER_THAN("field_reference > parameter", "is-greater-than"),
+		IS_GREATER_THAN_OR_EQUAL_TO(
+			"field_reference >= parameter", "is-greater-than-or-equal-to"),
+		IS_INTEGER("isInteger(parameter)", "is-integer"),
+		IS_LESS_THAN("field_reference < parameter", "is-less-than"),
+		IS_LESS_THAN_OR_EQUAL_TO(
+			"field_reference <= parameter", "is-less-than-or-equal-to"),
+		IS_NOT_EQUAL_TO("field_reference != parameter", "is-not-equal-to"),
+		MATCHES("match(field_reference, parameter)", "matches"),
+		PAST_DATES("pastDates(field_reference, parameter)", "past-dates"),
+		RANGE(
+			"futureDates(name, startsFrom, date, unit, quantity, endsOn, " +
+				"date, unit, quantity)",
+			"range"),
+		SUM("sum(parameter)", "sum");
+
+		public static List<HashMap<String, String>> getValues(Locale locale) {
+			List<HashMap<String, String>> functionItems = new ArrayList<>();
+
+			for (ValidationRuleElementFunctionItem functionItem : values()) {
+				functionItems.add(
+					HashMapBuilder.put(
+						"content", functionItem._content
+					).put(
+						"label", LanguageUtil.get(locale, functionItem._key)
+					).put(
+						"tooltip", "placeholder"
+					).build());
+			}
+
+			functionItems.sort(
+				Comparator.comparing(
+					item -> item.get(
+						"label"
+					).toLowerCase()));
+
+			return functionItems;
+		}
+
+		private ValidationRuleElementFunctionItem(String content, String key) {
+			_content = content;
+			_key = key;
+		}
+
+		private String _content;
+		private String _key;
+
+	}
+
+	public enum ValidationRuleElementOperatorItem {
+
+		AND("AND", "and"),
+		DIVIDED_BY("field_reference / field_reference2", "divided-by"),
+		EQUALS_OR_ATRIBUTE(
+			"field_reference = field_reference - field_reference2",
+			"equals-or-atribute"),
+		MINUS("field_reference - field_reference2", "minus"), OR("OR", "or"),
+		PLUS("field_reference + field_reference2", "plus"),
+		TIMES("field_reference * field_reference2", "times");
+
+		public static List<HashMap<String, String>> getValues(Locale locale) {
+			List<HashMap<String, String>> operatorItems = new ArrayList<>();
+
+			for (ValidationRuleElementOperatorItem operatorItem : values()) {
+				operatorItems.add(
+					HashMapBuilder.put(
+						"content", operatorItem._content
+					).put(
+						"label", LanguageUtil.get(locale, operatorItem._key)
+					).put(
+						"tooltip", "placeholder"
+					).build());
+			}
+
+			operatorItems.sort(
+				Comparator.comparing(
+					item -> item.get(
+						"label"
+					).toLowerCase()));
+
+			return operatorItems;
+		}
+
+		private ValidationRuleElementOperatorItem(String content, String key) {
+			_content = content;
+			_key = key;
+		}
+
+		private String _content;
+		private String _key;
+
 	}
 
 	@Override
