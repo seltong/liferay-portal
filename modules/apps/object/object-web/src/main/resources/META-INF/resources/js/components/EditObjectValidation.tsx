@@ -56,6 +56,7 @@ function closeSidePanel() {
 
 export default function EditObjectValidation({
 	objectValidationRule: initialValues,
+	objectValidationRuleElements,
 	readOnly,
 }: IProps) {
 	const [activeIndex, setActiveIndex] = useState<number>(0);
@@ -135,6 +136,26 @@ export default function EditObjectValidation({
 
 				<SidePanelContent.Footer>
 					<ClayButton.Group spaced>
+						{objectValidationRuleElements.map(
+							({items, label}, index) => (
+								<div key={index}>
+									<label>{label}</label>
+
+									<ul>
+										{items.map((item, index) => (
+											<li key={index}>
+												<label>{item.label}</label>
+
+												<p>{item.content}</p>
+
+												<hr />
+											</li>
+										))}
+									</ul>
+								</div>
+							)
+						)}
+
 						<ClayButton
 							displayType="secondary"
 							onClick={closeSidePanel}
@@ -154,5 +175,6 @@ export default function EditObjectValidation({
 
 interface IProps {
 	objectValidationRule: ObjectValidation;
+	objectValidationRuleElements: ObjectValidationRuleElement[];
 	readOnly: boolean;
 }

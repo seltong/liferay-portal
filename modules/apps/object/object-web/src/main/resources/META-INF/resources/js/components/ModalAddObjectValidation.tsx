@@ -35,7 +35,6 @@ function ModalAddObjectValidation({
 	observer,
 	onClose,
 }: IModal) {
-
 	const [typeSelection, setTypeSelection] = useState<ObjectValidationType>({
 		label: '',
 		name: '',
