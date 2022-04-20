@@ -14,6 +14,7 @@
 
 package com.liferay.object.web.internal.object.definitions.frontend.taglib.servlet.taglib;
 
+import com.liferay.dynamic.data.mapping.expression.DDMExpressionFunctionTracker;
 import com.liferay.frontend.taglib.servlet.taglib.ScreenNavigationCategory;
 import com.liferay.frontend.taglib.servlet.taglib.ScreenNavigationEntry;
 import com.liferay.object.model.ObjectDefinition;
@@ -92,10 +93,14 @@ public class ObjectDefinitionsValidationsScreeNavigationCategory
 			WebKeys.PORTLET_DISPLAY_CONTEXT,
 			new ObjectDefinitionsValidationsDisplayContext(
 				httpServletRequest, _objectDefinitionModelResourcePermission,
+				_ddmExpressionFunctionTracker,
 				_objectValidationRuleEngineServicesTracker));
 
 		super.render(httpServletRequest, httpServletResponse);
 	}
+
+	@Reference
+	private DDMExpressionFunctionTracker _ddmExpressionFunctionTracker;
 
 	@Reference(
 		target = "(model.class.name=com.liferay.object.model.ObjectDefinition)"

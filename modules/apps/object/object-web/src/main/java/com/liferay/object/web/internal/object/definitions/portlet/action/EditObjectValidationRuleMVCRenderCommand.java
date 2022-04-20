@@ -14,6 +14,7 @@
 
 package com.liferay.object.web.internal.object.definitions.portlet.action;
 
+import com.liferay.dynamic.data.mapping.expression.DDMExpressionFunctionTracker;
 import com.liferay.object.constants.ObjectPortletKeys;
 import com.liferay.object.model.ObjectDefinition;
 import com.liferay.object.model.ObjectValidationRule;
@@ -72,6 +73,7 @@ public class EditObjectValidationRuleMVCRenderCommand
 				new ObjectDefinitionsValidationsDisplayContext(
 					_portal.getHttpServletRequest(renderRequest),
 					_objectDefinitionModelResourcePermission,
+					_ddmExpressionFunctionTracker,
 					_objectValidationRuleEngineServicesTracker));
 		}
 		catch (PortalException portalException) {
@@ -80,6 +82,9 @@ public class EditObjectValidationRuleMVCRenderCommand
 
 		return "/object_definitions/edit_object_validation.jsp";
 	}
+
+	@Reference
+	private DDMExpressionFunctionTracker _ddmExpressionFunctionTracker;
 
 	@Reference
 	private ObjectDefinitionLocalService _objectDefinitionLocalService;
