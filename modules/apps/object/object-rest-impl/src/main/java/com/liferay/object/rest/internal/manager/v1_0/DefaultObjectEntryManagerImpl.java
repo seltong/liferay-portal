@@ -48,9 +48,11 @@ import com.liferay.portal.kernel.search.filter.TermFilter;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.DateUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
+import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
@@ -112,6 +114,18 @@ public class DefaultObjectEntryManagerImpl implements ObjectEntryManager {
 			String scopeKey)
 		throws Exception {
 
+		ServiceContext serviceContext = new ServiceContext();
+
+		Map<String, Object> properties = objectEntry.getProperties();
+
+		serviceContext.setAssetCategoryIds(
+			ListUtil.toLongArray(
+				(List<String>)properties.get("categoryIds"), Long::parseLong));
+		serviceContext.setAssetTagNames(
+			ArrayUtil.toStringArray((List<String>)properties.get("tagNames")));
+
+		serviceContext.setUserId(dtoConverterContext.getUserId());
+
 		return _toObjectEntry(
 			dtoConverterContext, objectDefinition,
 			_objectEntryService.addObjectEntry(
@@ -121,7 +135,7 @@ public class DefaultObjectEntryManagerImpl implements ObjectEntryManager {
 					objectDefinition.getObjectDefinitionId(),
 					objectEntry.getProperties(),
 					dtoConverterContext.getLocale()),
-				new ServiceContext()));
+				serviceContext));
 	}
 
 	@Override
@@ -507,6 +521,18 @@ public class DefaultObjectEntryManagerImpl implements ObjectEntryManager {
 		_checkObjectEntryObjectDefinitionId(
 			objectDefinition, serviceBuilderObjectEntry);
 
+		ServiceContext serviceContext = new ServiceContext();
+
+		Map<String, Object> properties = objectEntry.getProperties();
+
+		serviceContext.setAssetCategoryIds(
+			ListUtil.toLongArray(
+				(List<String>)properties.get("categoryIds"), Long::parseLong));
+		serviceContext.setAssetTagNames(
+			ArrayUtil.toStringArray((List<String>)properties.get("tagNames")));
+
+		serviceContext.setUserId(dtoConverterContext.getUserId());
+
 		return _toObjectEntry(
 			dtoConverterContext, objectDefinition,
 			_objectEntryService.updateObjectEntry(
@@ -515,7 +541,7 @@ public class DefaultObjectEntryManagerImpl implements ObjectEntryManager {
 					serviceBuilderObjectEntry.getObjectDefinitionId(),
 					objectEntry.getProperties(),
 					dtoConverterContext.getLocale()),
-				new ServiceContext()));
+				serviceContext));
 	}
 
 	private void _checkObjectEntryObjectDefinitionId(
