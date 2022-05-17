@@ -23,6 +23,7 @@ ObjectEntryDisplayContext objectEntryDisplayContext = (ObjectEntryDisplayContext
 
 ObjectDefinition objectDefinition = objectEntryDisplayContext.getObjectDefinition();
 ObjectEntry objectEntry = objectEntryDisplayContext.getObjectEntry();
+ObjectLayoutBox objectLayoutBoxCategorization = objectEntryDisplayContext.getObjectLayoutBoxCategorization();
 
 portletDisplay.setShowBackIcon(true);
 portletDisplay.setURLBack(backURL);
@@ -51,6 +52,56 @@ portletDisplay.setURLBack(backURL);
 				</clay:row>
 			</clay:sheet-section>
 		</liferay-frontend:fieldset-group>
+
+		<c:if test="<%= objectLayoutBoxCategorization != null %>">
+			<liferay-frontend:fieldset-group>
+				<div class="lfr-form-content" id="<portlet:namespace />categorization">
+					<c:choose>
+						<c:when test="<%= objectEntryDisplayContext.isReadOnly() %>">
+							<liferay-asset:asset-categories-error />
+
+							<liferay-asset:asset-tags-error />
+
+							<aui:fieldset-group markupView="lexicon">
+								<aui:fieldset collapsed="<%= objectLayoutBoxCategorization.isCollapsable() %>" collapsible="<%= objectLayoutBoxCategorization.isCollapsable() %>" label="categorization">
+									<liferay-asset:asset-categories-summary
+										className="<%= objectDefinition.getClassName() %>"
+										classPK="<%= (objectEntry == null) ? 0 : GetterUtil.getLong(objectEntry.getExternalReferenceCode()) %>"
+										visibleTypes="<%= AssetVocabularyConstants.VISIBILITY_TYPES %>"
+									/>
+
+									<liferay-asset:asset-tags-summary
+										className="<%= objectDefinition.getClassName() %>"
+										classPK="<%= (objectEntry == null) ? 0 : GetterUtil.getLong(objectEntry.getExternalReferenceCode()) %>"
+										message="tags"
+									/>
+								</aui:fieldset>
+							</aui:fieldset-group>
+						</c:when>
+						<c:otherwise>
+							<liferay-asset:asset-categories-error />
+
+							<liferay-asset:asset-tags-error />
+
+							<aui:fieldset-group markupView="lexicon">
+								<aui:fieldset collapsed="<%= objectLayoutBoxCategorization.isCollapsable() %>" collapsible="<%= objectLayoutBoxCategorization.isCollapsable() %>" label="categorization">
+									<liferay-asset:asset-categories-selector
+										className="<%= objectDefinition.getClassName() %>"
+										classPK="<%= (objectEntry == null) ? 0 : GetterUtil.getLong(objectEntry.getExternalReferenceCode()) %>"
+										visibilityTypes="<%= AssetVocabularyConstants.VISIBILITY_TYPES %>"
+									/>
+
+									<liferay-asset:asset-tags-selector
+										className="<%= objectDefinition.getClassName() %>"
+										classPK="<%= (objectEntry == null) ? 0 : GetterUtil.getLong(objectEntry.getExternalReferenceCode()) %>"
+									/>
+								</aui:fieldset>
+							</aui:fieldset-group>
+						</c:otherwise>
+					</c:choose>
+				</div>
+			</liferay-frontend:fieldset-group>
+		</c:if>
 	</liferay-frontend:edit-form-body>
 
 	<c:if test="<%= !objectEntryDisplayContext.isReadOnly() %>">
@@ -67,6 +118,12 @@ portletDisplay.setURLBack(backURL);
 		function <portlet:namespace />getExternalReferenceCode() {
 			return String(
 				'<%= (objectEntry == null) ? "" : objectEntry.getExternalReferenceCode() %>'
+			);
+		}
+
+		function <portlet:namespace />getInputValues(element, selector) {
+			return Array.from(element.querySelectorAll(selector)).map(
+				(item) => item.value
 			);
 		}
 
@@ -134,11 +191,28 @@ portletDisplay.setURLBack(backURL);
 						});
 
 						if (shouldSubmitForm) {
-							const values = <portlet:namespace />getValues(fields);
+							let values = <portlet:namespace />getValues(fields);
+							const categoriesContent = document.getElementById(
+								'<portlet:namespace />categorization'
+							);
 							const externalReferenceCode = <portlet:namespace />getExternalReferenceCode();
 							const path = <portlet:namespace />getPath(
 								externalReferenceCode
 							);
+
+							if (categoriesContent) {
+								values = Object.assign(
+									values,
+									{['categoryIds']: <portlet:namespace />getInputValues(
+										categoriesContent,
+										'input[name^="<portlet:namespace />assetCategoryIds"]'
+									)},
+									{['tagNames']: <portlet:namespace />getInputValues(
+										categoriesContent,
+										'input[name^="<portlet:namespace />assetTagNames"]'
+									)}
+								);
+							}
 
 							Liferay.Util.fetch(path, {
 								body: JSON.stringify(values),
