@@ -14,6 +14,9 @@
 
 package com.liferay.object.service.impl;
 
+import com.liferay.asset.kernel.service.AssetCategoryLocalService;
+import com.liferay.asset.kernel.service.AssetTagLocalService;
+import com.liferay.asset.kernel.service.AssetVocabularyLocalService;
 import com.liferay.fragment.model.FragmentEntryLink;
 import com.liferay.layout.model.LayoutClassedModelUsage;
 import com.liferay.layout.service.LayoutClassedModelUsageLocalService;
@@ -81,6 +84,7 @@ import com.liferay.portal.kernel.search.IndexableType;
 import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
 import com.liferay.portal.kernel.security.permission.ResourceActions;
 import com.liferay.portal.kernel.service.ClassNameLocalService;
+import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.PersistedModelLocalServiceRegistry;
 import com.liferay.portal.kernel.service.ResourceActionLocalService;
 import com.liferay.portal.kernel.service.ResourceLocalService;
@@ -516,13 +520,15 @@ public class ObjectDefinitionLocalServiceImpl
 
 		_addingObjectDefinitionDeployer(
 			new ObjectDefinitionDeployerImpl(
-				_bundleContext, _dynamicQueryBatchIndexingActionableFactory,
+				_assetCategoryLocalService, _assetTagLocalService,
+				_assetVocabularyLocalService, _bundleContext,
+				_dynamicQueryBatchIndexingActionableFactory, _groupLocalService,
 				_listTypeEntryLocalService, _modelSearchRegistrarHelper, this,
 				_objectEntryLocalService, _objectFieldLocalService,
-				_objectRelationshipLocalService, _objectScopeProviderRegistry,
-				_objectViewLocalService, _persistedModelLocalServiceRegistry,
-				_resourceActions, _userLocalService,
-				_workflowStatusModelPreFilterContributor));
+				_objectLayoutLocalService, _objectRelationshipLocalService,
+				_objectScopeProviderRegistry, _objectViewLocalService,
+				_persistedModelLocalServiceRegistry, _resourceActions,
+				_userLocalService, _workflowStatusModelPreFilterContributor));
 
 		_objectDefinitionDeployerServiceTracker = new ServiceTracker<>(
 			_bundleContext, ObjectDefinitionDeployer.class,
@@ -1277,6 +1283,15 @@ public class ObjectDefinitionLocalServiceImpl
 			ObjectDefinitionLocalServiceUtil.class, "undeployObjectDefinition",
 			ObjectDefinition.class);
 
+	@Reference
+	private AssetCategoryLocalService _assetCategoryLocalService;
+
+	@Reference
+	private AssetTagLocalService _assetTagLocalService;
+
+	@Reference
+	private AssetVocabularyLocalService _assetVocabularyLocalService;
+
 	private BundleContext _bundleContext;
 
 	@Reference
@@ -1285,6 +1300,9 @@ public class ObjectDefinitionLocalServiceImpl
 	@Reference
 	private DynamicQueryBatchIndexingActionableFactory
 		_dynamicQueryBatchIndexingActionableFactory;
+
+	@Reference
+	private GroupLocalService _groupLocalService;
 
 	@Reference
 	private LayoutClassedModelUsageLocalService
