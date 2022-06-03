@@ -14,28 +14,39 @@
 
 package com.liferay.object.internal.info.collection.provider;
 
+import com.liferay.asset.kernel.model.AssetCategory;
+import com.liferay.asset.kernel.model.AssetCategoryConstants;
+import com.liferay.asset.kernel.model.AssetTag;
+import com.liferay.asset.kernel.model.AssetVocabulary;
 import com.liferay.asset.kernel.service.AssetCategoryLocalService;
 import com.liferay.asset.kernel.service.AssetTagLocalService;
 import com.liferay.asset.kernel.service.AssetVocabularyLocalService;
+import com.liferay.depot.util.SiteConnectedGroupGroupProviderUtil;
 import com.liferay.info.collection.provider.CollectionQuery;
 import com.liferay.info.collection.provider.ConfigurableInfoCollectionProvider;
 import com.liferay.info.collection.provider.FilteredInfoCollectionProvider;
 import com.liferay.info.collection.provider.SingleFormVariationInfoCollectionProvider;
 import com.liferay.info.field.InfoField;
 import com.liferay.info.field.InfoFieldSet;
+import com.liferay.info.field.InfoFieldSetEntry;
 import com.liferay.info.field.type.SelectInfoFieldType;
 import com.liferay.info.filter.InfoFilter;
 import com.liferay.info.filter.KeywordsInfoFilter;
 import com.liferay.info.form.InfoForm;
 import com.liferay.info.localized.InfoLocalizedValue;
+import com.liferay.info.localized.SingleValueInfoLocalizedValue;
 import com.liferay.info.localized.bundle.FunctionInfoLocalizedValue;
 import com.liferay.info.localized.bundle.ResourceBundleInfoLocalizedValue;
 import com.liferay.info.pagination.InfoPage;
 import com.liferay.info.pagination.Pagination;
 import com.liferay.list.type.service.ListTypeEntryLocalService;
+import com.liferay.object.constants.ObjectDefinitionConstants;
+import com.liferay.object.constants.ObjectLayoutBoxConstants;
 import com.liferay.object.model.ObjectDefinition;
 import com.liferay.object.model.ObjectEntry;
 import com.liferay.object.model.ObjectField;
+import com.liferay.object.model.ObjectLayout;
+import com.liferay.object.model.ObjectLayoutTab;
 import com.liferay.object.scope.ObjectScopeProvider;
 import com.liferay.object.scope.ObjectScopeProviderRegistry;
 import com.liferay.object.service.ObjectEntryLocalService;
@@ -45,6 +56,9 @@ import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.search.BooleanClause;
 import com.liferay.portal.kernel.search.BooleanClauseFactoryUtil;
 import com.liferay.portal.kernel.search.BooleanClauseOccur;
@@ -63,9 +77,15 @@ import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
+import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.ListUtil;
+import com.liferay.portal.kernel.util.PortalUtil;
+import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.vulcan.util.TransformUtil;
+import com.liferay.portlet.asset.util.comparator.AssetTagNameComparator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -147,6 +167,10 @@ public class ObjectEntrySingleFormVariationInfoCollectionProvider
 	@Override
 	public InfoForm getConfigurationInfoForm() {
 		return InfoForm.builder(
+		).infoFieldSetEntries(
+			_getAssetCategoryInfoFields()
+		).infoFieldSetEntry(
+			_getAssetTagsInfoField()
 		).infoFieldSetEntry(
 			InfoFieldSet.builder(
 			).infoFieldSetEntry(
@@ -255,6 +279,38 @@ public class ObjectEntrySingleFormVariationInfoCollectionProvider
 			searchContext.setKeywords(keywordsInfoFilter.getKeywords());
 		}
 
+		Optional<Map<String, String[]>> configurationOptional =
+			collectionQuery.getConfigurationOptional();
+
+		Map<String, String[]> configuration = configurationOptional.orElse(
+			Collections.emptyMap());
+
+		List<String> assetCategoryIds = new ArrayList<>();
+
+		for (AssetVocabulary assetVocabulary :
+				_getAssetVocabularies(serviceContext)) {
+
+			String[] categoryIds = configuration.get(
+				String.valueOf(assetVocabulary.getVocabularyId()));
+
+			if ((categoryIds != null) &&
+				!StringUtil.equals(categoryIds[0], "null")) {
+
+				Collections.addAll(assetCategoryIds, categoryIds);
+			}
+		}
+
+		searchContext.setAssetCategoryIds(
+			ListUtil.toLongArray(assetCategoryIds, Long::parseLong));
+
+		String[] assetTagNames = configuration.get(Field.ASSET_TAG_NAMES);
+
+		if (ArrayUtil.isNotEmpty(assetTagNames) &&
+			Validator.isNotNull(assetTagNames[0])) {
+
+			searchContext.setAssetTagNames(assetTagNames);
+		}
+
 		searchContext.setStart(pagination.getStart());
 
 		QueryConfig queryConfig = searchContext.getQueryConfig();
@@ -263,6 +319,156 @@ public class ObjectEntrySingleFormVariationInfoCollectionProvider
 		queryConfig.setScoreEnabled(false);
 
 		return searchContext;
+	}
+
+	private List<InfoFieldSetEntry> _getAssetCategoryInfoFields() {
+		if (!StringUtil.equals(
+				_objectDefinition.getStorageType(),
+				ObjectDefinitionConstants.STORAGE_TYPE_DEFAULT) ||
+			!_hasCategorizationLayoutBox()) {
+
+			return Collections.emptyList();
+		}
+
+		ServiceContext serviceContext =
+			ServiceContextThreadLocal.getServiceContext();
+
+		List<InfoFieldSetEntry> fieldSetEntries = new ArrayList<>();
+
+		for (AssetVocabulary assetVocabulary :
+				_getAssetVocabularies(serviceContext)) {
+
+			List<SelectInfoFieldType.Option> selectInfoFieldTypeOptions =
+				new ArrayList<>();
+
+			for (AssetCategory assetCategory :
+					_assetCategoryLocalService.getVocabularyCategories(
+						assetVocabulary.getVocabularyId(), QueryUtil.ALL_POS,
+						QueryUtil.ALL_POS, null)) {
+
+				selectInfoFieldTypeOptions.add(
+					new SelectInfoFieldType.Option(
+						new SingleValueInfoLocalizedValue<>(
+							assetCategory.getName()),
+						String.valueOf(assetCategory.getCategoryId())));
+			}
+
+			if (!selectInfoFieldTypeOptions.isEmpty()) {
+				fieldSetEntries.add(
+					InfoField.builder(
+					).infoFieldType(
+						SelectInfoFieldType.INSTANCE
+					).namespace(
+						StringPool.BLANK
+					).name(
+						String.valueOf(assetVocabulary.getVocabularyId())
+					).attribute(
+						SelectInfoFieldType.MULTIPLE, true
+					).attribute(
+						SelectInfoFieldType.OPTIONS, selectInfoFieldTypeOptions
+					).labelInfoLocalizedValue(
+						InfoLocalizedValue.singleValue(
+							assetVocabulary.getTitle(
+								serviceContext.getLocale()))
+					).localizable(
+						true
+					).build());
+			}
+		}
+
+		return fieldSetEntries;
+	}
+
+	private InfoField<?> _getAssetTagsInfoField() {
+		if (!StringUtil.equals(
+				_objectDefinition.getStorageType(),
+				ObjectDefinitionConstants.STORAGE_TYPE_DEFAULT) ||
+			!_hasCategorizationLayoutBox()) {
+
+			return null;
+		}
+
+		long groupId = 0;
+
+		if (StringUtil.equals(
+				_objectDefinition.getScope(),
+				ObjectDefinitionConstants.SCOPE_COMPANY)) {
+
+			try {
+				Group group = _groupLocalService.getCompanyGroup(
+					_objectDefinition.getCompanyId());
+
+				groupId = group.getGroupId();
+			}
+			catch (PortalException portalException) {
+				_log.error(portalException);
+			}
+		}
+		else {
+			ServiceContext serviceContext =
+				ServiceContextThreadLocal.getServiceContext();
+
+			groupId = serviceContext.getScopeGroupId();
+		}
+
+		List<AssetTag> assetTags = new ArrayList<>(
+			_assetTagLocalService.getGroupTags(groupId));
+
+		assetTags.sort(new AssetTagNameComparator(true));
+
+		List<SelectInfoFieldType.Option> options = new ArrayList<>();
+
+		for (AssetTag assetTag : assetTags) {
+			options.add(
+				new SelectInfoFieldType.Option(
+					new SingleValueInfoLocalizedValue<>(assetTag.getName()),
+					assetTag.getName()));
+		}
+
+		InfoField.FinalStep<?> finalStep = InfoField.builder(
+		).infoFieldType(
+			SelectInfoFieldType.INSTANCE
+		).namespace(
+			StringPool.BLANK
+		).name(
+			Field.ASSET_TAG_NAMES
+		).attribute(
+			SelectInfoFieldType.MULTIPLE, true
+		).attribute(
+			SelectInfoFieldType.OPTIONS, options
+		).labelInfoLocalizedValue(
+			InfoLocalizedValue.localize(getClass(), "tag")
+		).localizable(
+			true
+		);
+
+		return finalStep.build();
+	}
+
+	private List<AssetVocabulary> _getAssetVocabularies(
+		ServiceContext serviceContext) {
+
+		List<AssetVocabulary> vocabularies = new ArrayList<>();
+
+		try {
+			vocabularies.addAll(
+				_assetVocabularyLocalService.getGroupVocabularies(
+					SiteConnectedGroupGroupProviderUtil.
+						getCurrentAndAncestorSiteAndDepotGroupIds(
+							serviceContext.getScopeGroupId())));
+		}
+		catch (PortalException portalException) {
+			if (_log.isDebugEnabled()) {
+				_log.debug(portalException);
+			}
+		}
+
+		return ListUtil.filter(
+			vocabularies,
+			assetVocabulary ->
+				assetVocabulary.isAssociatedToClassNameIdAndClassTypePK(
+					PortalUtil.getClassNameId(_objectDefinition.getClassName()),
+					AssetCategoryConstants.ALL_CLASS_TYPE_PK));
 	}
 
 	private BooleanClause[] _getBooleanClauses(CollectionQuery collectionQuery)
@@ -389,6 +595,38 @@ public class ObjectEntrySingleFormVariationInfoCollectionProvider
 
 		return options;
 	}
+
+	private boolean _hasCategorizationLayoutBox() {
+		ObjectLayout objectLayout = null;
+
+		try {
+			objectLayout = _objectLayoutLocalService.getDefaultObjectLayout(
+				_objectDefinition.getObjectDefinitionId());
+		}
+		catch (PortalException portalException) {
+			_log.error(portalException);
+		}
+
+		if (objectLayout != null) {
+			for (ObjectLayoutTab objectLayoutTab :
+					objectLayout.getObjectLayoutTabs()) {
+
+				if (ListUtil.exists(
+						objectLayoutTab.getObjectLayoutBoxes(),
+						objectLayoutBox -> StringUtil.equals(
+							objectLayoutBox.getType(),
+							ObjectLayoutBoxConstants.TYPE_CATEGORIZATION))) {
+
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		ObjectEntrySingleFormVariationInfoCollectionProvider.class);
 
 	private final AssetCategoryLocalService _assetCategoryLocalService;
 	private final AssetTagLocalService _assetTagLocalService;
