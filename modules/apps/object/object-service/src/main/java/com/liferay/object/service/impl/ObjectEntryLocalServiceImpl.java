@@ -221,14 +221,14 @@ public class ObjectEntryLocalServiceImpl
 			objectEntry.getUserId(), objectDefinition.getClassName(),
 			objectEntry.getPrimaryKey(), false, false, false);
 
+		_startWorkflowInstance(userId, objectEntry, serviceContext);
+
 		updateAsset(
 			serviceContext.getUserId(), objectEntry,
 			serviceContext.getAssetCategoryIds(),
 			serviceContext.getAssetTagNames(),
 			serviceContext.getAssetLinkEntryIds(),
 			serviceContext.getAssetPriority());
-
-		_startWorkflowInstance(userId, objectEntry, serviceContext);
 
 		_reindex(objectEntry);
 
@@ -962,14 +962,14 @@ public class ObjectEntryLocalServiceImpl
 
 		objectEntry = objectEntryPersistence.update(objectEntry);
 
+		_startWorkflowInstance(userId, objectEntry, serviceContext);
+
 		updateAsset(
 			serviceContext.getUserId(), objectEntry,
 			serviceContext.getAssetCategoryIds(),
 			serviceContext.getAssetTagNames(),
 			serviceContext.getAssetLinkEntryIds(),
 			serviceContext.getAssetPriority());
-
-		_startWorkflowInstance(userId, objectEntry, serviceContext);
 
 		_deleteFileEntries(
 			values, objectEntry.getObjectDefinitionId(), transientValues);
