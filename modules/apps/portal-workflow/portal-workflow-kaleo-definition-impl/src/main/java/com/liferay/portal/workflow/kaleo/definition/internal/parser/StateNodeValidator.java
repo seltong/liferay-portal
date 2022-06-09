@@ -14,11 +14,15 @@
 
 package com.liferay.portal.workflow.kaleo.definition.internal.parser;
 
+import com.liferay.portal.kernel.util.LocaleUtil;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.workflow.kaleo.definition.Definition;
 import com.liferay.portal.workflow.kaleo.definition.State;
 import com.liferay.portal.workflow.kaleo.definition.exception.KaleoDefinitionValidationException;
 import com.liferay.portal.workflow.kaleo.definition.parser.NodeValidator;
 
+import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 
 import org.osgi.service.component.annotations.Component;
@@ -42,8 +46,13 @@ public class StateNodeValidator extends BaseNodeValidator<State> {
 		}
 		else if (state.getIncomingTransitionsCount() == 0) {
 			throw new KaleoDefinitionValidationException.
-				MustSetIncomingTransition(state.getName());
+				MustSetIncomingTransition(
+					_getDefaultNodeLabel(state.getLabelMap()));
 		}
+	}
+
+	private String _getDefaultNodeLabel(Map<Locale, String> nodeLabelMap) {
+		return StringUtil.trim(nodeLabelMap.get(LocaleUtil.getSiteDefault()));
 	}
 
 	private void _validateInitialState(Definition definition, State state)
@@ -54,17 +63,20 @@ public class StateNodeValidator extends BaseNodeValidator<State> {
 		if (!Objects.equals(initialState, state)) {
 			throw new KaleoDefinitionValidationException.
 				MultipleInitialStateNodes(
-					state.getName(), initialState.getName());
+					_getDefaultNodeLabel(state.getLabelMap()),
+					_getDefaultNodeLabel(initialState.getLabelMap()));
 		}
 
 		if (state.getIncomingTransitionsCount() > 0) {
 			throw new KaleoDefinitionValidationException.
-				MustNotSetIncomingTransition(state.getName());
+				MustNotSetIncomingTransition(
+					_getDefaultNodeLabel(state.getLabelMap()));
 		}
 
 		if (state.getOutgoingTransitionsCount() == 0) {
 			throw new KaleoDefinitionValidationException.
-				MustSetOutgoingTransition(state.getName());
+				MustSetOutgoingTransition(
+					_getDefaultNodeLabel(state.getLabelMap()));
 		}
 	}
 
