@@ -532,8 +532,6 @@ public class MainServlet extends HttpServlet {
 			if (_log.isDebugEnabled()) {
 				_log.debug("Authenticated user id " + userId);
 			}
-		} catch(PortalException portalException) {
-			throw new ServletException(portalException);
 		}
 		catch (Exception exception) {
 			_log.error(exception);
