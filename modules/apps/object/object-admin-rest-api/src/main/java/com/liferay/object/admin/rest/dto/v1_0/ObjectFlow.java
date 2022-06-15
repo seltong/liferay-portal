@@ -46,18 +46,47 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @generated
  */
 @Generated("")
-@GraphQLName("ObjectState")
+@GraphQLName("ObjectFlow")
 @JsonFilter("Liferay.Vulcan")
-@XmlRootElement(name = "ObjectState")
-public class ObjectState implements Serializable {
+@XmlRootElement(name = "ObjectFlow")
+public class ObjectFlow implements Serializable {
 
-	public static ObjectState toDTO(String json) {
-		return ObjectMapperUtil.readValue(ObjectState.class, json);
+	public static ObjectFlow toDTO(String json) {
+		return ObjectMapperUtil.readValue(ObjectFlow.class, json);
 	}
 
-	public static ObjectState unsafeToDTO(String json) {
-		return ObjectMapperUtil.unsafeReadValue(ObjectState.class, json);
+	public static ObjectFlow unsafeToDTO(String json) {
+		return ObjectMapperUtil.unsafeReadValue(ObjectFlow.class, json);
 	}
+
+	@Schema
+	@Valid
+	public Object getCurrentState() {
+		return currentState;
+	}
+
+	public void setCurrentState(Object currentState) {
+		this.currentState = currentState;
+	}
+
+	@JsonIgnore
+	public void setCurrentState(
+		UnsafeSupplier<Object, Exception> currentStateUnsafeSupplier) {
+
+		try {
+			currentState = currentStateUnsafeSupplier.get();
+		}
+		catch (RuntimeException re) {
+			throw re;
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@GraphQLField
+	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
+	protected Object currentState;
 
 	@Schema
 	public Long getId() {
@@ -86,21 +115,18 @@ public class ObjectState implements Serializable {
 	protected Long id;
 
 	@Schema
-	@Valid
-	public Object getNextStatus() {
-		return nextStatus;
+	public String getName() {
+		return name;
 	}
 
-	public void setNextStatus(Object nextStatus) {
-		this.nextStatus = nextStatus;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	@JsonIgnore
-	public void setNextStatus(
-		UnsafeSupplier<Object, Exception> nextStatusUnsafeSupplier) {
-
+	public void setName(UnsafeSupplier<String, Exception> nameUnsafeSupplier) {
 		try {
-			nextStatus = nextStatusUnsafeSupplier.get();
+			name = nameUnsafeSupplier.get();
 		}
 		catch (RuntimeException re) {
 			throw re;
@@ -111,8 +137,8 @@ public class ObjectState implements Serializable {
 	}
 
 	@GraphQLField
-	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-	protected Object nextStatus;
+	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
+	protected String name;
 
 	@Schema
 	public Long getObjectDefinitionId() {
@@ -143,20 +169,21 @@ public class ObjectState implements Serializable {
 	protected Long objectDefinitionId;
 
 	@Schema
-	public Long getObjectFieldId() {
-		return objectFieldId;
+	@Valid
+	public Map[] getStates() {
+		return states;
 	}
 
-	public void setObjectFieldId(Long objectFieldId) {
-		this.objectFieldId = objectFieldId;
+	public void setStates(Map[] states) {
+		this.states = states;
 	}
 
 	@JsonIgnore
-	public void setObjectFieldId(
-		UnsafeSupplier<Long, Exception> objectFieldIdUnsafeSupplier) {
+	public void setStates(
+		UnsafeSupplier<Map[], Exception> statesUnsafeSupplier) {
 
 		try {
-			objectFieldId = objectFieldIdUnsafeSupplier.get();
+			states = statesUnsafeSupplier.get();
 		}
 		catch (RuntimeException re) {
 			throw re;
@@ -168,7 +195,7 @@ public class ObjectState implements Serializable {
 
 	@GraphQLField
 	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
-	protected Long objectFieldId;
+	protected Map[] states;
 
 	@Override
 	public boolean equals(Object object) {
@@ -176,13 +203,13 @@ public class ObjectState implements Serializable {
 			return true;
 		}
 
-		if (!(object instanceof ObjectState)) {
+		if (!(object instanceof ObjectFlow)) {
 			return false;
 		}
 
-		ObjectState objectState = (ObjectState)object;
+		ObjectFlow objectFlow = (ObjectFlow)object;
 
-		return Objects.equals(toString(), objectState.toString());
+		return Objects.equals(toString(), objectFlow.toString());
 	}
 
 	@Override
@@ -197,6 +224,27 @@ public class ObjectState implements Serializable {
 
 		sb.append("{");
 
+		if (currentState != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"currentState\": ");
+
+			if (currentState instanceof Map) {
+				sb.append(
+					JSONFactoryUtil.createJSONObject((Map<?, ?>)currentState));
+			}
+			else if (currentState instanceof String) {
+				sb.append("\"");
+				sb.append(_escape((String)currentState));
+				sb.append("\"");
+			}
+			else {
+				sb.append(currentState);
+			}
+		}
+
 		if (id != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
@@ -207,25 +255,18 @@ public class ObjectState implements Serializable {
 			sb.append(id);
 		}
 
-		if (nextStatus != null) {
+		if (name != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
 
-			sb.append("\"nextStatus\": ");
+			sb.append("\"name\": ");
 
-			if (nextStatus instanceof Map) {
-				sb.append(
-					JSONFactoryUtil.createJSONObject((Map<?, ?>)nextStatus));
-			}
-			else if (nextStatus instanceof String) {
-				sb.append("\"");
-				sb.append(_escape((String)nextStatus));
-				sb.append("\"");
-			}
-			else {
-				sb.append(nextStatus);
-			}
+			sb.append("\"");
+
+			sb.append(_escape(name));
+
+			sb.append("\"");
 		}
 
 		if (objectDefinitionId != null) {
@@ -238,14 +279,24 @@ public class ObjectState implements Serializable {
 			sb.append(objectDefinitionId);
 		}
 
-		if (objectFieldId != null) {
+		if (states != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
 
-			sb.append("\"objectFieldId\": ");
+			sb.append("\"states\": ");
 
-			sb.append(objectFieldId);
+			sb.append("[");
+
+			for (int i = 0; i < states.length; i++) {
+				sb.append(states[i]);
+
+				if ((i + 1) < states.length) {
+					sb.append(", ");
+				}
+			}
+
+			sb.append("]");
 		}
 
 		sb.append("}");
@@ -255,7 +306,7 @@ public class ObjectState implements Serializable {
 
 	@Schema(
 		accessMode = Schema.AccessMode.READ_ONLY,
-		defaultValue = "com.liferay.object.admin.rest.dto.v1_0.ObjectState",
+		defaultValue = "com.liferay.object.admin.rest.dto.v1_0.ObjectFlow",
 		name = "x-class-name"
 	)
 	public String xClassName;

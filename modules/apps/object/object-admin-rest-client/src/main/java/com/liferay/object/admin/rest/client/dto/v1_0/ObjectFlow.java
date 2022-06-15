@@ -15,10 +15,11 @@
 package com.liferay.object.admin.rest.client.dto.v1_0;
 
 import com.liferay.object.admin.rest.client.function.UnsafeSupplier;
-import com.liferay.object.admin.rest.client.serdes.v1_0.ObjectStateSerDes;
+import com.liferay.object.admin.rest.client.serdes.v1_0.ObjectFlowSerDes;
 
 import java.io.Serializable;
 
+import java.util.Map;
 import java.util.Objects;
 
 import javax.annotation.Generated;
@@ -28,11 +29,32 @@ import javax.annotation.Generated;
  * @generated
  */
 @Generated("")
-public class ObjectState implements Cloneable, Serializable {
+public class ObjectFlow implements Cloneable, Serializable {
 
-	public static ObjectState toDTO(String json) {
-		return ObjectStateSerDes.toDTO(json);
+	public static ObjectFlow toDTO(String json) {
+		return ObjectFlowSerDes.toDTO(json);
 	}
+
+	public Object getCurrentState() {
+		return currentState;
+	}
+
+	public void setCurrentState(Object currentState) {
+		this.currentState = currentState;
+	}
+
+	public void setCurrentState(
+		UnsafeSupplier<Object, Exception> currentStateUnsafeSupplier) {
+
+		try {
+			currentState = currentStateUnsafeSupplier.get();
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	protected Object currentState;
 
 	public Long getId() {
 		return id;
@@ -53,26 +75,24 @@ public class ObjectState implements Cloneable, Serializable {
 
 	protected Long id;
 
-	public Object getNextStatus() {
-		return nextStatus;
+	public String getName() {
+		return name;
 	}
 
-	public void setNextStatus(Object nextStatus) {
-		this.nextStatus = nextStatus;
+	public void setName(String name) {
+		this.name = name;
 	}
 
-	public void setNextStatus(
-		UnsafeSupplier<Object, Exception> nextStatusUnsafeSupplier) {
-
+	public void setName(UnsafeSupplier<String, Exception> nameUnsafeSupplier) {
 		try {
-			nextStatus = nextStatusUnsafeSupplier.get();
+			name = nameUnsafeSupplier.get();
 		}
 		catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	protected Object nextStatus;
+	protected String name;
 
 	public Long getObjectDefinitionId() {
 		return objectDefinitionId;
@@ -95,30 +115,30 @@ public class ObjectState implements Cloneable, Serializable {
 
 	protected Long objectDefinitionId;
 
-	public Long getObjectFieldId() {
-		return objectFieldId;
+	public Map[] getStates() {
+		return states;
 	}
 
-	public void setObjectFieldId(Long objectFieldId) {
-		this.objectFieldId = objectFieldId;
+	public void setStates(Map[] states) {
+		this.states = states;
 	}
 
-	public void setObjectFieldId(
-		UnsafeSupplier<Long, Exception> objectFieldIdUnsafeSupplier) {
+	public void setStates(
+		UnsafeSupplier<Map[], Exception> statesUnsafeSupplier) {
 
 		try {
-			objectFieldId = objectFieldIdUnsafeSupplier.get();
+			states = statesUnsafeSupplier.get();
 		}
 		catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	protected Long objectFieldId;
+	protected Map[] states;
 
 	@Override
-	public ObjectState clone() throws CloneNotSupportedException {
-		return (ObjectState)super.clone();
+	public ObjectFlow clone() throws CloneNotSupportedException {
+		return (ObjectFlow)super.clone();
 	}
 
 	@Override
@@ -127,13 +147,13 @@ public class ObjectState implements Cloneable, Serializable {
 			return true;
 		}
 
-		if (!(object instanceof ObjectState)) {
+		if (!(object instanceof ObjectFlow)) {
 			return false;
 		}
 
-		ObjectState objectState = (ObjectState)object;
+		ObjectFlow objectFlow = (ObjectFlow)object;
 
-		return Objects.equals(toString(), objectState.toString());
+		return Objects.equals(toString(), objectFlow.toString());
 	}
 
 	@Override
@@ -144,7 +164,7 @@ public class ObjectState implements Cloneable, Serializable {
 	}
 
 	public String toString() {
-		return ObjectStateSerDes.toJSON(this);
+		return ObjectFlowSerDes.toJSON(this);
 	}
 
 }

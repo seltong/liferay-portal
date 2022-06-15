@@ -14,7 +14,7 @@
 
 package com.liferay.object.admin.rest.client.serdes.v1_0;
 
-import com.liferay.object.admin.rest.client.dto.v1_0.ObjectState;
+import com.liferay.object.admin.rest.client.dto.v1_0.ObjectFlow;
 import com.liferay.object.admin.rest.client.json.BaseJSONParser;
 
 import java.util.Iterator;
@@ -30,24 +30,22 @@ import javax.annotation.Generated;
  * @generated
  */
 @Generated("")
-public class ObjectStateSerDes {
+public class ObjectFlowSerDes {
 
-	public static ObjectState toDTO(String json) {
-		ObjectStateJSONParser objectStateJSONParser =
-			new ObjectStateJSONParser();
+	public static ObjectFlow toDTO(String json) {
+		ObjectFlowJSONParser objectFlowJSONParser = new ObjectFlowJSONParser();
 
-		return objectStateJSONParser.parseToDTO(json);
+		return objectFlowJSONParser.parseToDTO(json);
 	}
 
-	public static ObjectState[] toDTOs(String json) {
-		ObjectStateJSONParser objectStateJSONParser =
-			new ObjectStateJSONParser();
+	public static ObjectFlow[] toDTOs(String json) {
+		ObjectFlowJSONParser objectFlowJSONParser = new ObjectFlowJSONParser();
 
-		return objectStateJSONParser.parseToDTOs(json);
+		return objectFlowJSONParser.parseToDTOs(json);
 	}
 
-	public static String toJSON(ObjectState objectState) {
-		if (objectState == null) {
+	public static String toJSON(ObjectFlow objectFlow) {
+		if (objectFlow == null) {
 			return "null";
 		}
 
@@ -55,51 +53,75 @@ public class ObjectStateSerDes {
 
 		sb.append("{");
 
-		if (objectState.getId() != null) {
+		if (objectFlow.getCurrentState() != null) {
+			if (sb.length() > 1) {
+				sb.append(", ");
+			}
+
+			sb.append("\"currentState\": ");
+
+			if (objectFlow.getCurrentState() instanceof String) {
+				sb.append("\"");
+				sb.append((String)objectFlow.getCurrentState());
+				sb.append("\"");
+			}
+			else {
+				sb.append(objectFlow.getCurrentState());
+			}
+		}
+
+		if (objectFlow.getId() != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
 
 			sb.append("\"id\": ");
 
-			sb.append(objectState.getId());
+			sb.append(objectFlow.getId());
 		}
 
-		if (objectState.getNextStatus() != null) {
+		if (objectFlow.getName() != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
 
-			sb.append("\"nextStatus\": ");
+			sb.append("\"name\": ");
 
-			if (objectState.getNextStatus() instanceof String) {
-				sb.append("\"");
-				sb.append((String)objectState.getNextStatus());
-				sb.append("\"");
-			}
-			else {
-				sb.append(objectState.getNextStatus());
-			}
+			sb.append("\"");
+
+			sb.append(_escape(objectFlow.getName()));
+
+			sb.append("\"");
 		}
 
-		if (objectState.getObjectDefinitionId() != null) {
+		if (objectFlow.getObjectDefinitionId() != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
 
 			sb.append("\"objectDefinitionId\": ");
 
-			sb.append(objectState.getObjectDefinitionId());
+			sb.append(objectFlow.getObjectDefinitionId());
 		}
 
-		if (objectState.getObjectFieldId() != null) {
+		if (objectFlow.getStates() != null) {
 			if (sb.length() > 1) {
 				sb.append(", ");
 			}
 
-			sb.append("\"objectFieldId\": ");
+			sb.append("\"states\": ");
 
-			sb.append(objectState.getObjectFieldId());
+			sb.append("[");
+
+			for (int i = 0; i < objectFlow.getStates().length; i++) {
+				sb.append(objectFlow.getStates()[i]);
+
+				if ((i + 1) < objectFlow.getStates().length) {
+					sb.append(", ");
+				}
+			}
+
+			sb.append("]");
 		}
 
 		sb.append("}");
@@ -108,95 +130,104 @@ public class ObjectStateSerDes {
 	}
 
 	public static Map<String, Object> toMap(String json) {
-		ObjectStateJSONParser objectStateJSONParser =
-			new ObjectStateJSONParser();
+		ObjectFlowJSONParser objectFlowJSONParser = new ObjectFlowJSONParser();
 
-		return objectStateJSONParser.parseToMap(json);
+		return objectFlowJSONParser.parseToMap(json);
 	}
 
-	public static Map<String, String> toMap(ObjectState objectState) {
-		if (objectState == null) {
+	public static Map<String, String> toMap(ObjectFlow objectFlow) {
+		if (objectFlow == null) {
 			return null;
 		}
 
 		Map<String, String> map = new TreeMap<>();
 
-		if (objectState.getId() == null) {
+		if (objectFlow.getCurrentState() == null) {
+			map.put("currentState", null);
+		}
+		else {
+			map.put(
+				"currentState", String.valueOf(objectFlow.getCurrentState()));
+		}
+
+		if (objectFlow.getId() == null) {
 			map.put("id", null);
 		}
 		else {
-			map.put("id", String.valueOf(objectState.getId()));
+			map.put("id", String.valueOf(objectFlow.getId()));
 		}
 
-		if (objectState.getNextStatus() == null) {
-			map.put("nextStatus", null);
+		if (objectFlow.getName() == null) {
+			map.put("name", null);
 		}
 		else {
-			map.put("nextStatus", String.valueOf(objectState.getNextStatus()));
+			map.put("name", String.valueOf(objectFlow.getName()));
 		}
 
-		if (objectState.getObjectDefinitionId() == null) {
+		if (objectFlow.getObjectDefinitionId() == null) {
 			map.put("objectDefinitionId", null);
 		}
 		else {
 			map.put(
 				"objectDefinitionId",
-				String.valueOf(objectState.getObjectDefinitionId()));
+				String.valueOf(objectFlow.getObjectDefinitionId()));
 		}
 
-		if (objectState.getObjectFieldId() == null) {
-			map.put("objectFieldId", null);
+		if (objectFlow.getStates() == null) {
+			map.put("states", null);
 		}
 		else {
-			map.put(
-				"objectFieldId",
-				String.valueOf(objectState.getObjectFieldId()));
+			map.put("states", String.valueOf(objectFlow.getStates()));
 		}
 
 		return map;
 	}
 
-	public static class ObjectStateJSONParser
-		extends BaseJSONParser<ObjectState> {
+	public static class ObjectFlowJSONParser
+		extends BaseJSONParser<ObjectFlow> {
 
 		@Override
-		protected ObjectState createDTO() {
-			return new ObjectState();
+		protected ObjectFlow createDTO() {
+			return new ObjectFlow();
 		}
 
 		@Override
-		protected ObjectState[] createDTOArray(int size) {
-			return new ObjectState[size];
+		protected ObjectFlow[] createDTOArray(int size) {
+			return new ObjectFlow[size];
 		}
 
 		@Override
 		protected void setField(
-			ObjectState objectState, String jsonParserFieldName,
+			ObjectFlow objectFlow, String jsonParserFieldName,
 			Object jsonParserFieldValue) {
 
-			if (Objects.equals(jsonParserFieldName, "id")) {
+			if (Objects.equals(jsonParserFieldName, "currentState")) {
 				if (jsonParserFieldValue != null) {
-					objectState.setId(
+					objectFlow.setCurrentState((Object)jsonParserFieldValue);
+				}
+			}
+			else if (Objects.equals(jsonParserFieldName, "id")) {
+				if (jsonParserFieldValue != null) {
+					objectFlow.setId(
 						Long.valueOf((String)jsonParserFieldValue));
 				}
 			}
-			else if (Objects.equals(jsonParserFieldName, "nextStatus")) {
+			else if (Objects.equals(jsonParserFieldName, "name")) {
 				if (jsonParserFieldValue != null) {
-					objectState.setNextStatus((Object)jsonParserFieldValue);
+					objectFlow.setName((String)jsonParserFieldValue);
 				}
 			}
 			else if (Objects.equals(
 						jsonParserFieldName, "objectDefinitionId")) {
 
 				if (jsonParserFieldValue != null) {
-					objectState.setObjectDefinitionId(
+					objectFlow.setObjectDefinitionId(
 						Long.valueOf((String)jsonParserFieldValue));
 				}
 			}
-			else if (Objects.equals(jsonParserFieldName, "objectFieldId")) {
+			else if (Objects.equals(jsonParserFieldName, "states")) {
 				if (jsonParserFieldValue != null) {
-					objectState.setObjectFieldId(
-						Long.valueOf((String)jsonParserFieldValue));
+					objectFlow.setStates((Map[])jsonParserFieldValue);
 				}
 			}
 		}

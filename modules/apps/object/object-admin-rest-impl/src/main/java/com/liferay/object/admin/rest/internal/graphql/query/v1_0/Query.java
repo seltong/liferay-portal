@@ -17,6 +17,7 @@ package com.liferay.object.admin.rest.internal.graphql.query.v1_0;
 import com.liferay.object.admin.rest.dto.v1_0.ObjectAction;
 import com.liferay.object.admin.rest.dto.v1_0.ObjectDefinition;
 import com.liferay.object.admin.rest.dto.v1_0.ObjectField;
+import com.liferay.object.admin.rest.dto.v1_0.ObjectFlow;
 import com.liferay.object.admin.rest.dto.v1_0.ObjectLayout;
 import com.liferay.object.admin.rest.dto.v1_0.ObjectLayoutColumn;
 import com.liferay.object.admin.rest.dto.v1_0.ObjectLayoutTab;
@@ -26,6 +27,7 @@ import com.liferay.object.admin.rest.dto.v1_0.ObjectView;
 import com.liferay.object.admin.rest.resource.v1_0.ObjectActionResource;
 import com.liferay.object.admin.rest.resource.v1_0.ObjectDefinitionResource;
 import com.liferay.object.admin.rest.resource.v1_0.ObjectFieldResource;
+import com.liferay.object.admin.rest.resource.v1_0.ObjectFlowResource;
 import com.liferay.object.admin.rest.resource.v1_0.ObjectLayoutResource;
 import com.liferay.object.admin.rest.resource.v1_0.ObjectRelationshipResource;
 import com.liferay.object.admin.rest.resource.v1_0.ObjectValidationRuleResource;
@@ -87,6 +89,14 @@ public class Query {
 
 		_objectFieldResourceComponentServiceObjects =
 			objectFieldResourceComponentServiceObjects;
+	}
+
+	public static void setObjectFlowResourceComponentServiceObjects(
+		ComponentServiceObjects<ObjectFlowResource>
+			objectFlowResourceComponentServiceObjects) {
+
+		_objectFlowResourceComponentServiceObjects =
+			objectFlowResourceComponentServiceObjects;
 	}
 
 	public static void setObjectLayoutResourceComponentServiceObjects(
@@ -245,6 +255,47 @@ public class Query {
 			this::_populateResourceContext,
 			objectFieldResource -> objectFieldResource.getObjectField(
 				objectFieldId));
+	}
+
+	/**
+	 * Invoke this method with the command line:
+	 *
+	 * curl -H 'Content-Type: text/plain; charset=utf-8' -X 'POST' 'http://localhost:8080/o/graphql' -d $'{"query": "query {objectDefinitionObjectStates(filter: ___, objectDefinitionId: ___, page: ___, pageSize: ___, search: ___){items {__}, page, pageSize, totalCount}}"}' -u 'test@liferay.com:test'
+	 */
+	@GraphQLField
+	public ObjectFlowPage objectDefinitionObjectStates(
+			@GraphQLName("objectDefinitionId") Long objectDefinitionId,
+			@GraphQLName("search") String search,
+			@GraphQLName("filter") String filterString,
+			@GraphQLName("pageSize") int pageSize,
+			@GraphQLName("page") int page)
+		throws Exception {
+
+		return _applyComponentServiceObjects(
+			_objectFlowResourceComponentServiceObjects,
+			this::_populateResourceContext,
+			objectFlowResource -> new ObjectFlowPage(
+				objectFlowResource.getObjectDefinitionObjectStatesPage(
+					objectDefinitionId, search,
+					_filterBiFunction.apply(objectFlowResource, filterString),
+					Pagination.of(page, pageSize))));
+	}
+
+	/**
+	 * Invoke this method with the command line:
+	 *
+	 * curl -H 'Content-Type: text/plain; charset=utf-8' -X 'POST' 'http://localhost:8080/o/graphql' -d $'{"query": "query {objectStateObjectFlow(objectFlowId: ___){currentState, id, name, objectDefinitionId, states}}"}' -u 'test@liferay.com:test'
+	 */
+	@GraphQLField
+	public ObjectFlow objectStateObjectFlow(
+			@GraphQLName("objectFlowId") Long objectFlowId)
+		throws Exception {
+
+		return _applyComponentServiceObjects(
+			_objectFlowResourceComponentServiceObjects,
+			this::_populateResourceContext,
+			objectFlowResource -> objectFlowResource.getObjectStateObjectFlow(
+				objectFlowId));
 	}
 
 	/**
@@ -476,6 +527,38 @@ public class Query {
 	}
 
 	@GraphQLTypeExtension(ObjectDefinition.class)
+	public class GetObjectDefinitionObjectStatesPageTypeExtension {
+
+		public GetObjectDefinitionObjectStatesPageTypeExtension(
+			ObjectDefinition objectDefinition) {
+
+			_objectDefinition = objectDefinition;
+		}
+
+		@GraphQLField
+		public ObjectFlowPage objectStates(
+				@GraphQLName("search") String search,
+				@GraphQLName("filter") String filterString,
+				@GraphQLName("pageSize") int pageSize,
+				@GraphQLName("page") int page)
+			throws Exception {
+
+			return _applyComponentServiceObjects(
+				_objectFlowResourceComponentServiceObjects,
+				Query.this::_populateResourceContext,
+				objectFlowResource -> new ObjectFlowPage(
+					objectFlowResource.getObjectDefinitionObjectStatesPage(
+						_objectDefinition.getId(), search,
+						_filterBiFunction.apply(
+							objectFlowResource, filterString),
+						Pagination.of(page, pageSize))));
+		}
+
+		private ObjectDefinition _objectDefinition;
+
+	}
+
+	@GraphQLTypeExtension(ObjectDefinition.class)
 	public class GetObjectDefinitionObjectValidationRulesPageTypeExtension {
 
 		public GetObjectDefinitionObjectValidationRulesPageTypeExtension(
@@ -604,6 +687,44 @@ public class Query {
 
 		@GraphQLField
 		protected java.util.Collection<ObjectField> items;
+
+		@GraphQLField
+		protected long lastPage;
+
+		@GraphQLField
+		protected long page;
+
+		@GraphQLField
+		protected long pageSize;
+
+		@GraphQLField
+		protected long totalCount;
+
+	}
+
+	@GraphQLName("ObjectFlowPage")
+	public class ObjectFlowPage {
+
+		public ObjectFlowPage(Page objectFlowPage) {
+			actions = objectFlowPage.getActions();
+
+			facets = objectFlowPage.getFacets();
+
+			items = objectFlowPage.getItems();
+			lastPage = objectFlowPage.getLastPage();
+			page = objectFlowPage.getPage();
+			pageSize = objectFlowPage.getPageSize();
+			totalCount = objectFlowPage.getTotalCount();
+		}
+
+		@GraphQLField
+		protected Map<String, Map> actions;
+
+		@GraphQLField
+		protected List<Facet> facets;
+
+		@GraphQLField
+		protected java.util.Collection<ObjectFlow> items;
 
 		@GraphQLField
 		protected long lastPage;
@@ -835,6 +956,19 @@ public class Query {
 		objectFieldResource.setRoleLocalService(_roleLocalService);
 	}
 
+	private void _populateResourceContext(ObjectFlowResource objectFlowResource)
+		throws Exception {
+
+		objectFlowResource.setContextAcceptLanguage(_acceptLanguage);
+		objectFlowResource.setContextCompany(_company);
+		objectFlowResource.setContextHttpServletRequest(_httpServletRequest);
+		objectFlowResource.setContextHttpServletResponse(_httpServletResponse);
+		objectFlowResource.setContextUriInfo(_uriInfo);
+		objectFlowResource.setContextUser(_user);
+		objectFlowResource.setGroupLocalService(_groupLocalService);
+		objectFlowResource.setRoleLocalService(_roleLocalService);
+	}
+
 	private void _populateResourceContext(
 			ObjectLayoutResource objectLayoutResource)
 		throws Exception {
@@ -901,6 +1035,8 @@ public class Query {
 		_objectDefinitionResourceComponentServiceObjects;
 	private static ComponentServiceObjects<ObjectFieldResource>
 		_objectFieldResourceComponentServiceObjects;
+	private static ComponentServiceObjects<ObjectFlowResource>
+		_objectFlowResourceComponentServiceObjects;
 	private static ComponentServiceObjects<ObjectLayoutResource>
 		_objectLayoutResourceComponentServiceObjects;
 	private static ComponentServiceObjects<ObjectRelationshipResource>

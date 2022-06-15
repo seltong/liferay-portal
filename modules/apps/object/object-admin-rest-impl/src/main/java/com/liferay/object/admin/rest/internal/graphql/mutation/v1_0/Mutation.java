@@ -17,6 +17,7 @@ package com.liferay.object.admin.rest.internal.graphql.mutation.v1_0;
 import com.liferay.object.admin.rest.dto.v1_0.ObjectAction;
 import com.liferay.object.admin.rest.dto.v1_0.ObjectDefinition;
 import com.liferay.object.admin.rest.dto.v1_0.ObjectField;
+import com.liferay.object.admin.rest.dto.v1_0.ObjectFlow;
 import com.liferay.object.admin.rest.dto.v1_0.ObjectLayout;
 import com.liferay.object.admin.rest.dto.v1_0.ObjectRelationship;
 import com.liferay.object.admin.rest.dto.v1_0.ObjectValidationRule;
@@ -24,6 +25,7 @@ import com.liferay.object.admin.rest.dto.v1_0.ObjectView;
 import com.liferay.object.admin.rest.resource.v1_0.ObjectActionResource;
 import com.liferay.object.admin.rest.resource.v1_0.ObjectDefinitionResource;
 import com.liferay.object.admin.rest.resource.v1_0.ObjectFieldResource;
+import com.liferay.object.admin.rest.resource.v1_0.ObjectFlowResource;
 import com.liferay.object.admin.rest.resource.v1_0.ObjectLayoutResource;
 import com.liferay.object.admin.rest.resource.v1_0.ObjectRelationshipResource;
 import com.liferay.object.admin.rest.resource.v1_0.ObjectValidationRuleResource;
@@ -79,6 +81,14 @@ public class Mutation {
 
 		_objectFieldResourceComponentServiceObjects =
 			objectFieldResourceComponentServiceObjects;
+	}
+
+	public static void setObjectFlowResourceComponentServiceObjects(
+		ComponentServiceObjects<ObjectFlowResource>
+			objectFlowResourceComponentServiceObjects) {
+
+		_objectFlowResourceComponentServiceObjects =
+			objectFlowResourceComponentServiceObjects;
 	}
 
 	public static void setObjectLayoutResourceComponentServiceObjects(
@@ -415,6 +425,60 @@ public class Mutation {
 			this::_populateResourceContext,
 			objectFieldResource -> objectFieldResource.putObjectFieldBatch(
 				callbackURL, object));
+	}
+
+	@GraphQLField
+	public ObjectFlow createObjectDefinitionObjectState(
+			@GraphQLName("objectDefinitionId") Long objectDefinitionId,
+			@GraphQLName("objectFlow") ObjectFlow objectFlow)
+		throws Exception {
+
+		return _applyComponentServiceObjects(
+			_objectFlowResourceComponentServiceObjects,
+			this::_populateResourceContext,
+			objectFlowResource ->
+				objectFlowResource.postObjectDefinitionObjectState(
+					objectDefinitionId, objectFlow));
+	}
+
+	@GraphQLField
+	public boolean deleteObjectStateObjectFlow(
+			@GraphQLName("objectFlowId") Long objectFlowId)
+		throws Exception {
+
+		_applyVoidComponentServiceObjects(
+			_objectFlowResourceComponentServiceObjects,
+			this::_populateResourceContext,
+			objectFlowResource ->
+				objectFlowResource.deleteObjectStateObjectFlow(objectFlowId));
+
+		return true;
+	}
+
+	@GraphQLField
+	public ObjectFlow patchObjectStateObjectFlow(
+			@GraphQLName("objectFlowId") Long objectFlowId,
+			@GraphQLName("objectFlow") ObjectFlow objectFlow)
+		throws Exception {
+
+		return _applyComponentServiceObjects(
+			_objectFlowResourceComponentServiceObjects,
+			this::_populateResourceContext,
+			objectFlowResource -> objectFlowResource.patchObjectStateObjectFlow(
+				objectFlowId, objectFlow));
+	}
+
+	@GraphQLField
+	public ObjectFlow updateObjectStateObjectFlow(
+			@GraphQLName("objectFlowId") Long objectFlowId,
+			@GraphQLName("objectFlow") ObjectFlow objectFlow)
+		throws Exception {
+
+		return _applyComponentServiceObjects(
+			_objectFlowResourceComponentServiceObjects,
+			this::_populateResourceContext,
+			objectFlowResource -> objectFlowResource.putObjectStateObjectFlow(
+				objectFlowId, objectFlow));
 	}
 
 	@GraphQLField
@@ -881,6 +945,22 @@ public class Mutation {
 			_vulcanBatchEngineImportTaskResource);
 	}
 
+	private void _populateResourceContext(ObjectFlowResource objectFlowResource)
+		throws Exception {
+
+		objectFlowResource.setContextAcceptLanguage(_acceptLanguage);
+		objectFlowResource.setContextCompany(_company);
+		objectFlowResource.setContextHttpServletRequest(_httpServletRequest);
+		objectFlowResource.setContextHttpServletResponse(_httpServletResponse);
+		objectFlowResource.setContextUriInfo(_uriInfo);
+		objectFlowResource.setContextUser(_user);
+		objectFlowResource.setGroupLocalService(_groupLocalService);
+		objectFlowResource.setRoleLocalService(_roleLocalService);
+
+		objectFlowResource.setVulcanBatchEngineImportTaskResource(
+			_vulcanBatchEngineImportTaskResource);
+	}
+
 	private void _populateResourceContext(
 			ObjectLayoutResource objectLayoutResource)
 		throws Exception {
@@ -959,6 +1039,8 @@ public class Mutation {
 		_objectDefinitionResourceComponentServiceObjects;
 	private static ComponentServiceObjects<ObjectFieldResource>
 		_objectFieldResourceComponentServiceObjects;
+	private static ComponentServiceObjects<ObjectFlowResource>
+		_objectFlowResourceComponentServiceObjects;
 	private static ComponentServiceObjects<ObjectLayoutResource>
 		_objectLayoutResourceComponentServiceObjects;
 	private static ComponentServiceObjects<ObjectRelationshipResource>
