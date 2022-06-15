@@ -181,6 +181,37 @@ components:
                     type: integer
                 value:
                     type: string
+        ObjectFlow:
+            properties:
+                currentState:
+                    additionalProperties:
+                        key:
+                            type: string
+                        nextStates:
+                            items:
+                                type: string
+                            type: array
+                    type: object
+                id:
+                    format: int64
+                    readOnly: true
+                    type: integer
+                name:
+                    type: string
+                objectDefinitionId:
+                    format: int64
+                    type: integer
+                states:
+                    items:
+                        additionalProperties:
+                            key:
+                                type: string
+                            nextStates:
+                                items:
+                                    type: string
+                                type: array
+                        type: object
+                    type: array
         ObjectLayout:
             properties:
                 actions:
@@ -464,7 +495,7 @@ components:
 info:
     description:
         "A Java client JAR is available for use with the group ID 'com.liferay', artifact ID
-        'com.liferay.object.admin.rest.client', and version '1.0.28'."
+        'com.liferay.object.admin.rest.client', and version '1.0.29'."
     license:
         name: "Apache 2.0"
         url: "http://www.apache.org/licenses/LICENSE-2.0.html"
@@ -1217,6 +1248,162 @@ paths:
                             schema:
                                 $ref: "#/components/schemas/ObjectField"
             tags: ["ObjectField"]
+    "/object-definitions/{objectDefinitionId}/object-states":
+        get:
+            operationId: getObjectDefinitionObjectStatesPage
+            parameters:
+                - in: path
+                  name: objectDefinitionId
+                  required: true
+                  schema:
+                      format: int64
+                      type: integer
+                - in: query
+                  name: filter
+                  schema:
+                      type: string
+                - in: query
+                  name: page
+                  schema:
+                      type: integer
+                - in: query
+                  name: pageSize
+                  schema:
+                      type: integer
+                - in: query
+                  name: search
+                  schema:
+                      type: string
+            responses:
+                200:
+                    content:
+                        application/json:
+                            schema:
+                                items:
+                                    $ref: "#/components/schemas/ObjectFlow"
+                                type: array
+                        application/xml:
+                            schema:
+                                items:
+                                    $ref: "#/components/schemas/ObjectFlow"
+                                type: array
+            tags: [ "ObjectFlow" ]
+        post:
+            operationId: postObjectDefinitionObjectState
+            parameters:
+                - in: path
+                  name: objectDefinitionId
+                  required: true
+                  schema:
+                      format: int64
+                      type: integer
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/ObjectFlow"
+                    application/xml:
+                        schema:
+                            $ref: "#/components/schemas/ObjectFlow"
+            responses:
+                200:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ObjectFlow"
+                        application/xml:
+                            schema:
+                                $ref: "#/components/schemas/ObjectFlow"
+            tags: [ "ObjectFlow" ]
+    "/object-states/{objectFlowId}":
+        delete:
+            operationId: deleteObjectFlow
+            parameters:
+                - in: path
+                  name: objectFlowId
+                  required: true
+                  schema:
+                      format: int64
+                      type: integer
+            responses:
+                204:
+                    content:
+                        application/json: { }
+                        application/xml: { }
+            tags: [ "ObjectFlow" ]
+        get:
+            operationId: getObjectFlow
+            parameters:
+                - in: path
+                  name: objectFlowId
+                  required: true
+                  schema:
+                      format: int64
+                      type: integer
+            responses:
+                200:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ObjectFlow"
+                        application/xml:
+                            schema:
+                                $ref: "#/components/schemas/ObjectFlow"
+            tags: [ "ObjectFlow" ]
+        patch:
+            operationId: patchObjectFlow
+            parameters:
+                - in: path
+                  name: objectFlowId
+                  required: true
+                  schema:
+                      format: int64
+                      type: integer
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/ObjectFlow"
+                    application/xml:
+                        schema:
+                            $ref: "#/components/schemas/ObjectFlow"
+            responses:
+                200:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ObjectFlow"
+                        application/xml:
+                            schema:
+                                $ref: "#/components/schemas/ObjectFlow"
+            tags: [ "ObjectFlow" ]
+        put:
+            operationId: putObjectFlow
+            parameters:
+                - in: path
+                  name: objectFlowId
+                  required: true
+                  schema:
+                      format: int64
+                      type: integer
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/ObjectFlow"
+                    application/xml:
+                        schema:
+                            $ref: "#/components/schemas/ObjectFlow"
+            responses:
+                200:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ObjectFlow"
+                        application/xml:
+                            schema:
+                                $ref: "#/components/schemas/ObjectFlow"
+            tags: [ "ObjectFlow" ]
     "/object-layouts/{objectLayoutId}":
         delete:
             operationId: deleteObjectLayout
@@ -1354,9 +1541,9 @@ paths:
             responses:
                 204:
                     content:
-                        application/json: {}
-                        application/xml: {}
-            tags: ["ObjectValidationRule"]
+                        application/json: { }
+                        application/xml: { }
+            tags: [ "ObjectValidationRule" ]
         get:
             operationId: getObjectValidationRule
             parameters:
@@ -1375,7 +1562,7 @@ paths:
                         application/xml:
                             schema:
                                 $ref: "#/components/schemas/ObjectValidationRule"
-            tags: ["ObjectValidationRule"]
+            tags: [ "ObjectValidationRule" ]
         patch:
             operationId: patchObjectValidationRule
             parameters:
@@ -1402,7 +1589,7 @@ paths:
                         application/xml:
                             schema:
                                 $ref: "#/components/schemas/ObjectValidationRule"
-            tags: ["ObjectValidationRule"]
+            tags: [ "ObjectValidationRule" ]
         put:
             operationId: putObjectValidationRule
             parameters:
@@ -1429,7 +1616,7 @@ paths:
                         application/xml:
                             schema:
                                 $ref: "#/components/schemas/ObjectValidationRule"
-            tags: ["ObjectValidationRule"]
+            tags: [ "ObjectValidationRule" ]
     "/object-views/{objectViewId}":
         delete:
             operationId: deleteObjectView
