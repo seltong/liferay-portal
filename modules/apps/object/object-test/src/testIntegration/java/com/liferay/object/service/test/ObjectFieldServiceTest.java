@@ -16,6 +16,9 @@ package com.liferay.object.service.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.object.constants.ObjectDefinitionConstants;
+import com.liferay.object.constants.ObjectFieldConstants;
+import com.liferay.object.exception.ObjectFieldDefaultValueException;
+import com.liferay.object.exception.ObjectFieldStateException;
 import com.liferay.object.model.ObjectDefinition;
 import com.liferay.object.model.ObjectField;
 import com.liferay.object.service.ObjectDefinitionLocalService;
@@ -39,8 +42,10 @@ import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.kernel.util.UnicodePropertiesBuilder;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
+import com.liferay.portal.util.PropsUtil;
 
 import java.util.Collections;
 
@@ -92,9 +97,16 @@ public class ObjectFieldServiceTest {
 
 	@Test
 	public void testAddCustomObjectField() throws Exception {
+		PropsUtil.addProperties(
+			UnicodePropertiesBuilder.setProperty(
+				"feature.flag.LPS-152677", "true"
+			).build());
+
 		try {
 			_testAddCustomObjectField(
-				_objectDefinition.getObjectDefinitionId(), _defaultUser);
+				ObjectFieldConstants.BUSINESS_TYPE_TEXT, null,
+				_objectDefinition.getObjectDefinitionId(), true, false,
+				_defaultUser);
 
 			Assert.fail();
 		}
@@ -109,7 +121,9 @@ public class ObjectFieldServiceTest {
 
 		try {
 			_testAddCustomObjectField(
-				_systemObjectDefinition.getObjectDefinitionId(), _defaultUser);
+				ObjectFieldConstants.BUSINESS_TYPE_TEXT, null,
+				_systemObjectDefinition.getObjectDefinitionId(), true, false,
+				_defaultUser);
 
 			Assert.fail();
 		}
@@ -124,8 +138,70 @@ public class ObjectFieldServiceTest {
 						"permission for")));
 		}
 
+		try {
+			_testAddCustomObjectField(
+				ObjectFieldConstants.BUSINESS_TYPE_TEXT,
+				RandomTestUtil.randomString(),
+				_systemObjectDefinition.getObjectDefinitionId(), false, false,
+				_user);
+
+			Assert.fail();
+		}
+		catch (ObjectFieldDefaultValueException
+					objectFieldDefaultValueException) {
+
+			Assert.assertEquals(
+				StringBundler.concat(
+					"Object field can only have a default type when the ",
+					"business type is \"",
+					ObjectFieldConstants.BUSINESS_TYPE_PICKLIST, "\""),
+				objectFieldDefaultValueException.getMessage());
+		}
+
+		try {
+			_testAddCustomObjectField(
+				ObjectFieldConstants.BUSINESS_TYPE_PICKLIST,
+				RandomTestUtil.randomString(),
+				_systemObjectDefinition.getObjectDefinitionId(), false, false,
+				_user);
+
+			Assert.fail();
+		}
+		catch (ObjectFieldStateException objectFieldStateException) {
+			Assert.assertEquals(
+				"Object field default value can only be added when the " +
+					"picklist is a state",
+				objectFieldStateException.getMessage());
+		}
+
+		try {
+			_testAddCustomObjectField(
+				ObjectFieldConstants.BUSINESS_TYPE_PICKLIST,
+				RandomTestUtil.randomString(),
+				_systemObjectDefinition.getObjectDefinitionId(), false, true,
+				_user);
+
+			Assert.fail();
+		}
+		catch (ObjectFieldStateException objectFieldStateException) {
+			Assert.assertEquals(
+				"Object field must be mandatory when the state is true",
+				objectFieldStateException.getMessage());
+		}
+
 		_testAddCustomObjectField(
-			_objectDefinition.getObjectDefinitionId(), _user);
+			ObjectFieldConstants.BUSINESS_TYPE_TEXT, null,
+			_objectDefinition.getObjectDefinitionId(), true, false, _user);
+
+		_testAddCustomObjectField(
+			ObjectFieldConstants.BUSINESS_TYPE_PICKLIST,
+			RandomTestUtil.randomString(),
+			_objectDefinition.getObjectDefinitionId(), true, true, _user);
+
+		PropsUtil.addProperties(
+			UnicodePropertiesBuilder.setProperty(
+				"feature.flag.LPS-152677", "false"
+			).build());
 	}
 
 	@Test
@@ -166,8 +242,15 @@ public class ObjectFieldServiceTest {
 
 	@Test
 	public void testUpdateObjectField() throws Exception {
+		PropsUtil.addProperties(
+			UnicodePropertiesBuilder.setProperty(
+				"feature.flag.LPS-152677", "true"
+			).build());
+
 		try {
-			_testUpdateObjectField(_defaultUser);
+			_testUpdateObjectField(
+				ObjectFieldConstants.BUSINESS_TYPE_TEXT, null, true, false,
+				_defaultUser);
 
 			Assert.fail();
 		}
@@ -180,7 +263,61 @@ public class ObjectFieldServiceTest {
 						" must have UPDATE permission for"));
 		}
 
-		_testUpdateObjectField(_user);
+		try {
+			_testUpdateObjectField(
+				ObjectFieldConstants.BUSINESS_TYPE_TEXT,
+				RandomTestUtil.randomString(), false, false, _user);
+
+			Assert.fail();
+		}
+		catch (ObjectFieldDefaultValueException
+					objectFieldDefaultValueException) {
+
+			Assert.assertEquals(
+				StringBundler.concat(
+					"Object field can only have a default type when the ",
+					"business type is \"",
+					ObjectFieldConstants.BUSINESS_TYPE_PICKLIST, "\""),
+				objectFieldDefaultValueException.getMessage());
+		}
+
+		try {
+			_testUpdateObjectField(
+				ObjectFieldConstants.BUSINESS_TYPE_PICKLIST,
+				RandomTestUtil.randomString(), false, false, _user);
+
+			Assert.fail();
+		}
+		catch (ObjectFieldStateException objectFieldStateException) {
+			Assert.assertEquals(
+				"Object field default value can only be added when the " +
+					"picklist is a state",
+				objectFieldStateException.getMessage());
+		}
+
+		try {
+			_testUpdateObjectField(
+				ObjectFieldConstants.BUSINESS_TYPE_PICKLIST,
+				RandomTestUtil.randomString(), false, true, _user);
+
+			Assert.fail();
+		}
+		catch (ObjectFieldStateException objectFieldStateException) {
+			Assert.assertEquals(
+				"Object field must be mandatory when the state is true",
+				objectFieldStateException.getMessage());
+		}
+
+		_testUpdateObjectField(
+			ObjectFieldConstants.BUSINESS_TYPE_TEXT, null, true, false, _user);
+		_testUpdateObjectField(
+			ObjectFieldConstants.BUSINESS_TYPE_PICKLIST,
+			RandomTestUtil.randomString(), true, true, _user);
+
+		PropsUtil.addProperties(
+			UnicodePropertiesBuilder.setProperty(
+				"feature.flag.LPS-152677", "false"
+			).build());
 	}
 
 	private ObjectField _addObjectField(User user) throws Exception {
@@ -198,7 +335,9 @@ public class ObjectFieldServiceTest {
 		PrincipalThreadLocal.setName(user.getUserId());
 	}
 
-	private void _testAddCustomObjectField(long objectDefinitionId, User user)
+	private void _testAddCustomObjectField(
+			String businessType, String defaultValue, long objectDefinitionId,
+			boolean required, boolean state, User user)
 		throws Exception {
 
 		ObjectField objectField = null;
@@ -207,10 +346,11 @@ public class ObjectFieldServiceTest {
 			_setUser(user);
 
 			objectField = _objectFieldService.addCustomObjectField(
-				0, objectDefinitionId, "Text", "String", null, false, false,
-				null,
+				0, objectDefinitionId, businessType, "String", defaultValue,
+				false, false, null,
 				LocalizedMapUtil.getLocalizedMap(RandomTestUtil.randomString()),
-				StringUtil.randomId(), true, false, Collections.emptyList());
+				StringUtil.randomId(), required, state,
+				Collections.emptyList());
 		}
 		finally {
 			if (objectField != null) {
@@ -255,7 +395,11 @@ public class ObjectFieldServiceTest {
 		}
 	}
 
-	private void _testUpdateObjectField(User user) throws Exception {
+	private void _testUpdateObjectField(
+			String businessType, String defaultValue, boolean required,
+			boolean state, User user)
+		throws Exception {
+
 		ObjectField objectField = null;
 
 		try {
@@ -264,11 +408,11 @@ public class ObjectFieldServiceTest {
 			objectField = _addObjectField(user);
 
 			objectField = _objectFieldService.updateObjectField(
-				objectField.getObjectFieldId(), StringPool.BLANK, 0, "Text",
-				"String", null, true, false,
+				objectField.getObjectFieldId(), StringPool.BLANK, 0,
+				businessType, "String", defaultValue, true, false,
 				LanguageUtil.getLanguageId(LocaleUtil.getDefault()),
-				LocalizedMapUtil.getLocalizedMap("baker"), "baker", true, false,
-				Collections.emptyList());
+				LocalizedMapUtil.getLocalizedMap("baker"), "baker", required,
+				state, Collections.emptyList());
 		}
 		finally {
 			if (objectField != null) {
