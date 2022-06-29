@@ -76,7 +76,7 @@ public class ObjectFieldResourceTest extends BaseObjectFieldResourceTestCase {
 
 	@Override
 	protected String[] getAdditionalAssertFieldNames() {
-		return new String[] {"label"};
+		return new String[] {"defaultValue", "label", "state"};
 	}
 
 	@Override
