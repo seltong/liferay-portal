@@ -49,6 +49,20 @@ public class ObjectFieldBuilder {
 		return this;
 	}
 
+	public ObjectFieldBuilder defaultValue(String defaultValue) {
+		_objectField.setDefaultValue(defaultValue);
+
+		return this;
+	}
+
+	public ObjectFieldBuilder externalReferenceCode(
+		String externalReferenceCode) {
+
+		_objectField.setExternalReferenceCode(externalReferenceCode);
+
+		return this;
+	}
+
 	public ObjectFieldBuilder indexed(boolean indexed) {
 		_objectField.setIndexed(indexed);
 
@@ -85,6 +99,18 @@ public class ObjectFieldBuilder {
 		return this;
 	}
 
+	public ObjectFieldBuilder objectDefinitionId(long objectDefinitionId) {
+		_objectField.setObjectDefinitionId(objectDefinitionId);
+
+		return this;
+	}
+
+	public ObjectFieldBuilder objectFieldId(long objectFieldId) {
+		_objectField.setObjectFieldId(objectFieldId);
+
+		return this;
+	}
+
 	public ObjectFieldBuilder objectFieldSettings(
 		List<ObjectFieldSetting> objectFieldSettings) {
 
@@ -95,6 +121,24 @@ public class ObjectFieldBuilder {
 
 	public ObjectFieldBuilder required(boolean required) {
 		_objectField.setRequired(required);
+
+		return this;
+	}
+
+	public ObjectFieldBuilder state(boolean state) {
+		_objectField.setState(state);
+
+		return this;
+	}
+
+	public ObjectFieldBuilder system(boolean system) {
+		_objectField.setSystem(system);
+
+		return this;
+	}
+
+	public ObjectFieldBuilder userId(long userId) {
+		_objectField.setUserId(userId);
 
 		return this;
 	}
