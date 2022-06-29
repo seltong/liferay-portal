@@ -22,11 +22,13 @@ import com.liferay.object.constants.ObjectFieldConstants;
 import com.liferay.object.constants.ObjectRelationshipConstants;
 import com.liferay.object.exception.ObjectFieldBusinessTypeException;
 import com.liferay.object.exception.ObjectFieldDBTypeException;
+import com.liferay.object.exception.ObjectFieldDefaultValueException;
 import com.liferay.object.exception.ObjectFieldLabelException;
 import com.liferay.object.exception.ObjectFieldNameException;
 import com.liferay.object.exception.ObjectFieldRelationshipTypeException;
 import com.liferay.object.exception.ObjectFieldSettingNameException;
 import com.liferay.object.exception.ObjectFieldSettingValueException;
+import com.liferay.object.exception.ObjectFieldStateException;
 import com.liferay.object.exception.RequiredObjectFieldException;
 import com.liferay.object.model.ObjectDefinition;
 import com.liferay.object.model.ObjectEntry;
@@ -40,6 +42,7 @@ import com.liferay.object.service.ObjectFieldSettingLocalServiceUtil;
 import com.liferay.object.service.ObjectRelationshipLocalService;
 import com.liferay.object.service.test.util.ObjectDefinitionTestUtil;
 import com.liferay.object.util.LocalizedMapUtil;
+import com.liferay.object.util.ObjectFieldBuilder;
 import com.liferay.object.util.ObjectFieldUtil;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
@@ -59,8 +62,10 @@ import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.TempFileEntryUtil;
 import com.liferay.portal.kernel.util.TextFormatter;
+import com.liferay.portal.kernel.util.UnicodePropertiesBuilder;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
+import com.liferay.portal.util.PropsUtil;
 
 import java.io.Serializable;
 
@@ -92,6 +97,10 @@ public class ObjectFieldLocalServiceTest {
 
 	@Test
 	public void testAddCustomObjectField() throws Exception {
+		PropsUtil.addProperties(
+			UnicodePropertiesBuilder.setProperty(
+				"feature.flag.LPS-152677", "true"
+			).build());
 
 		// Reserved name
 
@@ -119,6 +128,56 @@ public class ObjectFieldLocalServiceTest {
 					objectFieldNameException.getMessage());
 			}
 		}
+
+		try {
+			_testAddCustomObjectField(
+				ObjectFieldConstants.BUSINESS_TYPE_TEXT,
+				RandomTestUtil.randomString(), false);
+
+			Assert.fail();
+		}
+		catch (ObjectFieldDefaultValueException
+					objectFieldDefaultValueException) {
+
+			Assert.assertEquals(
+				StringBundler.concat(
+					"Object field can only have a default type when the ",
+					"business type is \"",
+					ObjectFieldConstants.BUSINESS_TYPE_PICKLIST, "\""),
+				objectFieldDefaultValueException.getMessage());
+		}
+
+		try {
+			_testAddCustomObjectField(
+				ObjectFieldConstants.BUSINESS_TYPE_PICKLIST,
+				RandomTestUtil.randomString(), false);
+
+			Assert.fail();
+		}
+		catch (ObjectFieldStateException objectFieldStateException) {
+			Assert.assertEquals(
+				"Object field default value can only be added when the " +
+					"picklist is a state",
+				objectFieldStateException.getMessage());
+		}
+
+		try {
+			_testAddCustomObjectField(
+				ObjectFieldConstants.BUSINESS_TYPE_PICKLIST,
+				RandomTestUtil.randomString(), true);
+
+			Assert.fail();
+		}
+		catch (ObjectFieldStateException objectFieldStateException) {
+			Assert.assertEquals(
+				"Object field must be mandatory when the state is true",
+				objectFieldStateException.getMessage());
+		}
+
+		PropsUtil.addProperties(
+			UnicodePropertiesBuilder.setProperty(
+				"feature.flag.LPS-152677", "false"
+			).build());
 	}
 
 	@Test
@@ -883,6 +942,11 @@ public class ObjectFieldLocalServiceTest {
 
 	@Test
 	public void testUpdateCustomObjectField() throws Exception {
+		PropsUtil.addProperties(
+			UnicodePropertiesBuilder.setProperty(
+				"feature.flag.LPS-152677", "true"
+			).build());
+
 		ObjectDefinition objectDefinition =
 			ObjectDefinitionTestUtil.addObjectDefinition(
 				_objectDefinitionLocalService);
@@ -925,6 +989,48 @@ public class ObjectFieldLocalServiceTest {
 			objectField.getLabelMap());
 		Assert.assertEquals("able", objectField.getName());
 		Assert.assertFalse(objectField.isRequired());
+
+		objectField = _objectFieldLocalService.updateCustomObjectField(
+			objectField.getObjectFieldId(), StringPool.BLANK, 0,
+			ObjectFieldConstants.BUSINESS_TYPE_PICKLIST,
+			ObjectFieldConstants.DB_TYPE_STRING, null, false, false, "",
+			LocalizedMapUtil.getLocalizedMap("alpha"), "alpha", false, false,
+			Collections.emptyList());
+
+		Assert.assertEquals("alpha_", objectField.getDBColumnName());
+		Assert.assertEquals(
+			ObjectFieldConstants.DB_TYPE_STRING, objectField.getDBType());
+		Assert.assertEquals(StringPool.BLANK, objectField.getDefaultValue());
+		Assert.assertFalse(objectField.isIndexed());
+		Assert.assertFalse(objectField.isIndexedAsKeyword());
+		Assert.assertEquals("", objectField.getIndexedLanguageId());
+		Assert.assertEquals(
+			objectField.getLabelMap(),
+			LocalizedMapUtil.getLocalizedMap("alpha"));
+		Assert.assertEquals("alpha", objectField.getName());
+		Assert.assertFalse(objectField.isRequired());
+		Assert.assertFalse(objectField.isState());
+
+		objectField = _objectFieldLocalService.updateCustomObjectField(
+			objectField.getObjectFieldId(), StringPool.BLANK, 0,
+			ObjectFieldConstants.BUSINESS_TYPE_PICKLIST,
+			ObjectFieldConstants.DB_TYPE_STRING, "default", false, false, "",
+			LocalizedMapUtil.getLocalizedMap("beta"), "beta", true, true,
+			Collections.emptyList());
+
+		Assert.assertEquals("beta_", objectField.getDBColumnName());
+		Assert.assertEquals(
+			ObjectFieldConstants.DB_TYPE_STRING, objectField.getDBType());
+		Assert.assertEquals("default", objectField.getDefaultValue());
+		Assert.assertFalse(objectField.isIndexed());
+		Assert.assertFalse(objectField.isIndexedAsKeyword());
+		Assert.assertEquals("", objectField.getIndexedLanguageId());
+		Assert.assertEquals(
+			objectField.getLabelMap(),
+			LocalizedMapUtil.getLocalizedMap("beta"));
+		Assert.assertEquals("beta", objectField.getName());
+		Assert.assertTrue(objectField.isRequired());
+		Assert.assertTrue(objectField.isState());
 
 		String externalReferenceCode = RandomTestUtil.randomString();
 		String indexedLanguageId = LanguageUtil.getLanguageId(
@@ -982,6 +1088,11 @@ public class ObjectFieldLocalServiceTest {
 
 		_objectDefinitionLocalService.deleteObjectDefinition(
 			objectDefinition.getObjectDefinitionId());
+
+		PropsUtil.addProperties(
+			UnicodePropertiesBuilder.setProperty(
+				"feature.flag.LPS-152677", "false"
+			).build());
 	}
 
 	private void _assertObjectFieldSetting(
@@ -1062,6 +1173,44 @@ public class ObjectFieldLocalServiceTest {
 					objectDefinition);
 			}
 		}
+	}
+
+	private void _testAddCustomObjectField(
+			String businessType, String defaultValue, boolean state)
+		throws Exception {
+
+		ObjectFieldBuilder objectFieldBuilder = new ObjectFieldBuilder();
+
+		_testAddCustomObjectField(
+			objectFieldBuilder.businessType(
+				businessType
+			).dbColumnName(
+				null
+			).dbType(
+				ObjectFieldConstants.DB_TYPE_STRING
+			).defaultValue(
+				defaultValue
+			).indexed(
+				false
+			).indexedAsKeyword(
+				false
+			).indexedLanguageId(
+				null
+			).labelMap(
+				LocalizedMapUtil.getLocalizedMap(RandomTestUtil.randomString())
+			).listTypeDefinitionId(
+				0
+			).name(
+				"a" + RandomTestUtil.randomString()
+			).objectFieldSettings(
+				_getObjectFieldSettings(ObjectFieldConstants.BUSINESS_TYPE_TEXT)
+			).required(
+				false
+			).state(
+				state
+			).system(
+				false
+			).build());
 	}
 
 	private String _testAddSystemObjectField(ObjectField... objectFields)
