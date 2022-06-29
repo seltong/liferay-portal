@@ -49,6 +49,12 @@ public class ObjectFieldBuilder {
 		return this;
 	}
 
+	public ObjectFieldBuilder defaultValue(String defaultValue) {
+		_objectField.setDefaultValue(defaultValue);
+
+		return this;
+	}
+
 	public ObjectFieldBuilder indexed(boolean indexed) {
 		_objectField.setIndexed(indexed);
 
@@ -95,6 +101,18 @@ public class ObjectFieldBuilder {
 
 	public ObjectFieldBuilder required(boolean required) {
 		_objectField.setRequired(required);
+
+		return this;
+	}
+
+	public ObjectFieldBuilder state(boolean state) {
+		_objectField.setState(state);
+
+		return this;
+	}
+
+	public ObjectFieldBuilder system(boolean system) {
+		_objectField.setSystem(system);
 
 		return this;
 	}
