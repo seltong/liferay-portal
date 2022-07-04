@@ -32,8 +32,10 @@ import com.liferay.commerce.payment.engine.CommercePaymentEngine;
 import com.liferay.commerce.service.CommerceAddressService;
 import com.liferay.commerce.service.CommerceOrderService;
 import com.liferay.commerce.service.CommerceShipmentService;
+import com.liferay.object.exception.ObjectValidationRuleEngineException;
 import com.liferay.petra.portlet.url.builder.PortletURLBuilder;
 import com.liferay.petra.string.StringPool;
+import com.liferay.portal.kernel.exception.ModelListenerException;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCActionCommand;
@@ -135,6 +137,17 @@ public class EditCommerceOrderMVCActionCommand extends BaseMVCActionCommand {
 			}
 			else if (cmd.equals("updateDeliveryTerms")) {
 				_updateDeliveryTerms(actionRequest, actionResponse);
+			}
+		}
+		catch (ModelListenerException modelListenerException) {
+			if (modelListenerException.getCause() instanceof
+					ObjectValidationRuleEngineException) {
+
+				Throwable throwable = modelListenerException.getCause();
+
+				SessionErrors.add(
+					actionRequest, throwable.getClass(),
+					modelListenerException);
 			}
 		}
 		catch (Exception exception) {
