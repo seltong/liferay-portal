@@ -18,6 +18,8 @@
 
 <liferay-ui:error-header />
 
+<liferay-ui:error exception="<%= ObjectValidationRuleEngineException.class %>" />
+
 <liferay-ui:error exception="<%= ContactNameException.MustHaveFirstName.class %>" message="please-enter-a-valid-first-name" />
 <liferay-ui:error exception="<%= ContactNameException.MustHaveLastName.class %>" message="please-enter-a-valid-last-name" />
 <liferay-ui:error exception="<%= ContactNameException.MustHaveMiddleName.class %>" message="please-enter-a-valid-middle-name" />
