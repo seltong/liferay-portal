@@ -81,7 +81,7 @@ public class ObjectDefinitionsStateManagerDisplayContext
 
 	@Override
 	protected String getAPIURI() {
-		return "/object-fields";
+		return "/object-fields?filter=state%20eq%20true";
 	}
 
 }
