@@ -16,6 +16,7 @@ package com.liferay.object.admin.rest.resource.v1_0.test;
 
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.object.admin.rest.client.dto.v1_0.ObjectField;
+import com.liferay.object.admin.rest.client.pagination.Page;
 import com.liferay.object.constants.ObjectDefinitionConstants;
 import com.liferay.object.model.ObjectDefinition;
 import com.liferay.object.service.ObjectDefinitionLocalService;
@@ -26,7 +27,9 @@ import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.test.rule.Inject;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
@@ -66,6 +69,41 @@ public class ObjectFieldResourceTest extends BaseObjectFieldResourceTestCase {
 			_objectDefinitionLocalService.deleteObjectDefinition(
 				_objectDefinition.getObjectDefinitionId());
 		}
+	}
+
+	@Override
+	@Test
+	public void testGetObjectDefinitionObjectFieldsPageWithSortString()
+		throws Exception {
+
+		ObjectField objectField1 = _addObjectField();
+
+		ObjectField objectField2 = randomObjectField();
+
+		objectField2.setLabel(
+			Collections.singletonMap(
+				LocaleUtil.US.toString(), "b" + objectField2.getName()));
+
+		objectFieldResource.postObjectDefinitionObjectField(
+			_objectDefinition.getObjectDefinitionId(), objectField2);
+
+		Page<ObjectField> ascPage =
+			objectFieldResource.getObjectDefinitionObjectFieldsPage(
+				_objectDefinition.getObjectDefinitionId(), null, null, null,
+				"label:asc");
+
+		List<ObjectField> items = (List<ObjectField>)ascPage.getItems();
+
+		assertEquals(Arrays.asList(objectField1, objectField2), items);
+
+		Page<ObjectField> descPage =
+			objectFieldResource.getObjectDefinitionObjectFieldsPage(
+				_objectDefinition.getObjectDefinitionId(), null, null, null,
+				"label:desc");
+
+		items = (List<ObjectField>)descPage.getItems();
+
+		assertEquals(Arrays.asList(objectField2, objectField1), items);
 	}
 
 	@Ignore
