@@ -65,6 +65,17 @@ renderResponse.setTitle(LanguageUtil.format(request, "add-new-user-to-x", accoun
 				<clay:col
 					md="6"
 				>
+					<liferay-ui:error exception="<%= ObjectValidationRuleEngineException.class %>">
+
+						<%
+						ModelListenerException mle = (ModelListenerException)errorException;
+
+						ObjectValidationRuleEngineException ovree = (ObjectValidationRuleEngineException)mle.getCause();
+						%>
+
+						<liferay-ui:message key="<%= ovree.getMessage() %>" />
+					</liferay-ui:error>
+
 					<liferay-ui:error exception="<%= UserScreenNameException.MustNotBeDuplicate.class %>" focusField="screenName" message="the-screen-name-you-requested-is-already-taken" />
 					<liferay-ui:error exception="<%= UserScreenNameException.MustNotBeNull.class %>" focusField="screenName" message="the-screen-name-cannot-be-blank" />
 					<liferay-ui:error exception="<%= UserScreenNameException.MustNotBeNumeric.class %>" focusField="screenName" message="the-screen-name-cannot-contain-only-numeric-values" />

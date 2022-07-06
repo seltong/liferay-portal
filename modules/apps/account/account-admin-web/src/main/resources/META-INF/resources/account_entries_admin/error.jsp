@@ -18,4 +18,6 @@
 
 <liferay-ui:error-header />
 
+<liferay-ui:error exception="<%= ObjectValidationRuleEngineException.class %>" />
+
 <liferay-ui:error-principal />
