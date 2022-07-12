@@ -1016,10 +1016,7 @@ public class ObjectEntryLocalServiceImpl
 
 		objectEntry.setStatusDate(serviceContext.getModifiedDate(null));
 
-		serviceContext.setAttribute("executeObjectActions", Boolean.FALSE);
-
-		objectEntry = objectEntryPersistence.update(
-			objectEntry, serviceContext);
+		objectEntry = objectEntryPersistence.update(objectEntry);
 
 		ObjectDefinition objectDefinition =
 			_objectDefinitionPersistence.fetchByPrimaryKey(
