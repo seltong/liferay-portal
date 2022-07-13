@@ -288,13 +288,13 @@ public class OpenIdConnectProviderManagedServiceFactory
 	}
 
 	private JSONObject _generateRequestParametersJSONObject(
-		String parametersName, Dictionary<String, ?> properties) {
+		String key, Dictionary<String, ?> properties) {
 
 		JSONObject requestParametersJSONObject = JSONUtil.put(
 			"scope", _getPropertyAsString("scopes", properties));
 
 		String[] parameters = GetterUtil.getStringValues(
-			properties.get(parametersName));
+			properties.get(key));
 
 		if (parameters.length < 1) {
 			return requestParametersJSONObject;
