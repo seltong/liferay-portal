@@ -458,7 +458,7 @@ public class OpenIdConnectProviderManagedServiceFactory
 		catch (PortalException portalException) {
 			if (_log.isDebugEnabled()) {
 				_log.debug(
-					"Unable to find user for company: " + companyId,
+					"Unable to get default user ID for company " + companyId,
 					portalException);
 			}
 		}
