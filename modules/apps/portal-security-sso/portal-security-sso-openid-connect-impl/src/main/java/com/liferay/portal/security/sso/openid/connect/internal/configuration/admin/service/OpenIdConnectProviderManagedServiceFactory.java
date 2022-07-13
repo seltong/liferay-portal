@@ -398,13 +398,7 @@ public class OpenIdConnectProviderManagedServiceFactory
 	private String _getPropertyAsString(
 		String key, Dictionary<String, ?> properties) {
 
-		String value = GetterUtil.getString(properties.get(key));
-
-		if (Validator.isNull(value)) {
-			return null;
-		}
-
-		return value;
+		return String.valueOf(properties.get(key));
 	}
 
 	private void _updateCompanyIdProviderNameOAuthClientEntryIds(
