@@ -329,13 +329,12 @@ public class OpenIdConnectProviderManagedServiceFactory
 						"custom_request_parameters");
 
 				if (customRequestParametersJSONObject == null) {
+					customRequestParametersJSONObject =
+						JSONFactoryUtil.createJSONObject();
+
 					requestParametersJSONObject.put(
 						"custom_request_parameters",
-						JSONFactoryUtil.createJSONObject());
-
-					customRequestParametersJSONObject =
-						requestParametersJSONObject.getJSONObject(
-							"custom_request_parameters");
+						customRequestParametersJSONObject);
 				}
 
 				JSONArray valuesJSONArray =
