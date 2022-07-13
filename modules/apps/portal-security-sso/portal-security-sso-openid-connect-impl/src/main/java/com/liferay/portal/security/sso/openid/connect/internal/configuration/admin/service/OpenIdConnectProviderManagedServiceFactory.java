@@ -301,25 +301,25 @@ public class OpenIdConnectProviderManagedServiceFactory
 		}
 
 		for (String parameter : parameters) {
-			String[] pair = parameter.split("=");
+			String[] parameterArray = parameter.split("=");
 
-			if (pair.length != 2) {
+			if (parameterArray.length != 2) {
 				if (_log.isDebugEnabled()) {
 					_log.debug("Parameter: " + parameter + " is not valid");
 				}
 			}
-			else if (pair[0].equals("resource")) {
+			else if (parameterArray[0].equals("resource")) {
 				JSONArray valuesJSONArray =
-					requestParametersJSONObject.getJSONArray(pair[0]);
+					requestParametersJSONObject.getJSONArray(parameterArray[0]);
 
 				if (valuesJSONArray != null) {
-					for (String value : pair[1].split(" ")) {
+					for (String value : parameterArray[1].split(" ")) {
 						valuesJSONArray.put(value);
 					}
 				}
 				else {
 					requestParametersJSONObject.put(
-						pair[0], JSONUtil.putAll((Object[])pair[1].split(" ")));
+						parameterArray[0], JSONUtil.putAll((Object[])parameterArray[1].split(" ")));
 				}
 			}
 			else {
@@ -338,16 +338,16 @@ public class OpenIdConnectProviderManagedServiceFactory
 				}
 
 				JSONArray valuesJSONArray =
-					customRequestParametersJSONObject.getJSONArray(pair[0]);
+					customRequestParametersJSONObject.getJSONArray(parameterArray[0]);
 
 				if (valuesJSONArray != null) {
-					for (String value : pair[1].split(" ")) {
+					for (String value : parameterArray[1].split(" ")) {
 						valuesJSONArray.put(value);
 					}
 				}
 				else {
 					customRequestParametersJSONObject.put(
-						pair[0], JSONUtil.putAll((Object[])pair[1].split(" ")));
+						parameterArray[0], JSONUtil.putAll((Object[])parameterArray[1].split(" ")));
 				}
 			}
 		}
