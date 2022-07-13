@@ -467,12 +467,10 @@ public class OpenIdConnectProviderManagedServiceFactory
 			String authServerWellKnownURI = _updateOAuthClientASLocalMetadata(
 				defaultUserId, properties);
 
-			String openIdConnectClientId = _getPropertyAsString(
-				"openIdConnectClientId", properties);
-
 			OAuthClientEntry oAuthClientEntry =
 				_oAuthClientEntryLocalService.fetchOAuthClientEntry(
-					companyId, authServerWellKnownURI, openIdConnectClientId);
+					companyId, authServerWellKnownURI,
+					_getPropertyAsString("openIdConnectClientId", properties));
 
 			if (oAuthClientEntry == null) {
 				oAuthClientEntry =
