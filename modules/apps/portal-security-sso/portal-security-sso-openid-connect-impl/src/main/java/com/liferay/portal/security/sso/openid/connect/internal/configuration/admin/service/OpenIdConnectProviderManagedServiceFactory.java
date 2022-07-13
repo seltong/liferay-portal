@@ -224,7 +224,7 @@ public class OpenIdConnectProviderManagedServiceFactory
 			return null;
 		}
 
-		return "client to " + providerName;
+		return "Client to " + providerName;
 	}
 
 	private String _generateInfoJSON(Dictionary<String, ?> properties) {
