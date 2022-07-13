@@ -293,8 +293,7 @@ public class OpenIdConnectProviderManagedServiceFactory
 		JSONObject requestParametersJSONObject = JSONUtil.put(
 			"scope", _getPropertyAsString("scopes", properties));
 
-		String[] parameters = GetterUtil.getStringValues(
-			properties.get(key));
+		String[] parameters = GetterUtil.getStringValues(properties.get(key));
 
 		if (parameters.length < 1) {
 			return requestParametersJSONObject;
@@ -319,7 +318,9 @@ public class OpenIdConnectProviderManagedServiceFactory
 				}
 				else {
 					requestParametersJSONObject.put(
-						parameterArray[0], JSONUtil.putAll((Object[])parameterArray[1].split(" ")));
+						parameterArray[0],
+						JSONUtil.putAll(
+							(Object[])parameterArray[1].split(" ")));
 				}
 			}
 			else {
@@ -338,7 +339,8 @@ public class OpenIdConnectProviderManagedServiceFactory
 				}
 
 				JSONArray valuesJSONArray =
-					customRequestParametersJSONObject.getJSONArray(parameterArray[0]);
+					customRequestParametersJSONObject.getJSONArray(
+						parameterArray[0]);
 
 				if (valuesJSONArray != null) {
 					for (String value : parameterArray[1].split(" ")) {
@@ -347,7 +349,9 @@ public class OpenIdConnectProviderManagedServiceFactory
 				}
 				else {
 					customRequestParametersJSONObject.put(
-						parameterArray[0], JSONUtil.putAll((Object[])parameterArray[1].split(" ")));
+						parameterArray[0],
+						JSONUtil.putAll(
+							(Object[])parameterArray[1].split(" ")));
 				}
 			}
 		}
