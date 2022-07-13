@@ -194,11 +194,9 @@ public class OpenIdConnectProviderManagedServiceFactory
 			String authServerWellKnownURI = _deleteOAuthClientASLocalMetadata(
 				properties);
 
-			String openIdConnectClientId = _getPropertyAsString(
-				"openIdConnectClientId", properties);
-
 			_oAuthClientEntryLocalService.deleteOAuthClientEntry(
-				companyId, authServerWellKnownURI, openIdConnectClientId);
+				companyId, authServerWellKnownURI,
+				_getPropertyAsString("openIdConnectClientId", properties));
 		}
 		catch (Exception exception) {
 			if (_log.isWarnEnabled()) {
