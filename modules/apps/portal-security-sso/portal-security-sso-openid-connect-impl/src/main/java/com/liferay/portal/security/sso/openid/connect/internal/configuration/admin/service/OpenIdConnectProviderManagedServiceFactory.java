@@ -377,7 +377,7 @@ public class OpenIdConnectProviderManagedServiceFactory
 			return null;
 		}
 
-		String[] values;
+		String[] values = null;
 
 		if (key.equals("scopes")) {
 			String scopes = _getPropertyAsString("scopes", properties);
