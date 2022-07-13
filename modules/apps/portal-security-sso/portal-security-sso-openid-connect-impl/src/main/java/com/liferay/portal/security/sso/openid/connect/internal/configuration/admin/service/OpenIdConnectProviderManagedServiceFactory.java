@@ -135,7 +135,16 @@ public class OpenIdConnectProviderManagedServiceFactory
 			_getPropertyAsString("providerName", oldProperties) : "";
 
 		if (companyId == CompanyConstants.SYSTEM) {
-			_updateOAuthClientEntries(oldProviderName, properties);
+			try {
+				_companyLocalService.forEachCompanyId(
+					curCompanyId -> _updateOAuthClientEntry(
+						curCompanyId, oldProviderName, properties));
+			}
+			catch (Exception exception) {
+				if (_log.isDebugEnabled()) {
+					_log.debug(exception);
+				}
+			}
 
 			return;
 		}
@@ -435,21 +444,6 @@ public class OpenIdConnectProviderManagedServiceFactory
 		}
 
 		return localWellKnownURI;
-	}
-
-	private void _updateOAuthClientEntries(
-		String oldProviderName, Dictionary<String, ?> properties) {
-
-		try {
-			_companyLocalService.forEachCompanyId(
-				companyId -> _updateOAuthClientEntry(
-					companyId, oldProviderName, properties));
-		}
-		catch (Exception exception) {
-			if (_log.isDebugEnabled()) {
-				_log.debug(exception);
-			}
-		}
 	}
 
 	private void _updateOAuthClientEntry(
