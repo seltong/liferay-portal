@@ -506,7 +506,7 @@ public class OpenIdConnectProviderManagedServiceFactory
 		}
 		catch (Exception exception) {
 			if (_log.isDebugEnabled()) {
-				_log.debug("Unable to convert OIDC configuration", exception);
+				_log.debug("Unable to update OAuth client entry", exception);
 			}
 		}
 	}
