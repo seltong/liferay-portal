@@ -40,6 +40,7 @@ import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 
 import java.util.Arrays;
+import java.util.List;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -113,6 +114,14 @@ public class ObjectValidationRuleServiceTest {
 
 		_testAddObjectValidationRule(
 			_objectDefinition.getObjectDefinitionId(), _user);
+
+		List<ObjectDefinition> objectDefinitions =
+			_objectDefinitionLocalService.getSystemObjectDefinitions();
+
+		for (ObjectDefinition objectDefinition : objectDefinitions) {
+			_testAddObjectValidationRule(
+				objectDefinition.getObjectDefinitionId(), _user);
+		}
 	}
 
 	@Test
@@ -168,6 +177,14 @@ public class ObjectValidationRuleServiceTest {
 		}
 
 		_testUpdateObjectValidationRule(_user);
+
+		List<ObjectDefinition> objectDefinitions =
+			_objectDefinitionLocalService.getSystemObjectDefinitions();
+
+		for (ObjectDefinition objectDefinition : objectDefinitions) {
+			_objectDefinition = objectDefinition;
+			_testUpdateObjectValidationRule(_user);
+		}
 	}
 
 	private ObjectValidationRule _addObjectValidationRule(User user)
