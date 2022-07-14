@@ -14,6 +14,7 @@
 
 package com.liferay.portal.workflow;
 
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.messaging.proxy.BaseProxyBean;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.spring.osgi.OSGiBeanProperties;
@@ -59,8 +60,10 @@ public class WorkflowTaskManagerProxyBean
 
 	@Override
 	public WorkflowTask completeWorkflowTask(
-		long companyId, long userId, long workflowTaskId, String transitionName,
-		String comment, Map<String, Serializable> workflowContext) {
+			long companyId, long userId, long workflowTaskId,
+			String transitionName, String comment,
+			Map<String, Serializable> workflowContext)
+		throws PortalException {
 
 		throw new UnsupportedOperationException();
 	}

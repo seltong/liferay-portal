@@ -142,7 +142,7 @@ public class WorkflowTaskManagerImpl implements WorkflowTaskManager {
 			long companyId, long userId, long workflowTaskId,
 			String transitionName, String comment,
 			Map<String, Serializable> workflowContext)
-		throws WorkflowException {
+		throws PortalException {
 
 		return completeWorkflowTask(
 			companyId, userId, workflowTaskId, transitionName, comment,
@@ -155,7 +155,7 @@ public class WorkflowTaskManagerImpl implements WorkflowTaskManager {
 			String transitionName, String comment,
 			Map<String, Serializable> workflowContext,
 			boolean waitForCompletion)
-		throws WorkflowException {
+		throws PortalException {
 
 		WorkflowTask workflowTask = getWorkflowTask(companyId, workflowTaskId);
 
