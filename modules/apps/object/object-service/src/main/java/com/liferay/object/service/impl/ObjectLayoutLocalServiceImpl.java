@@ -596,6 +596,13 @@ public class ObjectLayoutLocalServiceImpl
 		ObjectDefinition objectDefinition =
 			_objectDefinitionPersistence.fetchByPrimaryKey(objectDefinitionId);
 
+		if (!objectDefinition.isCategorization() &&
+			(countObjectLayoutBoxCategorizationType == 1)) {
+
+			throw new ObjectLayoutBoxCategorizationTypeException(
+				"Categorization layout box must be enabled to be used");
+		}
+
 		if ((countObjectLayoutBoxCategorizationType == 1) &&
 			!StringUtil.equals(
 				objectDefinition.getStorageType(),
