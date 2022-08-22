@@ -153,63 +153,14 @@ public class ObjectEntryDisplayContext {
 	public ObjectLayoutBox getCategorizationObjectLayoutBox()
 		throws PortalException {
 
-		ObjectDefinition objectDefinition = getObjectDefinition();
-
-		if (!StringUtil.equals(
-				objectDefinition.getStorageType(),
-				ObjectDefinitionConstants.STORAGE_TYPE_DEFAULT)) {
-
-			return null;
-		}
-
-		ObjectLayoutTab objectLayoutTab = getObjectLayoutTab();
-
-		if (objectLayoutTab == null) {
-			return null;
-		}
-
-		for (ObjectLayoutBox objectLayoutBox :
-				objectLayoutTab.getObjectLayoutBoxes()) {
-
-			if (StringUtil.equals(
-					objectLayoutBox.getType(),
-					ObjectLayoutBoxConstants.TYPE_CATEGORIZATION)) {
-
-				return objectLayoutBox;
-			}
-		}
-
-		return null;
+		return _getObjectLayoutBoxByType(
+			ObjectLayoutBoxConstants.TYPE_CATEGORIZATION);
 	}
 
 	public ObjectLayoutBox getCommentsObjectLayoutBox() throws PortalException {
-		ObjectDefinition objectDefinition = getObjectDefinition();
 
-		if (!StringUtil.equals(
-				objectDefinition.getStorageType(),
-				ObjectDefinitionConstants.STORAGE_TYPE_DEFAULT)) {
-
-			return null;
-		}
-
-		ObjectLayoutTab objectLayoutTab = getObjectLayoutTab();
-
-		if (objectLayoutTab == null) {
-			return null;
-		}
-
-		for (ObjectLayoutBox objectLayoutBox :
-				objectLayoutTab.getObjectLayoutBoxes()) {
-
-			if (StringUtil.equals(
-					objectLayoutBox.getType(),
-					ObjectLayoutBoxConstants.TYPE_COMMENTS)) {
-
-				return objectLayoutBox;
-			}
-		}
-
-		return null;
+		return _getObjectLayoutBoxByType(
+			ObjectLayoutBoxConstants.TYPE_COMMENTS);
 	}
 
 	public List<NavigationItem> getNavigationItems() throws PortalException {
@@ -997,6 +948,38 @@ public class ObjectEntryDisplayContext {
 
 				return ddmFormFieldValue;
 			});
+	}
+
+	private ObjectLayoutBox _getObjectLayoutBoxByType(
+			String objectLayoutBoxType)
+		throws PortalException {
+
+		ObjectDefinition objectDefinition = getObjectDefinition();
+
+		if (!StringUtil.equals(
+				objectDefinition.getStorageType(),
+				ObjectDefinitionConstants.STORAGE_TYPE_DEFAULT)) {
+
+			return null;
+		}
+
+		ObjectLayoutTab objectLayoutTab = getObjectLayoutTab();
+
+		if (objectLayoutTab == null) {
+			return null;
+		}
+
+		for (ObjectLayoutBox objectLayoutBox :
+				objectLayoutTab.getObjectLayoutBoxes()) {
+
+			if (StringUtil.equals(
+					objectLayoutBox.getType(), objectLayoutBoxType)) {
+
+				return objectLayoutBox;
+			}
+		}
+
+		return null;
 	}
 
 	private String _getRows(ObjectLayoutBox objectLayoutBox) {
