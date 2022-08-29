@@ -158,7 +158,6 @@ public class ObjectEntryDisplayContext {
 	}
 
 	public ObjectLayoutBox getCommentsObjectLayoutBox() throws PortalException {
-
 		return _getObjectLayoutBoxByType(
 			ObjectLayoutBoxConstants.TYPE_COMMENTS);
 	}
