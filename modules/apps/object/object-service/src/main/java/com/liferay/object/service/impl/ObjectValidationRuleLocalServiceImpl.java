@@ -20,6 +20,7 @@ import com.liferay.object.constants.ObjectValidationRuleConstants;
 import com.liferay.object.exception.ObjectValidationRuleEngineException;
 import com.liferay.object.exception.ObjectValidationRuleNameException;
 import com.liferay.object.exception.ObjectValidationRuleScriptException;
+import com.liferay.object.model.ObjectDefinition;
 import com.liferay.object.model.ObjectEntry;
 import com.liferay.object.model.ObjectValidationRule;
 import com.liferay.object.scripting.exception.ObjectScriptingException;
@@ -31,6 +32,7 @@ import com.liferay.object.validation.rule.ObjectValidationRuleEngine;
 import com.liferay.object.validation.rule.ObjectValidationRuleEngineTracker;
 import com.liferay.portal.aop.AopService;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.BaseModel;
@@ -186,12 +188,17 @@ public class ObjectValidationRuleLocalServiceImpl
 
 	@Override
 	@Transactional(readOnly = true)
-	public void validate(BaseModel<?> baseModel, long objectDefinitionId)
+	public void validate(
+			BaseModel<?> baseModel, long objectDefinitionId,
+			JSONObject payloadJSONObject, long userId)
 		throws PortalException {
 
 		if (baseModel == null) {
 			return;
 		}
+
+		ObjectDefinition objectDefinition =
+			_objectDefinitionPersistence.fetchByPrimaryKey(objectDefinitionId);
 
 		Map<String, Object> values = new HashMap<>();
 
@@ -208,8 +215,7 @@ public class ObjectValidationRuleLocalServiceImpl
 			).putAll(
 				_objectEntryLocalService.
 					getExtensionDynamicObjectDefinitionTableValues(
-						_objectDefinitionPersistence.fetchByPrimaryKey(
-							objectDefinitionId),
+						objectDefinition,
 						GetterUtil.getLong(baseModel.getPrimaryKeyObj()))
 			).putAll(
 				EntityExtensionThreadLocal.getExtendedProperties()
