@@ -101,7 +101,10 @@ public class PushNotificationsDeviceLocalServiceImpl
 			long[] toUserIds, JSONObject payloadJSONObject)
 		throws PortalException {
 
-		for (String platform : _serviceTrackerMap.keySet()) {
+		ServiceTrackerMap<String, PushNotificationsSender> serviceTrackerMap =
+			_getServiceTrackerMap();
+
+		for (String platform : serviceTrackerMap.keySet()) {
 			List<String> tokens = new ArrayList<>();
 
 			List<PushNotificationsDevice> pushNotificationsDevices =
@@ -127,8 +130,11 @@ public class PushNotificationsDeviceLocalServiceImpl
 			String platform, List<String> tokens, JSONObject payloadJSONObject)
 		throws PortalException {
 
+		ServiceTrackerMap<String, PushNotificationsSender> serviceTrackerMap =
+			_getServiceTrackerMap();
+
 		PushNotificationsSender pushNotificationsSender =
-			_serviceTrackerMap.getService(platform);
+			serviceTrackerMap.getService(platform);
 
 		if (pushNotificationsSender == null) {
 			return;
@@ -182,8 +188,7 @@ public class PushNotificationsDeviceLocalServiceImpl
 
 	@Activate
 	protected void activate(BundleContext bundleContext) {
-		_serviceTrackerMap = ServiceTrackerMapFactory.openSingleValueMap(
-			bundleContext, PushNotificationsSender.class, "platform");
+		_bundleContext = bundleContext;
 	}
 
 	@Deactivate
@@ -191,8 +196,23 @@ public class PushNotificationsDeviceLocalServiceImpl
 	protected void deactivate() {
 		super.deactivate();
 
-		_serviceTrackerMap.close();
+		if (_serviceTrackerMap != null) {
+			_serviceTrackerMap.close();
+		}
 	}
+
+	private ServiceTrackerMap<String, PushNotificationsSender>
+		_getServiceTrackerMap() {
+
+		if (_serviceTrackerMap == null) {
+			_serviceTrackerMap = ServiceTrackerMapFactory.openSingleValueMap(
+				_bundleContext, PushNotificationsSender.class, "platform");
+		}
+
+		return _serviceTrackerMap;
+	}
+
+	private BundleContext _bundleContext;
 
 	@Reference
 	private MessageBus _messageBus;

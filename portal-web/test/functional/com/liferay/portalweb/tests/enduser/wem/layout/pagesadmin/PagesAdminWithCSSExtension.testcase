@@ -68,6 +68,8 @@ definition {
 	@description = "This is a test for LPS-153656. The site designer could add CSS extension to page, page template, and group of pages."
 	@priority = "5"
 	test AddCSSExtension {
+		property portal.acceptance = "true";
+
 		task ("Given a site designer has a widget page") {
 			JSONLayout.addPublicLayout(
 				groupName = "Test Site Name",
@@ -84,9 +86,9 @@ definition {
 			Navigator.gotoNavTab(navTab = "Look and Feel");
 
 			AssertTextEquals(
-				key_sectionTitle = "CSS Extensions",
+				key_sectionTitle = "CSS Client Extensions",
 				locator1 = "PagesAdmin#SECTION_SUBTITLE",
-				value1 = "No CSS extensions were loaded.");
+				value1 = "No CSS Client extensions were loaded.");
 		}
 
 		task ("Then the site designer could add a CSS Extension to widget page") {
@@ -134,9 +136,9 @@ definition {
 			Navigator.gotoNavTab(navTab = "Look and Feel");
 
 			AssertTextEquals(
-				key_sectionTitle = "CSS Extensions",
+				key_sectionTitle = "CSS Client Extensions",
 				locator1 = "PagesAdmin#SECTION_SUBTITLE",
-				value1 = "No CSS extensions were loaded.");
+				value1 = "No CSS Client extensions were loaded.");
 		}
 
 		task ("Then the site designer could add a CSS Extension to widget page") {
@@ -174,9 +176,9 @@ definition {
 			Panel.expandPanel(panel = "Look and Feel");
 
 			AssertTextEquals(
-				key_sectionTitle = "CSS Extensions",
+				key_sectionTitle = "CSS Client Extensions",
 				locator1 = "PagesAdmin#SECTION_SUBTITLE",
-				value1 = "No CSS extensions were loaded.");
+				value1 = "No CSS Client extensions were loaded.");
 		}
 
 		task ("Then the site designer could add a CSS Extension to Pages") {
@@ -221,6 +223,8 @@ definition {
 	@description = "This is a test for LPS-153656. The site designer could change CSS extension selection to an inheritor page from page template."
 	@priority = "5"
 	test ChangeCSSExtensionOfInheritorPage {
+		property portal.acceptance = "true";
+
 		task ("Given a site designer has a content page template with a CSS extension") {
 			JSONLayoutpagetemplate.addLayoutPageTemplateCollection(
 				groupName = "Test Site Name",
@@ -322,9 +326,9 @@ definition {
 			}
 
 			AssertTextEquals(
-				key_sectionTitle = "CSS Extensions",
+				key_sectionTitle = "CSS Client Extensions",
 				locator1 = "PagesAdmin#SECTION_SUBTITLE",
-				value1 = "No CSS extensions were loaded.");
+				value1 = "No CSS Client extensions were loaded.");
 
 			PortletEntry.save();
 
@@ -396,9 +400,9 @@ definition {
 			DropdownMenuItem.click(menuItem = "Delete");
 
 			AssertTextEquals(
-				key_sectionTitle = "CSS Extensions",
+				key_sectionTitle = "CSS Client Extensions",
 				locator1 = "PagesAdmin#SECTION_SUBTITLE",
-				value1 = "No CSS extensions were loaded.");
+				value1 = "No CSS Client extensions were loaded.");
 
 			PortletEntry.save();
 
@@ -525,6 +529,8 @@ definition {
 	@description = "This is a test for LPS-153656. Page should inherit the CSS extension from page template."
 	@priority = "5"
 	test ViewInheritedCSSExtensionFromPageTemplate {
+		property portal.acceptance = "true";
+
 		task ("Given a site designer has a content page template with a CSS extension") {
 			JSONLayoutpagetemplate.addLayoutPageTemplateCollection(
 				groupName = "Test Site Name",

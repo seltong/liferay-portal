@@ -136,6 +136,14 @@ public class LayoutActionDropdownItemsProvider {
 						}
 					).add(
 						dropdownItem -> {
+							if (layout.isTypeContent() &&
+								!GetterUtil.getBoolean(
+									draftLayout.getTypeSettingsProperty(
+										"published"))) {
+
+								dropdownItem.setDisabled(true);
+							}
+
 							dropdownItem.setHref(
 								_layoutsAdminDisplayContext.getViewLayoutURL(
 									layout));
@@ -150,14 +158,9 @@ public class LayoutActionDropdownItemsProvider {
 							}
 
 							dropdownItem.setLabel(label);
-
-							if (layout.isTypeContent() &&
-								!GetterUtil.getBoolean(
-									draftLayout.getTypeSettingsProperty(
-										"published"))) {
-
-								dropdownItem.setDisabled(true);
-							}
+							dropdownItem.setTarget(
+								HtmlUtil.escape(
+									layout.getTypeSettingsProperty("target")));
 						}
 					).add(
 						() ->

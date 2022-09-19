@@ -139,18 +139,6 @@ public class AdminPortlet extends MVCPortlet {
 		}
 	}
 
-	@Reference(unbind = "-")
-	public void setDefinitionLocalService(
-		DefinitionLocalService definitionLocalService) {
-
-		_definitionLocalService = definitionLocalService;
-	}
-
-	@Reference(unbind = "-")
-	public void setSourceLocalService(SourceLocalService sourceLocalService) {
-		_sourceLocalService = sourceLocalService;
-	}
-
 	@Activate
 	@Modified
 	protected void activate(Map<String, Object> properties) {
@@ -158,6 +146,12 @@ public class AdminPortlet extends MVCPortlet {
 			ConfigurableUtil.createConfigurable(
 				ReportsEngineAdminWebConfiguration.class, properties);
 	}
+
+	@Reference
+	protected DefinitionLocalService definitionLocalService;
+
+	@Reference
+	protected SourceLocalService sourceLocalService;
 
 	private void _serveDownload(
 			ResourceRequest resourceRequest, ResourceResponse resourceResponse)
@@ -186,7 +180,7 @@ public class AdminPortlet extends MVCPortlet {
 		Definition definition = null;
 
 		if (definitionId > 0) {
-			definition = _definitionLocalService.getDefinition(definitionId);
+			definition = definitionLocalService.getDefinition(definitionId);
 		}
 
 		renderRequest.setAttribute(ReportsEngineWebKeys.DEFINITION, definition);
@@ -208,15 +202,13 @@ public class AdminPortlet extends MVCPortlet {
 		Source source = null;
 
 		if (sourceId > 0) {
-			source = _sourceLocalService.getSource(sourceId);
+			source = sourceLocalService.getSource(sourceId);
 		}
 
 		renderRequest.setAttribute(ReportsEngineWebKeys.SOURCE, source);
 	}
 
-	private DefinitionLocalService _definitionLocalService;
 	private volatile ReportsEngineAdminWebConfiguration
 		_reportsEngineAdminWebConfiguration;
-	private SourceLocalService _sourceLocalService;
 
 }

@@ -124,6 +124,8 @@ definition {
 	@description = "This is a test for LPS-153655 and LPS-153658. The site designer could add JavaScript extension to page, page template, and group of pages. The site designer could add a JavaScript Extension to Page Head or Page Bottom."
 	@priority = "5"
 	test AddJavaScriptExtension {
+		property portal.acceptance = "true";
+
 		task ("Given a site designer has a widget page") {
 			JSONLayout.addPublicLayout(
 				groupName = "Test Site Name",
@@ -356,6 +358,8 @@ definition {
 	@description = "This is a test for LPS-153655. The site designer could change JavaScript extension selection to an inheritor page from page template."
 	@priority = "5"
 	test ChangeJavaScriptExtensionOfInheritorPage {
+		property portal.acceptance = "true";
+
 		task ("Given a site designer has a content page template with a JavaScript extension") {
 			JSONLayoutpagetemplate.addLayoutPageTemplateCollection(
 				groupName = "Test Site Name",
@@ -459,9 +463,9 @@ definition {
 			}
 
 			AssertTextEquals(
-				key_sectionTitle = "JavaScript Extensions",
+				key_sectionTitle = "JavaScript Client Extensions",
 				locator1 = "PagesAdmin#SECTION_SUBTITLE",
-				value1 = "No JavaScript extensions were loaded.");
+				value1 = "No JavaScript client extensions were loaded.");
 
 			PortletEntry.save();
 
@@ -528,9 +532,9 @@ definition {
 			DropdownMenuItem.click(menuItem = "Delete");
 
 			AssertTextEquals(
-				key_sectionTitle = "JavaScript Extensions",
+				key_sectionTitle = "JavaScript Client Extensions",
 				locator1 = "PagesAdmin#SECTION_SUBTITLE",
-				value1 = "No JavaScript extensions were loaded.");
+				value1 = "No JavaScript client extensions were loaded.");
 
 			PortletEntry.save();
 
@@ -545,6 +549,8 @@ definition {
 	@description = "This is a test for LPS-153658. The site designer could configure the load attribute of JavaScript Extension."
 	@priority = "5"
 	test ConfigureLoadAttributeOfJavaScriptExtension {
+		property portal.acceptance = "true";
+
 		task ("Given a site designer has a page") {
 			JSONLayout.addPublicLayout(
 				groupName = "Test Site Name",
@@ -871,7 +877,7 @@ definition {
 			Panel.expandPanel(panel = "JavaScript");
 
 			AssertVisible(
-				key_groupHeader = "Page bottom JS extensions",
+				key_groupHeader = "Page bottom JS client extensions",
 				key_tableEntry = "InnerText",
 				locator1 = "LexiconTable#GROUPED_TABLE_ENTRY");
 
@@ -929,7 +935,7 @@ definition {
 			Panel.expandPanel(panel = "JavaScript");
 
 			AssertVisible(
-				key_groupHeader = "Page Head JS Extensions",
+				key_groupHeader = "Page Head JS Client Extensions",
 				key_tableEntry = "FontFamily",
 				locator1 = "LexiconTable#GROUPED_TABLE_ENTRY");
 

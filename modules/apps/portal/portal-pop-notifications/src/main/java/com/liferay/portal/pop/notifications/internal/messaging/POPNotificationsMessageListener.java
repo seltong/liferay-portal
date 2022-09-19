@@ -16,12 +16,13 @@ package com.liferay.portal.pop.notifications.internal.messaging;
 
 import com.liferay.mail.kernel.model.Account;
 import com.liferay.mail.kernel.service.MailService;
+import com.liferay.osgi.service.tracker.collections.list.ServiceTrackerList;
+import com.liferay.osgi.service.tracker.collections.list.ServiceTrackerListFactory;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.messaging.BaseMessageListener;
 import com.liferay.portal.kernel.messaging.DestinationNames;
-import com.liferay.portal.kernel.module.framework.ModuleServiceLifecycle;
 import com.liferay.portal.kernel.pop.MessageListener;
 import com.liferay.portal.kernel.pop.MessageListenerException;
 import com.liferay.portal.kernel.scheduler.SchedulerEngineHelper;
@@ -38,8 +39,6 @@ import com.liferay.portal.util.PropsValues;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javax.mail.Address;
 import javax.mail.Flags;
@@ -50,25 +49,52 @@ import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.internet.InternetAddress;
 
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
-import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
-import org.osgi.service.component.annotations.ReferencePolicyOption;
+import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
 /**
  * @author Brian Wing Shun Chan
  */
-@Component(immediate = true, service = POPNotificationsMessageListener.class)
+@Component(service = {})
 public class POPNotificationsMessageListener extends BaseMessageListener {
 
 	@Activate
-	@Modified
-	protected void activate() {
+	protected void activate(BundleContext bundleContext) {
 		if (PropsValues.POP_SERVER_NOTIFICATIONS_ENABLED) {
+			_messageListenerWrappers = ServiceTrackerListFactory.open(
+				bundleContext, MessageListener.class, null,
+				new ServiceTrackerCustomizer
+					<MessageListener, MessageListenerWrapper>() {
+
+					@Override
+					public MessageListenerWrapper addingService(
+						ServiceReference<MessageListener> serviceReference) {
+
+						return new MessageListenerWrapper(
+							bundleContext.getService(serviceReference));
+					}
+
+					@Override
+					public void modifiedService(
+						ServiceReference<MessageListener> serviceReference,
+						MessageListenerWrapper messageListenerWrapper) {
+					}
+
+					@Override
+					public void removedService(
+						ServiceReference<MessageListener> serviceReference,
+						MessageListenerWrapper sessageListenerWrapper) {
+
+						bundleContext.ungetService(serviceReference);
+					}
+
+				});
+
 			Class<?> clazz = getClass();
 
 			String className = clazz.getName();
@@ -84,23 +110,12 @@ public class POPNotificationsMessageListener extends BaseMessageListener {
 		}
 	}
 
-	@Reference(
-		cardinality = ReferenceCardinality.MULTIPLE,
-		policy = ReferencePolicy.DYNAMIC,
-		policyOption = ReferencePolicyOption.RELUCTANT,
-		service = MessageListener.class
-	)
-	protected void addMessageListener(MessageListener messageListener) {
-		MessageListenerWrapper messageListenerWrapper =
-			new MessageListenerWrapper(messageListener);
-
-		_messageListenerWrappers.put(messageListener, messageListenerWrapper);
-	}
-
 	@Deactivate
 	protected void deactivate() {
 		if (PropsValues.POP_SERVER_NOTIFICATIONS_ENABLED) {
 			_schedulerEngineHelper.unregister(this);
+
+			_messageListenerWrappers.close();
 		}
 	}
 
@@ -145,22 +160,6 @@ public class POPNotificationsMessageListener extends BaseMessageListener {
 				store.close();
 			}
 		}
-	}
-
-	protected void removeMessageListener(MessageListener messageListener) {
-		_messageListenerWrappers.remove(messageListener);
-	}
-
-	@Reference(target = ModuleServiceLifecycle.PORTAL_INITIALIZED, unbind = "-")
-	protected void setModuleServiceLifecycle(
-		ModuleServiceLifecycle moduleServiceLifecycle) {
-	}
-
-	@Reference(unbind = "-")
-	protected void setSchedulerEngineHelper(
-		SchedulerEngineHelper schedulerEngineHelper) {
-
-		_schedulerEngineHelper = schedulerEngineHelper;
 	}
 
 	private String _getEmailAddress(Address[] addresses) {
@@ -260,9 +259,7 @@ public class POPNotificationsMessageListener extends BaseMessageListener {
 				_log.debug("Recipients " + recipients.toString());
 			}
 
-			for (MessageListener messageListener :
-					_messageListenerWrappers.values()) {
-
+			for (MessageListener messageListener : _messageListenerWrappers) {
 				try {
 					if (messageListener.accept(from, recipients, message)) {
 						messageListener.deliver(from, recipients, message);
@@ -281,8 +278,9 @@ public class POPNotificationsMessageListener extends BaseMessageListener {
 	@Reference
 	private MailService _mailService;
 
-	private final Map<MessageListener, MessageListenerWrapper>
-		_messageListenerWrappers = new ConcurrentHashMap<>();
+	private ServiceTrackerList<MessageListenerWrapper> _messageListenerWrappers;
+
+	@Reference
 	private SchedulerEngineHelper _schedulerEngineHelper;
 
 	@Reference

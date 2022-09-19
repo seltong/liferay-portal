@@ -182,6 +182,7 @@ const MillerColumnsItem = ({
 		quickActions = [],
 		selectable,
 		states = [],
+		target,
 		title,
 		url,
 		viewUrl,
@@ -380,7 +381,11 @@ const MillerColumnsItem = ({
 			<ClayLayout.ContentCol className="pl-1" expand>
 				<h4 className="list-group-title text-truncate-inline">
 					{viewUrl ? (
-						<ClayLink className="text-truncate" href={viewUrl}>
+						<ClayLink
+							className="text-truncate"
+							href={viewUrl}
+							target={target}
+						>
 							{title}
 						</ClayLink>
 					) : (
