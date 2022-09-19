@@ -20,6 +20,7 @@ import com.liferay.object.constants.ObjectValidationRuleConstants;
 import com.liferay.object.exception.ObjectValidationRuleEngineException;
 import com.liferay.object.exception.ObjectValidationRuleNameException;
 import com.liferay.object.exception.ObjectValidationRuleScriptException;
+import com.liferay.object.internal.action.util.ObjectScriptVariablesUtil;
 import com.liferay.object.model.ObjectDefinition;
 import com.liferay.object.model.ObjectEntry;
 import com.liferay.object.model.ObjectValidationRule;
@@ -28,6 +29,7 @@ import com.liferay.object.scripting.validator.ObjectScriptingValidator;
 import com.liferay.object.service.ObjectEntryLocalService;
 import com.liferay.object.service.base.ObjectValidationRuleLocalServiceBaseImpl;
 import com.liferay.object.service.persistence.ObjectDefinitionPersistence;
+import com.liferay.object.system.SystemObjectDefinitionMetadataTracker;
 import com.liferay.object.validation.rule.ObjectValidationRuleEngine;
 import com.liferay.object.validation.rule.ObjectValidationRuleEngineTracker;
 import com.liferay.portal.aop.AopService;
@@ -52,6 +54,7 @@ import com.liferay.portal.vulcan.dto.converter.DTOConverterRegistry;
 import com.liferay.portal.vulcan.extension.EntityExtensionThreadLocal;
 
 import java.io.Serializable;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -220,11 +223,12 @@ public class ObjectValidationRuleLocalServiceImpl
 		if (baseModel instanceof ObjectEntry) {
 			values.putAll(
 				_objectEntryLocalService.getValues((ObjectEntry)baseModel));
-		} else {
+		}
+		else {
 			Map<String, Serializable> extendedProperties =
 				EntityExtensionThreadLocal.getExtendedProperties();
 
-			if (extendedProperties != null){
+			if (extendedProperties != null) {
 				values.putAll(extendedProperties);
 			}
 		}
@@ -233,8 +237,7 @@ public class ObjectValidationRuleLocalServiceImpl
 			_objectEntryLocalService.
 				getExtensionDynamicObjectDefinitionTableValues(
 					objectDefinition,
-					GetterUtil.getLong(baseModel.getPrimaryKeyObj()))
-		);
+					GetterUtil.getLong(baseModel.getPrimaryKeyObj())));
 
 		List<Map<String, Object>> variablesList = Arrays.asList(
 			values,
@@ -344,6 +347,9 @@ public class ObjectValidationRuleLocalServiceImpl
 	private DDMExpressionFactory _ddmExpressionFactory;
 
 	@Reference
+	private DTOConverterRegistry _dtoConverterRegistry;
+
+	@Reference
 	private ObjectDefinitionPersistence _objectDefinitionPersistence;
 
 	@Reference
@@ -355,6 +361,10 @@ public class ObjectValidationRuleLocalServiceImpl
 	@Reference
 	private ObjectValidationRuleEngineTracker
 		_objectValidationRuleEngineTracker;
+
+	@Reference
+	private SystemObjectDefinitionMetadataTracker
+		_systemObjectDefinitionMetadataTracker;
 
 	@Reference
 	private UserLocalService _userLocalService;
