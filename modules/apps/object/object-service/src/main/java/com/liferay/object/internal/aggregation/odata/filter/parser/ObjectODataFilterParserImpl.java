@@ -55,17 +55,14 @@ public class ObjectODataFilterParserImpl implements ObjectODataFilterParser {
 	private String _buildCreateDateModifiedDateExpressionFilterString(
 		String filterBy, String operator, String value, String timestamp) {
 
-		return StringBundler.concat(
-			"(", filterBy, StringPool.SPACE, operator, StringPool.SPACE, value,
-			timestamp, ")");
+		return _buildLambdaExpressionFilterString(
+			operator, value + timestamp, filterBy);
 	}
 
 	private String _buildDateExpressionFilterString(
 		String filterBy, String operator, String value) {
 
-		return StringBundler.concat(
-			"(", filterBy, StringPool.SPACE, operator, StringPool.SPACE, value,
-			")");
+		return _buildLambdaExpressionFilterString(operator, value, filterBy);
 	}
 
 	private String _buildExpressionFilterString(Object value, String filterBy) {
@@ -97,9 +94,21 @@ public class ObjectODataFilterParserImpl implements ObjectODataFilterParser {
 			valuesList.add(StringUtil.quote(String.valueOf(value)));
 		}
 
+		return _buildLambdaExpressionFilterString(
+			"in",
+			StringBundler.concat(
+				StringPool.OPEN_PARENTHESIS,
+				StringUtil.merge(valuesList, StringPool.COMMA_AND_SPACE),
+				StringPool.CLOSE_PARENTHESIS),
+			filterBy);
+	}
+
+	private String _buildLambdaExpressionFilterString(
+		String operator, String value, String x) {
+
 		return StringBundler.concat(
-			"(", filterBy, " in (",
-			StringUtil.merge(valuesList, StringPool.COMMA_AND_SPACE), "))");
+			StringPool.OPEN_PARENTHESIS, x, StringPool.SPACE, operator,
+			StringPool.SPACE, value, StringPool.CLOSE_PARENTHESIS);
 	}
 
 	private String _buildOperatorFilterString(
@@ -115,9 +124,10 @@ public class ObjectODataFilterParserImpl implements ObjectODataFilterParser {
 		if (StringUtil.equals(operator, "eq") ||
 			StringUtil.equals(operator, "ne")) {
 
-			return StringBundler.concat(
-				"(", filterBy, StringPool.SPACE, operator, StringPool.SPACE,
-				StringUtil.removeSubstring(value.toString(), "\""), ")");
+			return _buildLambdaExpressionFilterString(
+				operator,
+				StringUtil.removeSubstring(value.toString(), StringPool.QUOTE),
+				filterBy);
 		}
 
 		if (StringUtil.equals(filterBy, "status") &&
@@ -191,11 +201,11 @@ public class ObjectODataFilterParserImpl implements ObjectODataFilterParser {
 	private String _buildStatusExpressionFilterString(
 		String operator, Object value, String delimiter) {
 
-		String expressionFilterString =
+		return StringBundler.concat(
+			"(status/any(x:",
 			_buildStatusValuesExpressionFilterString(
-				operator, delimiter, (Object[])value);
-
-		return "(status/any(x:" + expressionFilterString + "))";
+				operator, delimiter, (Object[])value),
+			"))");
 	}
 
 	private String _buildStatusValuesExpressionFilterString(
@@ -205,8 +215,8 @@ public class ObjectODataFilterParserImpl implements ObjectODataFilterParser {
 
 		for (Object value : values) {
 			statusValuesExpressionFilter.add(
-				StringBundler.concat(
-					"(x ", operator, StringPool.SPACE, value.toString(), ")"));
+				_buildLambdaExpressionFilterString(
+					operator, value.toString(), "x"));
 		}
 
 		return StringUtil.merge(statusValuesExpressionFilter, delimiter);
