@@ -17,6 +17,7 @@ package com.liferay.object.internal.aggregation.odata.filter.parser;
 import com.liferay.object.aggregation.odata.filter.parser.ObjectODataFilterParser;
 import com.liferay.object.model.ObjectFilter;
 import com.liferay.petra.string.StringPool;
+import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringUtil;
@@ -130,21 +131,19 @@ public class ObjectODataFilterParserImpl implements ObjectODataFilterParser {
 				filterBy);
 		}
 
-		if (StringUtil.equals(filterBy, "status") &&
-			StringUtil.equals(operator, "not")) {
+		if (StringUtil.equals(filterBy, "status")) {
+			if (StringUtil.equals(operator, "not")) {
+				Map<String, Object> map = (Map<String, Object>)value;
 
-			Map<String, Object> map = (Map<String, Object>)value;
+				Object statusValues = map.get("in");
 
-			Object statusValues = map.get("in");
+				return _buildStatusExpressionFilterString(
+					"ne", statusValues, " and ");
+			}
 
-			return _buildStatusExpressionFilterString(
-				"ne", statusValues, " and ");
-		}
-
-		if (StringUtil.equals(filterBy, "status") &&
-			StringUtil.equals(operator, "in")) {
-
-			return _buildStatusExpressionFilterString("eq", value, " or ");
+			if (StringUtil.equals(operator, "in")) {
+				return _buildStatusExpressionFilterString("eq", value, " or ");
+			}
 		}
 
 		if (StringUtil.equals(operator, "not")) {
@@ -182,14 +181,10 @@ public class ObjectODataFilterParserImpl implements ObjectODataFilterParser {
 				" and ";
 		}
 		else if (StringUtil.equals(operator, "ge")) {
-			if (StringUtil.equals(filterBy, "createDate")) {
+			if (_variables.containsKey(filterBy)) {
 				return _buildCreateDateModifiedDateExpressionFilterString(
-					"dateCreated", operator, value, "T00:00:00.000Z");
-			}
-
-			if (StringUtil.equals(filterBy, "modifiedDate")) {
-				return _buildCreateDateModifiedDateExpressionFilterString(
-					"dateModified", operator, value, "T00:00:00.000Z");
+					_variables.get(filterBy), operator, value,
+					"T00:00:00.000Z");
 			}
 
 			return _buildDateExpressionFilterString(filterBy, operator, value);
@@ -221,5 +216,11 @@ public class ObjectODataFilterParserImpl implements ObjectODataFilterParser {
 
 		return StringUtil.merge(statusValuesExpressionFilter, delimiter);
 	}
+
+	private static final Map<String, String> _variables = HashMapBuilder.put(
+		"createDate", "dateCreated"
+	).put(
+		"modifiedDate", "dateModified"
+	).build();
 
 }
