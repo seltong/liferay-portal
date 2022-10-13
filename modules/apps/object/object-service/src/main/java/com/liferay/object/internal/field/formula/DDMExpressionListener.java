@@ -16,10 +16,11 @@ package com.liferay.object.internal.field.formula;
 
 import com.liferay.dynamic.data.mapping.expression.internal.parser.DDMExpressionBaseListener;
 import com.liferay.dynamic.data.mapping.expression.internal.parser.DDMExpressionParser;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
 import java.util.Set;
+
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Marcellus Tavares
