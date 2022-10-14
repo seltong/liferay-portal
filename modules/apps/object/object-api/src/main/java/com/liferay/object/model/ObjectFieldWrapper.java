@@ -584,8 +584,8 @@ public class ObjectFieldWrapper
 	}
 
 	@Override
-	public boolean isBusinessTypeFormula() {
-		return model.isBusinessTypeFormula();
+	public boolean isFormulaBusinessType() {
+		return model.isFormulaBusinessType();
 	}
 
 	/**
