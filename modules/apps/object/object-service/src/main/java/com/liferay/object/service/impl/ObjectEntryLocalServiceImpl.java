@@ -123,6 +123,7 @@ import com.liferay.portal.kernel.service.WorkflowInstanceLinkLocalService;
 import com.liferay.portal.kernel.systemevent.SystemEvent;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.ContentTypes;
+import com.liferay.portal.kernel.util.DateFormatFactoryUtil;
 import com.liferay.portal.kernel.util.DateUtil;
 import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
@@ -162,6 +163,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
+
+import java.text.DateFormat;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -834,28 +837,37 @@ public class ObjectEntryLocalServiceImpl
 					getObjectFieldObjectFieldSettings(
 						objectField.getObjectFieldId());
 
+			Map<String, Object> objectFieldSettingMap = new HashMap<>();
+
 			for (ObjectFieldSetting objectFieldSetting : objectFieldSettings) {
-				if (!StringUtil.equals(
-						objectFieldSetting.getName(), "script")) {
+				objectFieldSettingMap.put(
+					objectFieldSetting.getName(),
+					objectFieldSetting.getValue());
+			}
 
-					continue;
-				}
+			Object script = objectFieldSettingMap.get("script");
 
-				String script = objectFieldSetting.getValue();
+			if (script == null) {
+				break;
+			}
 
-				if (script == null) {
-					break;
-				}
+			DDMExpression<Serializable> ddmExpression =
+				_ddmExpressionFactory.createExpression(
+					CreateExpressionRequest.Builder.newBuilder(
+						String.valueOf(script)
+					).build());
 
-				DDMExpression<Serializable> ddmExpression =
-					_ddmExpressionFactory.createExpression(
-						CreateExpressionRequest.Builder.newBuilder(
-							script
-						).build());
+			ddmExpression.setVariables(new HashMap<>(values));
 
-				ddmExpression.setVariables(new HashMap<>(values));
-
-				values.put(objectField.getName(), ddmExpression.evaluate());
+			try {
+				values.put(
+					objectField.getName(),
+					_getOutputValue(
+						String.valueOf(objectFieldSettingMap.get("output")),
+						ddmExpression.evaluate()));
+			}
+			catch (PortalException portalException) {
+				_log.error(portalException);
 			}
 		}
 
@@ -1868,6 +1880,43 @@ public class ObjectEntryLocalServiceImpl
 				}
 			)
 		);
+	}
+
+	private Serializable _getOutputValue(String outputType, Object value) {
+		if (StringUtil.equals(
+				outputType, ObjectFieldConstants.BUSINESS_TYPE_TEXT)) {
+
+			return GetterUtil.getString(value);
+		}
+
+		if (StringUtil.equals(
+				outputType, ObjectFieldConstants.BUSINESS_TYPE_INTEGER)) {
+
+			return GetterUtil.getInteger(value);
+		}
+
+		if (StringUtil.equals(
+				outputType, ObjectFieldConstants.BUSINESS_TYPE_DATE)) {
+
+			DateFormat dateFormat = DateFormatFactoryUtil.getSimpleDateFormat(
+				"dd/MM/yyyy");
+
+			return dateFormat.format(value);
+		}
+
+		if (StringUtil.equals(
+				outputType, ObjectFieldConstants.BUSINESS_TYPE_BOOLEAN)) {
+
+			return GetterUtil.getBoolean(value);
+		}
+
+		if (StringUtil.equals(
+				outputType, ObjectFieldConstants.BUSINESS_TYPE_DECIMAL)) {
+
+			return GetterUtil.getDouble(value);
+		}
+
+		return null;
 	}
 
 	private Predicate _getPermissionWherePredicate(
