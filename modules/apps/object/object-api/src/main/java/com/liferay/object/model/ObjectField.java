@@ -58,6 +58,8 @@ public interface ObjectField extends ObjectFieldModel, PersistedModel {
 
 	public java.util.List<ObjectFieldSetting> getObjectFieldSettings();
 
+	public boolean isAggregationBusinessType();
+
 	public boolean isFormulaBusinessType();
 
 	public void setObjectFieldSettings(

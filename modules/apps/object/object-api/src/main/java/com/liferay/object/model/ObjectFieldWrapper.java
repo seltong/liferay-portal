@@ -584,6 +584,11 @@ public class ObjectFieldWrapper
 	}
 
 	@Override
+	public boolean isAggregationBusinessType() {
+		return model.isAggregationBusinessType();
+	}
+
+	@Override
 	public boolean isFormulaBusinessType() {
 		return model.isFormulaBusinessType();
 	}
