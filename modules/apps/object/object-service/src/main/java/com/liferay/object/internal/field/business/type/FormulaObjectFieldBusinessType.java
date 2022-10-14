@@ -124,9 +124,15 @@ public class FormulaObjectFieldBusinessType implements ObjectFieldBusinessType {
 			objectFieldSetting -> objectFieldSettingsValues.put(
 				objectFieldSetting.getName(), objectFieldSetting.getValue()));
 
+		String script = objectFieldSettingsValues.get("script");
+
+		if (script == null) {
+			return;
+		}
+
 		_ddmExpressionFactory.createExpression(
 			CreateExpressionRequest.Builder.newBuilder(
-				objectFieldSettingsValues.get("script")
+				script
 			).build());
 	}
 
