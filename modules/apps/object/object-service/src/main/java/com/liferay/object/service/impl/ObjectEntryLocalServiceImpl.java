@@ -2300,6 +2300,7 @@ public class ObjectEntryLocalServiceImpl
 			if (Objects.equals(
 					objectField.getBusinessType(),
 					ObjectFieldConstants.BUSINESS_TYPE_AGGREGATION) ||
+				objectField.isBusinessTypeFormula() ||
 				!values.containsKey(objectField.getName())) {
 
 				if (objectField.isRequired()) {
@@ -2360,6 +2361,7 @@ public class ObjectEntryLocalServiceImpl
 				if (Objects.equals(
 						objectField.getBusinessType(),
 						ObjectFieldConstants.BUSINESS_TYPE_AGGREGATION) ||
+					objectField.isBusinessTypeFormula() ||
 					!values.containsKey(objectField.getName())) {
 
 					continue;
@@ -2694,7 +2696,8 @@ public class ObjectEntryLocalServiceImpl
 		for (ObjectField objectField : objectFields) {
 			if (Objects.equals(
 					objectField.getBusinessType(),
-					ObjectFieldConstants.BUSINESS_TYPE_AGGREGATION)) {
+					ObjectFieldConstants.BUSINESS_TYPE_AGGREGATION) ||
+				objectField.isBusinessTypeFormula()) {
 
 				continue;
 			}
@@ -2766,6 +2769,7 @@ public class ObjectEntryLocalServiceImpl
 				if (Objects.equals(
 						objectField.getBusinessType(),
 						ObjectFieldConstants.BUSINESS_TYPE_AGGREGATION) ||
+					objectField.isBusinessTypeFormula() ||
 					!values.containsKey(objectField.getName())) {
 
 					continue;
