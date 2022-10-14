@@ -14,7 +14,6 @@
 
 package com.liferay.object.service.impl;
 
-import com.liferay.object.constants.ObjectFieldConstants;
 import com.liferay.object.constants.ObjectFieldSettingConstants;
 import com.liferay.object.model.ObjectField;
 import com.liferay.object.model.ObjectFieldSetting;
@@ -30,7 +29,6 @@ import com.liferay.portal.kernel.service.UserLocalService;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -76,10 +74,7 @@ public class ObjectFieldSettingLocalServiceImpl
 		objectFieldSettingPersistence.removeByObjectFieldId(
 			objectField.getObjectFieldId());
 
-		if (Objects.equals(
-				objectField.getBusinessType(),
-				ObjectFieldConstants.BUSINESS_TYPE_AGGREGATION)) {
-
+		if (objectField.isAggregationBusinessType()) {
 			_objectFilterLocalService.deleteObjectFieldObjectFilter(
 				objectField.getObjectFieldId());
 		}
@@ -106,10 +101,7 @@ public class ObjectFieldSettingLocalServiceImpl
 		List<ObjectFieldSetting> objectFieldSettings =
 			objectFieldSettingPersistence.findByObjectFieldId(objectFieldId);
 
-		if (!Objects.equals(
-				objectField.getBusinessType(),
-				ObjectFieldConstants.BUSINESS_TYPE_AGGREGATION)) {
-
+		if (!objectField.isAggregationBusinessType()) {
 			return objectFieldSettings;
 		}
 

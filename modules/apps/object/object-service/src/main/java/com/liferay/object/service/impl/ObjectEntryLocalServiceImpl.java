@@ -1983,10 +1983,7 @@ public class ObjectEntryLocalServiceImpl
 		for (ObjectField objectField :
 				dynamicObjectDefinitionTable.getObjectFields()) {
 
-			if (!Objects.equals(
-					objectField.getBusinessType(),
-					ObjectFieldConstants.BUSINESS_TYPE_AGGREGATION)) {
-
+			if (!objectField.isAggregationBusinessType()) {
 				continue;
 			}
 
@@ -2297,9 +2294,7 @@ public class ObjectEntryLocalServiceImpl
 			dynamicObjectDefinitionTable.getObjectFields();
 
 		for (ObjectField objectField : objectFields) {
-			if (Objects.equals(
-					objectField.getBusinessType(),
-					ObjectFieldConstants.BUSINESS_TYPE_AGGREGATION) ||
+			if (objectField.isAggregationBusinessType() ||
 				objectField.isFormulaBusinessType() ||
 				!values.containsKey(objectField.getName())) {
 
@@ -2358,9 +2353,7 @@ public class ObjectEntryLocalServiceImpl
 			_setColumn(preparedStatement, index++, Types.BIGINT, objectEntryId);
 
 			for (ObjectField objectField : objectFields) {
-				if (Objects.equals(
-						objectField.getBusinessType(),
-						ObjectFieldConstants.BUSINESS_TYPE_AGGREGATION) ||
+				if (objectField.isAggregationBusinessType() ||
 					objectField.isFormulaBusinessType() ||
 					!values.containsKey(objectField.getName())) {
 
@@ -2694,9 +2687,7 @@ public class ObjectEntryLocalServiceImpl
 			dynamicObjectDefinitionTable.getObjectFields();
 
 		for (ObjectField objectField : objectFields) {
-			if (Objects.equals(
-					objectField.getBusinessType(),
-					ObjectFieldConstants.BUSINESS_TYPE_AGGREGATION) ||
+			if (objectField.isAggregationBusinessType() ||
 				objectField.isFormulaBusinessType()) {
 
 				continue;
@@ -2766,9 +2757,7 @@ public class ObjectEntryLocalServiceImpl
 			int index = 1;
 
 			for (ObjectField objectField : objectFields) {
-				if (Objects.equals(
-						objectField.getBusinessType(),
-						ObjectFieldConstants.BUSINESS_TYPE_AGGREGATION) ||
+				if (objectField.isAggregationBusinessType() ||
 					objectField.isFormulaBusinessType() ||
 					!values.containsKey(objectField.getName())) {
 
