@@ -124,9 +124,7 @@ public class ObjectFieldLocalServiceImpl
 			required, state, false);
 
 		if (objectDefinition.isApproved() &&
-			!Objects.equals(
-				objectField.getBusinessType(),
-				ObjectFieldConstants.BUSINESS_TYPE_AGGREGATION)) {
+			!objectField.isAggregationBusinessType()) {
 
 			runSQL(
 				DynamicObjectDefinitionTable.getAlterTableAddColumnSQL(
@@ -828,9 +826,7 @@ public class ObjectFieldLocalServiceImpl
 			  Objects.equals(
 				  objectField.getBusinessType(),
 				  ObjectFieldConstants.BUSINESS_TYPE_RELATIONSHIP))) &&
-			!Objects.equals(
-				objectField.getBusinessType(),
-				ObjectFieldConstants.BUSINESS_TYPE_AGGREGATION)) {
+			!objectField.isAggregationBusinessType()) {
 
 			runSQL(
 				DynamicObjectDefinitionTable.getAlterTableDropColumnSQL(

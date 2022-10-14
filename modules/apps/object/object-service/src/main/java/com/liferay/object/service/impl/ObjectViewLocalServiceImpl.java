@@ -536,9 +536,7 @@ public class ObjectViewLocalServiceImpl extends ObjectViewLocalServiceBaseImpl {
 			ObjectField objectField = _objectFieldPersistence.findByODI_N(
 				objectDefinitionId, objectViewSortColumn.getObjectFieldName());
 
-			if (Objects.equals(
-					objectField.getBusinessType(),
-					ObjectFieldConstants.BUSINESS_TYPE_AGGREGATION) ||
+			if (objectField.isAggregationBusinessType() ||
 				Objects.equals(
 					objectField.getBusinessType(),
 					ObjectFieldConstants.BUSINESS_TYPE_RELATIONSHIP)) {

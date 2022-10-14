@@ -620,9 +620,7 @@ public class ObjectEntryDisplayContext {
 					continue;
 				}
 
-				if (Objects.equals(
-						objectField.getBusinessType(),
-						ObjectFieldConstants.BUSINESS_TYPE_AGGREGATION) ||
+				if (objectField.isAggregationBusinessType() ||
 					objectField.isFormulaBusinessType()) {
 
 					ddmForm.addDDMFormField(
@@ -936,10 +934,7 @@ public class ObjectEntryDisplayContext {
 						objectLayoutColumn.getObjectFieldId(),
 						objectField.getName());
 
-					if (Objects.equals(
-							objectField.getBusinessType(),
-							ObjectFieldConstants.BUSINESS_TYPE_AGGREGATION)) {
-
+					if (objectField.isAggregationBusinessType()) {
 						nestedDDMFormFields.add(
 							_getDDMFormField(objectField, true));
 					}

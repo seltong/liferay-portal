@@ -14,7 +14,6 @@
 
 package com.liferay.object.internal.petra.sql.dsl;
 
-import com.liferay.object.constants.ObjectFieldConstants;
 import com.liferay.object.model.ObjectDefinition;
 import com.liferay.object.model.ObjectField;
 import com.liferay.petra.sql.dsl.Column;
@@ -33,7 +32,6 @@ import java.sql.Types;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * @author Marco Leo
@@ -114,10 +112,7 @@ public class DynamicObjectDefinitionTable
 			Column.FLAG_PRIMARY);
 
 		for (ObjectField objectField : objectFields) {
-			if (Objects.equals(
-					objectField.getBusinessType(),
-					ObjectFieldConstants.BUSINESS_TYPE_AGGREGATION)) {
-
+			if (objectField.isAggregationBusinessType()) {
 				continue;
 			}
 
@@ -142,10 +137,7 @@ public class DynamicObjectDefinitionTable
 		sb.append(" LONG not null primary key");
 
 		for (ObjectField objectField : _objectFields) {
-			if (Objects.equals(
-					objectField.getBusinessType(),
-					ObjectFieldConstants.BUSINESS_TYPE_AGGREGATION)) {
-
+			if (objectField.isAggregationBusinessType()) {
 				continue;
 			}
 
