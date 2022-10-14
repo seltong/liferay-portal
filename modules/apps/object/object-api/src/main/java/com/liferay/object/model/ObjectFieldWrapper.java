@@ -583,6 +583,11 @@ public class ObjectFieldWrapper
 		return model.getUuid();
 	}
 
+	@Override
+	public boolean isBusinessTypeFormula() {
+		return model.isBusinessTypeFormula();
+	}
+
 	/**
 	 * Returns <code>true</code> if this object field is indexed.
 	 *
