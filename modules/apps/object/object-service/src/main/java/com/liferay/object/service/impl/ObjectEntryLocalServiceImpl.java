@@ -25,6 +25,9 @@ import com.liferay.document.library.kernel.service.DLAppLocalService;
 import com.liferay.document.library.kernel.service.DLFileEntryLocalService;
 import com.liferay.document.library.kernel.service.DLFolderLocalService;
 import com.liferay.document.library.kernel.util.DLUtil;
+import com.liferay.dynamic.data.mapping.expression.CreateExpressionRequest;
+import com.liferay.dynamic.data.mapping.expression.DDMExpression;
+import com.liferay.dynamic.data.mapping.expression.DDMExpressionFactory;
 import com.liferay.list.type.model.ListTypeEntry;
 import com.liferay.list.type.service.ListTypeEntryLocalService;
 import com.liferay.object.configuration.ObjectConfiguration;
@@ -826,7 +829,52 @@ public class ObjectEntryLocalServiceImpl
 			),
 			selectExpressions);
 
-		return _getValues(rows.get(0), selectExpressions);
+		Map<String, Serializable> values = _getValues(
+			rows.get(0), selectExpressions);
+
+		List<ObjectField> objectFields =
+			_objectFieldLocalService.getObjectFields(
+				objectEntry.getObjectDefinitionId());
+
+		for (ObjectField objectField : objectFields) {
+			if (!Objects.equals(
+					objectField.getBusinessType(),
+					ObjectFieldConstants.BUSINESS_TYPE_FORMULA)) {
+
+				continue;
+			}
+
+			List<ObjectFieldSetting> objectFieldSettings =
+				_objectFieldSettingLocalService.
+					getObjectFieldObjectFieldSettings(
+						objectField.getObjectFieldId());
+
+			for (ObjectFieldSetting objectFieldSetting : objectFieldSettings) {
+				if (!StringUtil.equals(
+						objectFieldSetting.getName(), "script")) {
+
+					continue;
+				}
+
+				String script = objectFieldSetting.getValue();
+
+				if (script == null) {
+					break;
+				}
+
+				DDMExpression<Serializable> ddmExpression =
+					_ddmExpressionFactory.createExpression(
+						CreateExpressionRequest.Builder.newBuilder(
+							script
+						).build());
+
+				ddmExpression.setVariables(new HashMap<>(values));
+
+				values.put(objectField.getName(), ddmExpression.evaluate());
+			}
+		}
+
+		return values;
 	}
 
 	@Override
@@ -3000,6 +3048,9 @@ public class ObjectEntryLocalServiceImpl
 
 	@Reference
 	private CurrentConnection _currentConnection;
+
+	@Reference
+	private DDMExpressionFactory _ddmExpressionFactory;
 
 	@Reference
 	private DLAppLocalService _dlAppLocalService;
