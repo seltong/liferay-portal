@@ -32,7 +32,7 @@ public class ObjectFieldImpl extends ObjectFieldBaseImpl {
 	}
 
 	@Override
-	public boolean isBusinessTypeFormula() {
+	public boolean isFormulaBusinessType() {
 		if (Objects.equals(
 				getBusinessType(),
 				ObjectFieldConstants.BUSINESS_TYPE_FORMULA)) {

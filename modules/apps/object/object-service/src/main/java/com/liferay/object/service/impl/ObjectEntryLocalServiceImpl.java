@@ -840,7 +840,7 @@ public class ObjectEntryLocalServiceImpl
 				objectEntry.getObjectDefinitionId());
 
 		for (ObjectField objectField : objectFields) {
-			if (!objectField.isBusinessTypeFormula()) {
+			if (!objectField.isFormulaBusinessType()) {
 				continue;
 			}
 
@@ -2258,7 +2258,7 @@ public class ObjectEntryLocalServiceImpl
 			if (Objects.equals(
 					objectField.getBusinessType(),
 					ObjectFieldConstants.BUSINESS_TYPE_AGGREGATION) ||
-				objectField.isBusinessTypeFormula() ||
+				objectField.isFormulaBusinessType() ||
 				!values.containsKey(objectField.getName())) {
 
 				if (objectField.isRequired()) {
@@ -2319,7 +2319,7 @@ public class ObjectEntryLocalServiceImpl
 				if (Objects.equals(
 						objectField.getBusinessType(),
 						ObjectFieldConstants.BUSINESS_TYPE_AGGREGATION) ||
-					objectField.isBusinessTypeFormula() ||
+					objectField.isFormulaBusinessType() ||
 					!values.containsKey(objectField.getName())) {
 
 					continue;
@@ -2648,7 +2648,7 @@ public class ObjectEntryLocalServiceImpl
 			if (Objects.equals(
 					objectField.getBusinessType(),
 					ObjectFieldConstants.BUSINESS_TYPE_AGGREGATION) ||
-				objectField.isBusinessTypeFormula()) {
+				objectField.isFormulaBusinessType()) {
 
 				continue;
 			}
@@ -2720,7 +2720,7 @@ public class ObjectEntryLocalServiceImpl
 				if (Objects.equals(
 						objectField.getBusinessType(),
 						ObjectFieldConstants.BUSINESS_TYPE_AGGREGATION) ||
-					objectField.isBusinessTypeFormula() ||
+					objectField.isFormulaBusinessType() ||
 					!values.containsKey(objectField.getName())) {
 
 					continue;
