@@ -623,9 +623,7 @@ public class ObjectEntryDisplayContext {
 				if (Objects.equals(
 						objectField.getBusinessType(),
 						ObjectFieldConstants.BUSINESS_TYPE_AGGREGATION) ||
-					Objects.equals(
-						objectField.getBusinessType(),
-						ObjectFieldConstants.BUSINESS_TYPE_FORMULA)) {
+					objectField.isBusinessTypeFormula()) {
 
 					ddmForm.addDDMFormField(
 						_getDDMFormField(objectField, true));
