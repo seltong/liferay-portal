@@ -32,6 +32,18 @@ public class ObjectFieldImpl extends ObjectFieldBaseImpl {
 	}
 
 	@Override
+	public boolean isAggregationBusinessType() {
+		if (Objects.equals(
+				getBusinessType(),
+				ObjectFieldConstants.BUSINESS_TYPE_AGGREGATION)) {
+
+			return true;
+		}
+
+		return false;
+	}
+
+	@Override
 	public boolean isFormulaBusinessType() {
 		if (Objects.equals(
 				getBusinessType(),
