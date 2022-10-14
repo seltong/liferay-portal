@@ -837,10 +837,7 @@ public class ObjectEntryLocalServiceImpl
 				objectEntry.getObjectDefinitionId());
 
 		for (ObjectField objectField : objectFields) {
-			if (!Objects.equals(
-					objectField.getBusinessType(),
-					ObjectFieldConstants.BUSINESS_TYPE_FORMULA)) {
-
+			if (!objectField.isBusinessTypeFormula()) {
 				continue;
 			}
 
