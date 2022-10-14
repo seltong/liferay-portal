@@ -14,9 +14,11 @@
 
 package com.liferay.object.model.impl;
 
+import com.liferay.object.constants.ObjectFieldConstants;
 import com.liferay.object.model.ObjectFieldSetting;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Marco Leo
@@ -27,6 +29,18 @@ public class ObjectFieldImpl extends ObjectFieldBaseImpl {
 	@Override
 	public List<ObjectFieldSetting> getObjectFieldSettings() {
 		return _objectFieldSettings;
+	}
+
+	@Override
+	public boolean isBusinessTypeFormula() {
+		if (Objects.equals(
+				getBusinessType(),
+				ObjectFieldConstants.BUSINESS_TYPE_FORMULA)) {
+
+			return true;
+		}
+
+		return false;
 	}
 
 	@Override
