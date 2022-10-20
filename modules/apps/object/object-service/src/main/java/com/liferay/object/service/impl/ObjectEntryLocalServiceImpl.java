@@ -813,9 +813,9 @@ public class ObjectEntryLocalServiceImpl
 			),
 			selectExpressions);
 
-		return ObjectFieldFormulaUtil.evaluate(
+		return (Map<String, Serializable>)ObjectFieldFormulaUtil.evaluate(
 			_ddmExpressionFactory, objectEntry.getObjectDefinitionId(),
-			_getValues(rows.get(0), selectExpressions));
+			new HashMap<>(_getValues(rows.get(0), selectExpressions)));
 	}
 
 	@Override
