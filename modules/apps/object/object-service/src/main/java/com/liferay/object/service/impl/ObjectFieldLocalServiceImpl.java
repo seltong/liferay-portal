@@ -125,9 +125,10 @@ public class ObjectFieldLocalServiceImpl
 			indexedLanguageId, labelMap, name, required, state, false);
 
 		if (objectDefinition.isApproved() &&
-			!Objects.equals(
-				objectField.getBusinessType(),
-				ObjectFieldConstants.BUSINESS_TYPE_AGGREGATION)) {
+			!objectField.compareBusinessType(
+				ObjectFieldConstants.BUSINESS_TYPE_AGGREGATION) &&
+			!objectField.compareBusinessType(
+				ObjectFieldConstants.BUSINESS_TYPE_FORMULA)) {
 
 			runSQL(
 				DynamicObjectDefinitionTable.getAlterTableAddColumnSQL(
@@ -836,9 +837,10 @@ public class ObjectFieldLocalServiceImpl
 			  Objects.equals(
 				  objectField.getBusinessType(),
 				  ObjectFieldConstants.BUSINESS_TYPE_RELATIONSHIP))) &&
-			!Objects.equals(
-				objectField.getBusinessType(),
-				ObjectFieldConstants.BUSINESS_TYPE_AGGREGATION)) {
+			!objectField.compareBusinessType(
+				ObjectFieldConstants.BUSINESS_TYPE_AGGREGATION) &&
+			!objectField.compareBusinessType(
+				ObjectFieldConstants.BUSINESS_TYPE_FORMULA)) {
 
 			runSQL(
 				DynamicObjectDefinitionTable.getAlterTableDropColumnSQL(
