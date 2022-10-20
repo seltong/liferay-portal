@@ -42,9 +42,9 @@ import java.util.Map;
  */
 public class ObjectFieldFormulaUtil {
 
-	public static Map<String, Serializable> evaluate(
+	public static Map<String, ?> evaluate(
 			DDMExpressionFactory ddmExpressionFactory, long objectDefinitionId,
-			Map<String, Serializable> values)
+			Map<String, Object> values)
 		throws PortalException {
 
 		List<ObjectField> objectFields =
@@ -82,7 +82,7 @@ public class ObjectFieldFormulaUtil {
 						String.valueOf(script)
 					).build());
 
-			ddmExpression.setVariables(new HashMap<>(values));
+			ddmExpression.setVariables(values);
 
 			try {
 				values.put(
