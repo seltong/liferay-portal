@@ -314,17 +314,25 @@ export default function ObjectFieldFormBase({
 					error={errors.output}
 					label={Liferay.Language.get('output')}
 					onChange={({label, value}) => {
-						setValues({
-							objectFieldSettings: [
+						let newObjectFieldSettings: ObjectFieldSetting[] = [
+							{
+								name: 'output',
+								value,
+							},
+						];
+
+						if (values.objectFieldSettings) {
+							newObjectFieldSettings = [
 								...(values.objectFieldSettings?.filter(
 									(objectFieldSetting) =>
 										objectFieldSetting.name !== 'output'
 								) as ObjectFieldSetting[]),
-								{
-									name: 'output',
-									value,
-								},
-							],
+								...newObjectFieldSettings,
+							];
+						}
+
+						setValues({
+							objectFieldSettings: [...newObjectFieldSettings],
 						});
 
 						setSelectedOutput(label);
@@ -335,33 +343,36 @@ export default function ObjectFieldFormBase({
 				/>
 			)}
 
-			{values.businessType === 'Picklist' || values.businessType === 'MultiselectPicklist' && (
-				<AutoComplete
-					disabled={disabled}
-					emptyStateMessage={Liferay.Language.get('option-not-found')}
-					error={errors.listTypeDefinitionId}
-					items={filteredPicklist}
-					label={Liferay.Language.get('picklist')}
-					onChangeQuery={setPicklistQuery}
-					onSelectItem={(item) => {
-						setValues({
-							defaultValue: '',
-							listTypeDefinitionExternalReferenceCode:
-								item.externalReferenceCode,
-							listTypeDefinitionId: item.id,
-							state: false,
-						});
-					}}
-					query={picklistQuery}
-					value={selectedPicklist?.name}
-				>
-					{({name}) => (
-						<div className="d-flex justify-content-between">
-							<div>{name}</div>
-						</div>
-					)}
-				</AutoComplete>
-			)}
+			{values.businessType === 'Picklist' ||
+				(values.businessType === 'MultiselectPicklist' && (
+					<AutoComplete
+						disabled={disabled}
+						emptyStateMessage={Liferay.Language.get(
+							'option-not-found'
+						)}
+						error={errors.listTypeDefinitionId}
+						items={filteredPicklist}
+						label={Liferay.Language.get('picklist')}
+						onChangeQuery={setPicklistQuery}
+						onSelectItem={(item) => {
+							setValues({
+								defaultValue: '',
+								listTypeDefinitionExternalReferenceCode:
+									item.externalReferenceCode,
+								listTypeDefinitionId: item.id,
+								state: false,
+							});
+						}}
+						query={picklistQuery}
+						value={selectedPicklist?.name}
+					>
+						{({name}) => (
+							<div className="d-flex justify-content-between">
+								<div>{name}</div>
+							</div>
+						)}
+					</AutoComplete>
+				))}
 
 			{children}
 
