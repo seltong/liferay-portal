@@ -155,9 +155,10 @@ public class ObjectDefinitionsFieldsDisplayContext
 			));
 	}
 
-	public List<Map<String, Object>> getObjectFieldCodeEditorElements() {
+	public Object getObjectFieldCodeEditorElements() {
 		return ObjectCodeEditorUtil.getCodeEditorElements(
-			true, objectRequestHelper.getLocale(), getObjectDefinitionId());
+				true, true, false, objectRequestHelper.getLocale(),
+				getObjectDefinitionId());
 	}
 
 	public JSONObject getObjectFieldJSONObject(ObjectField objectField) {
