@@ -67,6 +67,7 @@ import com.liferay.portal.kernel.exception.ModelListenerException;
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.messaging.Message;
+import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.ModelListener;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.repository.model.FileEntry;
@@ -79,6 +80,7 @@ import com.liferay.portal.kernel.test.ReflectionTestUtil;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
 import com.liferay.portal.kernel.test.rule.SynchronousDestinationTestRule;
+import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
@@ -1797,6 +1799,88 @@ public class ObjectEntryLocalServiceTest {
 			null, QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
 
 		Assert.assertEquals(valuesList.toString(), 0, valuesList.size());
+
+		ObjectDefinition objectDefinition =
+			_objectDefinitionLocalService.addCustomObjectDefinition(
+				TestPropsValues.getUserId(),
+				LocalizedMapUtil.getLocalizedMap(RandomTestUtil.randomString()),
+				"A" + RandomTestUtil.randomString(), null, null,
+				LocalizedMapUtil.getLocalizedMap(RandomTestUtil.randomString()),
+				ObjectDefinitionConstants.SCOPE_SITE,
+				ObjectDefinitionConstants.STORAGE_TYPE_DEFAULT,
+				Arrays.asList(
+					ObjectFieldUtil.createObjectField(
+						ObjectFieldConstants.BUSINESS_TYPE_TEXT,
+						ObjectFieldConstants.DB_TYPE_STRING, true, true, null,
+						"Email Address", "emailAddress", false),
+					ObjectFieldUtil.createObjectField(
+						ObjectFieldConstants.BUSINESS_TYPE_INTEGER,
+						ObjectFieldConstants.DB_TYPE_INTEGER, true, false, null,
+						"Number of Books Written", "numberOfBooksWritten",
+						false)));
+
+		objectDefinition =
+			_objectDefinitionLocalService.publishCustomObjectDefinition(
+				TestPropsValues.getUserId(),
+				objectDefinition.getObjectDefinitionId());
+
+		Group group1 = GroupTestUtil.addGroup();
+
+		valuesList = _objectEntryLocalService.getValuesList(
+			objectDefinition.getObjectDefinitionId(), group1.getGroupId(), null,
+			null, null, QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
+
+		Assert.assertEquals(valuesList.toString(), 0, valuesList.size());
+
+		_objectEntryLocalService.addObjectEntry(
+			TestPropsValues.getUserId(), group1.getGroupId(),
+			objectDefinition.getObjectDefinitionId(),
+			HashMapBuilder.<String, Serializable>put(
+				"emailAddress", "matthew@liferay.com"
+			).put(
+				"numberOfBooksWritten", 2345
+			).build(),
+			ServiceContextTestUtil.getServiceContext());
+
+		valuesList = _objectEntryLocalService.getValuesList(
+			objectDefinition.getObjectDefinitionId(), group1.getGroupId(), null,
+			null, null, QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
+
+		Assert.assertEquals(valuesList.toString(), 1, valuesList.size());
+
+		values = valuesList.get(0);
+
+		Assert.assertEquals("matthew@liferay.com", values.get("emailAddress"));
+		Assert.assertEquals(2345, values.get("numberOfBooksWritten"));
+
+		Group group2 = GroupTestUtil.addGroup();
+
+		_objectEntryLocalService.addObjectEntry(
+			TestPropsValues.getUserId(), group2.getGroupId(),
+			objectDefinition.getObjectDefinitionId(),
+			HashMapBuilder.<String, Serializable>put(
+				"emailAddress", "leonard@liferay.com"
+			).put(
+				"numberOfBooksWritten", 361923
+			).build(),
+			ServiceContextTestUtil.getServiceContext());
+
+		valuesList = _objectEntryLocalService.getValuesList(
+			objectDefinition.getObjectDefinitionId(), group2.getGroupId(), null,
+			null, null, QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
+
+		Assert.assertEquals(valuesList.toString(), 1, valuesList.size());
+
+		values = valuesList.get(0);
+
+		Assert.assertEquals("leonard@liferay.com", values.get("emailAddress"));
+		Assert.assertEquals(361923, values.get("numberOfBooksWritten"));
+
+		valuesList = _objectEntryLocalService.getValuesList(
+			objectDefinition.getObjectDefinitionId(), 0, null, null, null,
+			QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
+
+		Assert.assertEquals(valuesList.toString(), 2, valuesList.size());
 	}
 
 	@Test
