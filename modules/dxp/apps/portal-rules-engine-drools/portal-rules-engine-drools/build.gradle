@@ -6,7 +6,7 @@ dependencies {
 	compileInclude group: "org.drools", name: "knowledge-api", version: "5.4.0.Final"
 	compileInclude group: "org.drools", name: "knowledge-internal-api", version: "5.4.0.Final"
 	compileInclude group: "org.eclipse.jdt.core.compiler", name: "ecj", version: "4.5.1"
-	compileInclude group: "org.mvel", name: "mvel2", version: "2.1.0.drools16"
+	compileInclude group: "org.mvel", name: "mvel2", version: "2.3.2.Final"
 
 	compileOnly group: "com.liferay.portal", name: "com.liferay.portal.kernel", version: "default"
 	compileOnly group: "org.osgi", name: "org.osgi.service.component", version: "1.4.0"
