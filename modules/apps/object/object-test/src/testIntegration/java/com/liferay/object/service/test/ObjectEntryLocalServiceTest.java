@@ -1824,6 +1824,10 @@ public class ObjectEntryLocalServiceTest {
 				TestPropsValues.getUserId(),
 				objectDefinition.getObjectDefinitionId());
 
+		_workflowDefinitionLinkLocalService.updateWorkflowDefinitionLink(
+			TestPropsValues.getUserId(), TestPropsValues.getCompanyId(), 0,
+			objectDefinition.getClassName(), 0, 0, "Single Approver", 1);
+
 		Group group1 = GroupTestUtil.addGroup();
 
 		valuesList = _objectEntryLocalService.getValuesList(
