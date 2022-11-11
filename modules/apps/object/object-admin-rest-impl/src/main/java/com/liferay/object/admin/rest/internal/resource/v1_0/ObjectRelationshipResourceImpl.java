@@ -128,30 +128,22 @@ public class ObjectRelationshipResourceImpl
 			Long objectDefinitionId, ObjectRelationship objectRelationship)
 		throws Exception {
 
-		long objectDefinitionId2 = GetterUtil.getLong(
-			objectRelationship.getObjectDefinitionId2());
+		com.liferay.object.model.ObjectDefinition objectDefinition =
+			_objectDefinitionLocalService.
+				fetchObjectDefinitionByExternalReferenceCode(
+					contextCompany.getCompanyId(),
+					objectRelationship.
+						getObjectDefinitionExternalReferenceCode2());
 
-		if ((objectDefinitionId2 == 0) &&
-			(objectRelationship.getObjectDefinitionExternalReferenceCode2() !=
-				null)) {
-
-			com.liferay.object.model.ObjectDefinition objectDefinition =
-				_objectDefinitionLocalService.
-					fetchObjectDefinitionByExternalReferenceCode(
-						contextCompany.getCompanyId(),
-						objectRelationship.
-							getObjectDefinitionExternalReferenceCode2());
-
-			if (objectDefinition == null) {
-				objectDefinition =
-					_objectDefinitionLocalService.addObjectDefinition(
-						objectRelationship.
-							getObjectDefinitionExternalReferenceCode2(),
-						contextUser.getUserId());
-			}
-
-			objectDefinitionId2 = objectDefinition.getObjectDefinitionId();
+		if (objectDefinition == null) {
+			objectDefinition =
+				_objectDefinitionLocalService.addObjectDefinition(
+					objectRelationship.
+						getObjectDefinitionExternalReferenceCode2(),
+					contextUser.getUserId());
 		}
+
+		long objectDefinitionId2 = objectDefinition.getObjectDefinitionId();
 
 		return _toObjectRelationship(
 			_objectRelationshipService.addObjectRelationship(
