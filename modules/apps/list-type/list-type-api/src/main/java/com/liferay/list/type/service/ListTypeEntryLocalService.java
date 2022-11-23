@@ -214,6 +214,10 @@ public interface ListTypeEntryLocalService
 	public ListTypeEntry fetchListTypeEntry(
 		long listTypeDefinitionId, String key);
 
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public ListTypeEntry fetchListTypeEntryByExternalReferenceCode(
+		String externalReferenceCode, long companyId);
+
 	/**
 	 * Returns the list type entry with the matching UUID and company.
 	 *
@@ -282,6 +286,11 @@ public interface ListTypeEntryLocalService
 	public ListTypeEntry getListTypeEntry(long listTypeDefinitionId, String key)
 		throws PortalException;
 
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public ListTypeEntry getListTypeEntryByExternalReferenceCode(
+			String externalReferenceCode, long companyId)
+		throws PortalException;
+
 	/**
 	 * Returns the list type entry with the matching UUID and company.
 	 *
@@ -325,7 +334,8 @@ public interface ListTypeEntryLocalService
 
 	@Indexable(type = IndexableType.REINDEX)
 	public ListTypeEntry updateListTypeEntry(
-			long listTypeEntryId, Map<Locale, String> nameMap)
+			String externalReferenceCode, long listTypeEntryId,
+			Map<Locale, String> nameMap)
 		throws PortalException;
 
 }

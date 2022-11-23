@@ -81,7 +81,8 @@ public interface ListTypeEntryService extends BaseService {
 	public String getOSGiServiceIdentifier();
 
 	public ListTypeEntry updateListTypeEntry(
-			long listTypeEntryId, Map<Locale, String> nameMap)
+			String externalReferenceCode, long listTypeEntryId,
+			Map<Locale, String> nameMap)
 		throws PortalException;
 
 }
