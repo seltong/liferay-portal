@@ -96,7 +96,7 @@ public abstract class BaseExternalReferenceCodeUpgradeProcess
 						connection, updateSB.toString())) {
 
 				while (resultSet.next()) {
-					long primKey = resultSet.getLong(1);
+					String primKey = resultSet.getString(1);
 
 					if (hasUuid) {
 						String uuid = resultSet.getString(2);
@@ -108,7 +108,7 @@ public abstract class BaseExternalReferenceCodeUpgradeProcess
 							1, String.valueOf(primKey));
 					}
 
-					preparedStatement2.setLong(2, primKey);
+					preparedStatement2.setString(2, primKey);
 
 					preparedStatement2.addBatch();
 				}
