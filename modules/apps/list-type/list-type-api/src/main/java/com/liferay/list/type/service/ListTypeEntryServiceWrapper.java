@@ -91,12 +91,12 @@ public class ListTypeEntryServiceWrapper
 
 	@Override
 	public com.liferay.list.type.model.ListTypeEntry updateListTypeEntry(
-			long listTypeEntryId,
+			String externalReferenceCode, long listTypeEntryId,
 			java.util.Map<java.util.Locale, String> nameMap)
 		throws com.liferay.portal.kernel.exception.PortalException {
 
 		return _listTypeEntryService.updateListTypeEntry(
-			listTypeEntryId, nameMap);
+			externalReferenceCode, listTypeEntryId, nameMap);
 	}
 
 	@Override

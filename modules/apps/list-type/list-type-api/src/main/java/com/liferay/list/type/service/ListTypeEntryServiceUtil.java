@@ -84,10 +84,12 @@ public class ListTypeEntryServiceUtil {
 	}
 
 	public static ListTypeEntry updateListTypeEntry(
-			long listTypeEntryId, Map<java.util.Locale, String> nameMap)
+			String externalReferenceCode, long listTypeEntryId,
+			Map<java.util.Locale, String> nameMap)
 		throws PortalException {
 
-		return getService().updateListTypeEntry(listTypeEntryId, nameMap);
+		return getService().updateListTypeEntry(
+			externalReferenceCode, listTypeEntryId, nameMap);
 	}
 
 	public static ListTypeEntryService getService() {
