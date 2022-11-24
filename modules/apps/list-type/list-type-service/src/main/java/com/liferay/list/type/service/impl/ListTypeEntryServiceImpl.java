@@ -112,7 +112,8 @@ public class ListTypeEntryServiceImpl extends ListTypeEntryServiceBaseImpl {
 
 	@Override
 	public ListTypeEntry updateListTypeEntry(
-			long listTypeEntryId, Map<Locale, String> nameMap)
+			String externalReferenceCode, long listTypeEntryId,
+			Map<Locale, String> nameMap)
 		throws PortalException {
 
 		ListTypeEntry listTypeEntry = listTypeEntryPersistence.findByPrimaryKey(
@@ -123,7 +124,7 @@ public class ListTypeEntryServiceImpl extends ListTypeEntryServiceBaseImpl {
 			ActionKeys.UPDATE);
 
 		return listTypeEntryLocalService.updateListTypeEntry(
-			listTypeEntryId, nameMap);
+			externalReferenceCode, listTypeEntryId, nameMap);
 	}
 
 	@Reference(
