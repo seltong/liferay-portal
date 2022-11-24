@@ -231,10 +231,16 @@ public class ListTypeEntryServiceTest {
 
 			listTypeEntry = _addListTypeEntry(user);
 
+			String externalReferenceCode = RandomTestUtil.randomString();
+
 			listTypeEntry = _listTypeEntryService.updateListTypeEntry(
-				listTypeEntry.getListTypeEntryId(),
+				externalReferenceCode, listTypeEntry.getListTypeEntryId(),
 				Collections.singletonMap(
 					LocaleUtil.US, RandomTestUtil.randomString()));
+
+			Assert.assertEquals(
+				externalReferenceCode,
+				listTypeEntry.getExternalReferenceCode());
 		}
 		finally {
 			if (listTypeEntry != null) {
