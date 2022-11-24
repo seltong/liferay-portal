@@ -119,6 +119,10 @@ public class ListTypeEntryLocalServiceImpl
 		ListTypeEntry listTypeEntry = listTypeEntryPersistence.findByPrimaryKey(
 			listTypeEntryId);
 
+		if (Validator.isNotNull(externalReferenceCode)) {
+			listTypeEntry.setExternalReferenceCode(externalReferenceCode);
+		}
+
 		listTypeEntry.setNameMap(nameMap);
 
 		return listTypeEntryPersistence.update(listTypeEntry);
