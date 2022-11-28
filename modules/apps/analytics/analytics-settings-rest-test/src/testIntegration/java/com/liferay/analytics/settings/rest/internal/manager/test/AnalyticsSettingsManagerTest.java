@@ -166,7 +166,6 @@ public class AnalyticsSettingsManagerTest {
 				Assert.assertEquals(
 					Arrays.toString(commerceChannelIds), 1,
 					commerceChannelIds.length);
-
 				Assert.assertEquals(
 					_commerceChannelGroup1.getClassPK(),
 					(long)commerceChannelIds[0]);
@@ -258,7 +257,6 @@ public class AnalyticsSettingsManagerTest {
 
 				Assert.assertEquals(
 					Arrays.toString(siteIds), 1, siteIds.length);
-
 				Assert.assertEquals(_siteGroup1.getGroupId(), (long)siteIds[0]);
 
 				return null;
