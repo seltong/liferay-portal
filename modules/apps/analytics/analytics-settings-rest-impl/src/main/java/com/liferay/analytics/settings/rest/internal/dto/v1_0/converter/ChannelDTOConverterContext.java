@@ -26,7 +26,7 @@ import java.util.Locale;
 public class ChannelDTOConverterContext extends DefaultDTOConverterContext {
 
 	public ChannelDTOConverterContext(
-		Object id, Locale locale, String[] analyticsChannelIds) {
+		String[] analyticsChannelIds, Object id, Locale locale) {
 
 		super(false, new HashMap<>(), null, id, locale, null, null);
 

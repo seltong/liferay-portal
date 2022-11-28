@@ -67,9 +67,9 @@ public class ChannelResourceImpl extends BaseChannelResourceImpl {
 				analyticsChannelsPage.getItems(),
 				analyticsChannel -> _channelDTOConverter.toDTO(
 					new ChannelDTOConverterContext(
+						analyticsConfiguration.commerceSyncEnabledChannelIds(),
 						analyticsChannel.getId(),
-						contextAcceptLanguage.getPreferredLocale(),
-						analyticsConfiguration.commerceSyncEnabledChannelIds()),
+						contextAcceptLanguage.getPreferredLocale()),
 					analyticsChannel)),
 			pagination, analyticsChannelsPage.getTotalCount());
 	}
