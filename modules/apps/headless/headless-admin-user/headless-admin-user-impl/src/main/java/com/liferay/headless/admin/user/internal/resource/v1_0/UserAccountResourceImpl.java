@@ -577,14 +577,14 @@ public class UserAccountResourceImpl
 	public UserAccount postUserAccount(UserAccount userAccount)
 		throws Exception {
 
+		User user = null;
+
 		boolean autoPassword = false;
 		String password = userAccount.getPassword();
 
 		if (Validator.isNull(password)) {
 			autoPassword = true;
 		}
-
-		User user = null;
 
 		ServiceContext serviceContext = ServiceContextFactory.getInstance(
 			contextHttpServletRequest);
