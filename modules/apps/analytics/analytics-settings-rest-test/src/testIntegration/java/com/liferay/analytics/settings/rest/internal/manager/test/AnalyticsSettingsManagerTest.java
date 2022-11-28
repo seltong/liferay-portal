@@ -76,6 +76,14 @@ public class AnalyticsSettingsManagerTest {
 
 	@Test
 	public void testGetCommerceChannelIds() throws Exception {
+		Long[] emptyCommerceChannelIds =
+			_analyticsSettingsManager.getCommerceChannelIds(
+				_analyticsChannelId1, TestPropsValues.getCompanyId());
+
+		Assert.assertEquals(
+			Arrays.toString(emptyCommerceChannelIds), 0,
+			emptyCommerceChannelIds.length);
+
 		_analyticsSettingsManager.updateCompanyConfiguration(
 			TestPropsValues.getCompanyId(),
 			HashMapBuilder.<String, Object>put(
@@ -107,20 +115,7 @@ public class AnalyticsSettingsManagerTest {
 
 				return null;
 			});
-	}
 
-	@Test
-	public void testGetCommerceChannelIdsEmpty() throws Exception {
-		Long[] commerceChannelIds =
-			_analyticsSettingsManager.getCommerceChannelIds(
-				_analyticsChannelId1, TestPropsValues.getCompanyId());
-
-		Assert.assertEquals(
-			Arrays.toString(commerceChannelIds), 0, commerceChannelIds.length);
-	}
-
-	@Test
-	public void testGetCommerceChannelIdsRemoval() throws Exception {
 		_analyticsSettingsManager.updateCompanyConfiguration(
 			TestPropsValues.getCompanyId(),
 			HashMapBuilder.<String, Object>put(
@@ -176,6 +171,12 @@ public class AnalyticsSettingsManagerTest {
 
 	@Test
 	public void testGetSiteIds() throws Exception {
+		Long[] emptySiteIds = _analyticsSettingsManager.getSiteIds(
+			_analyticsChannelId1, TestPropsValues.getCompanyId());
+
+		Assert.assertEquals(
+			Arrays.toString(emptySiteIds), 0, emptySiteIds.length);
+
 		_analyticsSettingsManager.updateCompanyConfiguration(
 			TestPropsValues.getCompanyId(),
 			HashMapBuilder.<String, Object>put(
@@ -205,18 +206,7 @@ public class AnalyticsSettingsManagerTest {
 
 				return null;
 			});
-	}
 
-	@Test
-	public void testGetSiteIdsEmpty() throws Exception {
-		Long[] siteIds = _analyticsSettingsManager.getSiteIds(
-			_analyticsChannelId1, TestPropsValues.getCompanyId());
-
-		Assert.assertEquals(Arrays.toString(siteIds), 0, siteIds.length);
-	}
-
-	@Test
-	public void testGetSiteIdsRemoval() throws Exception {
 		_analyticsSettingsManager.updateCompanyConfiguration(
 			TestPropsValues.getCompanyId(),
 			HashMapBuilder.<String, Object>put(
