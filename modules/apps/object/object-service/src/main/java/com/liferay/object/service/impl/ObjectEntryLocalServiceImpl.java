@@ -3005,13 +3005,13 @@ public class ObjectEntryLocalServiceImpl
 			ObjectEntry objectEntry, long objectFieldId)
 		throws PortalException {
 
-		Map<String, Serializable> objectEntryValues = objectEntry.getValues();
+		Map<String, Serializable> values = objectEntry.getValues();
 
 		ListTypeEntry originalListTypeEntry =
 			_listTypeEntryLocalService.getListTypeEntry(
 				listTypeDefinitionId,
 				_getValue(
-					String.valueOf(objectEntryValues.get(entry.getKey()))));
+					String.valueOf(values.get(entry.getKey()))));
 
 		ObjectStateFlow objectStateFlow =
 			_objectStateFlowLocalService.fetchObjectFieldObjectStateFlow(
