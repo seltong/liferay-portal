@@ -55,17 +55,14 @@ public class AnalyticsSettingsManagerTest {
 
 	@Before
 	public void setUp() throws Exception {
-		_analyticsChannelIdA = RandomTestUtil.randomString(8);
+		_analyticsChannelId1 = RandomTestUtil.randomString(8);
+		_analyticsChannelId2 = RandomTestUtil.randomString(8);
 
-		_analyticsChannelIdB = RandomTestUtil.randomString(8);
+		_siteGroup1 = _addSiteGroup();
+		_siteGroup2 = _addSiteGroup();
 
-		_siteAGroup = _addSiteGroup();
-
-		_siteBGroup = _addSiteGroup();
-
-		_commerceChannelAGroup = _addCommerceChannelGroup();
-
-		_commerceChannelBGroup = _addCommerceChannelGroup();
+		_commerceChannelGroup1 = _addCommerceChannelGroup();
+		_commerceChannelGroup2 = _addCommerceChannelGroup();
 	}
 
 	@After
@@ -73,13 +70,11 @@ public class AnalyticsSettingsManagerTest {
 		_analyticsSettingsManager.deleteCompanyConfiguration(
 			TestPropsValues.getCompanyId());
 
-		_groupLocalService.deleteGroup(_siteAGroup);
+		_groupLocalService.deleteGroup(_siteGroup1);
+		_groupLocalService.deleteGroup(_siteGroup2);
 
-		_groupLocalService.deleteGroup(_siteBGroup);
-
-		_groupLocalService.deleteGroup(_commerceChannelAGroup);
-
-		_groupLocalService.deleteGroup(_commerceChannelBGroup);
+		_groupLocalService.deleteGroup(_commerceChannelGroup1);
+		_groupLocalService.deleteGroup(_commerceChannelGroup2);
 	}
 
 	@Test
@@ -89,8 +84,8 @@ public class AnalyticsSettingsManagerTest {
 			HashMapBuilder.<String, Object>put(
 				"syncedCommerceChannelIds",
 				_analyticsSettingsManager.updateCommerceChannelIds(
-					_analyticsChannelIdA, TestPropsValues.getCompanyId(),
-					new Long[] {_commerceChannelAGroup.getClassPK()})
+					_analyticsChannelId1, TestPropsValues.getCompanyId(),
+					new Long[] {_commerceChannelGroup1.getClassPK()})
 			).build());
 
 		_analyticsSettingsManager.updateCompanyConfiguration(
@@ -98,8 +93,8 @@ public class AnalyticsSettingsManagerTest {
 			HashMapBuilder.<String, Object>put(
 				"syncedCommerceChannelIds",
 				_analyticsSettingsManager.updateCommerceChannelIds(
-					_analyticsChannelIdB, TestPropsValues.getCompanyId(),
-					new Long[] {_commerceChannelBGroup.getClassPK()})
+					_analyticsChannelId2, TestPropsValues.getCompanyId(),
+					new Long[] {_commerceChannelGroup2.getClassPK()})
 			).build());
 
 		IdempotentRetryAssert.retryAssert(
@@ -107,7 +102,7 @@ public class AnalyticsSettingsManagerTest {
 			() -> {
 				Long[] commerceChannelIds =
 					_analyticsSettingsManager.getCommerceChannelIds(
-						_analyticsChannelIdA, TestPropsValues.getCompanyId());
+						_analyticsChannelId1, TestPropsValues.getCompanyId());
 
 				Assert.assertEquals(
 					Arrays.toString(commerceChannelIds), 1,
@@ -121,7 +116,7 @@ public class AnalyticsSettingsManagerTest {
 	public void testGetCommerceChannelIdsEmpty() throws Exception {
 		Long[] commerceChannelIds =
 			_analyticsSettingsManager.getCommerceChannelIds(
-				_analyticsChannelIdA, TestPropsValues.getCompanyId());
+				_analyticsChannelId1, TestPropsValues.getCompanyId());
 
 		Assert.assertEquals(
 			Arrays.toString(commerceChannelIds), 0, commerceChannelIds.length);
@@ -134,10 +129,10 @@ public class AnalyticsSettingsManagerTest {
 			HashMapBuilder.<String, Object>put(
 				"syncedCommerceChannelIds",
 				_analyticsSettingsManager.updateCommerceChannelIds(
-					_analyticsChannelIdA, TestPropsValues.getCompanyId(),
+					_analyticsChannelId1, TestPropsValues.getCompanyId(),
 					new Long[] {
-						_commerceChannelAGroup.getClassPK(),
-						_commerceChannelBGroup.getClassPK()
+						_commerceChannelGroup1.getClassPK(),
+						_commerceChannelGroup2.getClassPK()
 					})
 			).build());
 
@@ -146,7 +141,7 @@ public class AnalyticsSettingsManagerTest {
 			() -> {
 				Long[] commerceChannelIds =
 					_analyticsSettingsManager.getCommerceChannelIds(
-						_analyticsChannelIdA, TestPropsValues.getCompanyId());
+						_analyticsChannelId1, TestPropsValues.getCompanyId());
 
 				Assert.assertEquals(
 					Arrays.toString(commerceChannelIds), 2,
@@ -160,8 +155,8 @@ public class AnalyticsSettingsManagerTest {
 			HashMapBuilder.<String, Object>put(
 				"syncedCommerceChannelIds",
 				_analyticsSettingsManager.updateCommerceChannelIds(
-					_analyticsChannelIdA, TestPropsValues.getCompanyId(),
-					new Long[] {_commerceChannelAGroup.getClassPK()})
+					_analyticsChannelId1, TestPropsValues.getCompanyId(),
+					new Long[] {_commerceChannelGroup1.getClassPK()})
 			).build());
 
 		IdempotentRetryAssert.retryAssert(
@@ -169,14 +164,14 @@ public class AnalyticsSettingsManagerTest {
 			() -> {
 				Long[] commerceChannelIds =
 					_analyticsSettingsManager.getCommerceChannelIds(
-						_analyticsChannelIdA, TestPropsValues.getCompanyId());
+						_analyticsChannelId1, TestPropsValues.getCompanyId());
 
 				Assert.assertEquals(
 					Arrays.toString(commerceChannelIds), 1,
 					commerceChannelIds.length);
 
 				Assert.assertEquals(
-					_commerceChannelAGroup.getClassPK(),
+					_commerceChannelGroup1.getClassPK(),
 					(long)commerceChannelIds[0]);
 
 				return null;
@@ -190,8 +185,8 @@ public class AnalyticsSettingsManagerTest {
 			HashMapBuilder.<String, Object>put(
 				"syncedGroupIds",
 				_analyticsSettingsManager.updateSiteIds(
-					_analyticsChannelIdA, TestPropsValues.getCompanyId(),
-					new Long[] {_siteAGroup.getGroupId()})
+					_analyticsChannelId1, TestPropsValues.getCompanyId(),
+					new Long[] {_siteGroup1.getGroupId()})
 			).build());
 
 		_analyticsSettingsManager.updateCompanyConfiguration(
@@ -199,15 +194,15 @@ public class AnalyticsSettingsManagerTest {
 			HashMapBuilder.<String, Object>put(
 				"syncedGroupIds",
 				_analyticsSettingsManager.updateSiteIds(
-					_analyticsChannelIdB, TestPropsValues.getCompanyId(),
-					new Long[] {_siteBGroup.getGroupId()})
+					_analyticsChannelId2, TestPropsValues.getCompanyId(),
+					new Long[] {_siteGroup2.getGroupId()})
 			).build());
 
 		IdempotentRetryAssert.retryAssert(
 			5, TimeUnit.SECONDS, 1, TimeUnit.SECONDS,
 			() -> {
 				Long[] siteIds = _analyticsSettingsManager.getSiteIds(
-					_analyticsChannelIdA, TestPropsValues.getCompanyId());
+					_analyticsChannelId1, TestPropsValues.getCompanyId());
 
 				Assert.assertEquals(
 					Arrays.toString(siteIds), 1, siteIds.length);
@@ -219,7 +214,7 @@ public class AnalyticsSettingsManagerTest {
 	@Test
 	public void testGetSiteIdsEmpty() throws Exception {
 		Long[] siteIds = _analyticsSettingsManager.getSiteIds(
-			_analyticsChannelIdA, TestPropsValues.getCompanyId());
+			_analyticsChannelId1, TestPropsValues.getCompanyId());
 
 		Assert.assertEquals(Arrays.toString(siteIds), 0, siteIds.length);
 	}
@@ -231,9 +226,9 @@ public class AnalyticsSettingsManagerTest {
 			HashMapBuilder.<String, Object>put(
 				"syncedGroupIds",
 				_analyticsSettingsManager.updateSiteIds(
-					_analyticsChannelIdA, TestPropsValues.getCompanyId(),
+					_analyticsChannelId1, TestPropsValues.getCompanyId(),
 					new Long[] {
-						_siteAGroup.getGroupId(), _siteBGroup.getGroupId()
+						_siteGroup1.getGroupId(), _siteGroup2.getGroupId()
 					})
 			).build());
 
@@ -241,7 +236,7 @@ public class AnalyticsSettingsManagerTest {
 			5, TimeUnit.SECONDS, 1, TimeUnit.SECONDS,
 			() -> {
 				Long[] siteIds = _analyticsSettingsManager.getSiteIds(
-					_analyticsChannelIdA, TestPropsValues.getCompanyId());
+					_analyticsChannelId1, TestPropsValues.getCompanyId());
 
 				Assert.assertEquals(
 					Arrays.toString(siteIds), 2, siteIds.length);
@@ -254,20 +249,20 @@ public class AnalyticsSettingsManagerTest {
 			HashMapBuilder.<String, Object>put(
 				"syncedGroupIds",
 				_analyticsSettingsManager.updateSiteIds(
-					_analyticsChannelIdA, TestPropsValues.getCompanyId(),
-					new Long[] {_siteAGroup.getGroupId()})
+					_analyticsChannelId1, TestPropsValues.getCompanyId(),
+					new Long[] {_siteGroup1.getGroupId()})
 			).build());
 
 		IdempotentRetryAssert.retryAssert(
 			5, TimeUnit.SECONDS, 1, TimeUnit.SECONDS,
 			() -> {
 				Long[] siteIds = _analyticsSettingsManager.getSiteIds(
-					_analyticsChannelIdA, TestPropsValues.getCompanyId());
+					_analyticsChannelId1, TestPropsValues.getCompanyId());
 
 				Assert.assertEquals(
 					Arrays.toString(siteIds), 1, siteIds.length);
 
-				Assert.assertEquals(_siteAGroup.getGroupId(), (long)siteIds[0]);
+				Assert.assertEquals(_siteGroup1.getGroupId(), (long)siteIds[0]);
 
 				return null;
 			});
@@ -319,19 +314,19 @@ public class AnalyticsSettingsManagerTest {
 		return GroupTestUtil.addGroup();
 	}
 
-	private String _analyticsChannelIdA;
-	private String _analyticsChannelIdB;
+	private String _analyticsChannelId1;
+	private String _analyticsChannelId2;
 
 	@Inject
 	private AnalyticsSettingsManager _analyticsSettingsManager;
 
-	private Group _commerceChannelAGroup;
-	private Group _commerceChannelBGroup;
+	private Group _commerceChannelGroup1;
+	private Group _commerceChannelGroup2;
 
 	@Inject
 	private GroupLocalService _groupLocalService;
 
-	private Group _siteAGroup;
-	private Group _siteBGroup;
+	private Group _siteGroup1;
+	private Group _siteGroup2;
 
 }
