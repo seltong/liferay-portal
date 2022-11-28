@@ -99,6 +99,7 @@ import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.FriendlyURLNormalizer;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.LocaleUtil;
+import com.liferay.portal.kernel.util.LoggingTimer;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.PortalUtil;
 import com.liferay.portal.kernel.util.StringUtil;
@@ -581,10 +582,15 @@ public class JournalArticleLocalServiceTest {
 			TemplateConstants.LANG_TYPE_FTL, "<p>Web Content Render</p>",
 			LocaleUtil.US);
 
-		JournalArticleDisplay journalArticleDisplay =
-			_journalArticleLocalService.getArticleDisplay(
-				journalArticle.getGroupId(), journalArticle.getArticleId(),
-				ddmTemplate.getTemplateKey(), null, null, _getThemeDisplay());
+		JournalArticleDisplay journalArticleDisplay = null;
+
+		try (LoggingTimer loggingTimer = new LoggingTimer()) {
+			journalArticleDisplay =
+				_journalArticleLocalService.getArticleDisplay(
+					journalArticle.getGroupId(), journalArticle.getArticleId(),
+					ddmTemplate.getTemplateKey(), null, null,
+					_getThemeDisplay());
+		}
 
 		String content = journalArticleDisplay.getContent();
 
