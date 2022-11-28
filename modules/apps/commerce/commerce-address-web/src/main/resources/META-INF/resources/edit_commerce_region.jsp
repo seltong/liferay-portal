@@ -49,17 +49,18 @@ else {
 		<aui:model-context bean="<%= region %>" model="<%= Region.class %>" />
 
 		<div class="sheet">
-	<div class="panel-group panel-group-flush">
-			<aui:fieldset>
-				<aui:input autoFocus="<%= true %>" name="name" />
+			<div class="panel-group panel-group-flush">
+				<aui:fieldset>
+					<aui:input autoFocus="<%= true %>" name="name" />
 
-				<aui:input label="code" name="regionCode" />
+					<aui:input label="code" name="regionCode" />
 
-				<aui:input label="position" name="position" />
+					<aui:input label="position" name="position" />
 
-				<aui:input checked="<%= (region == null) ? false : region.isActive() %>" inlineLabel="right" labelCssClass="simple-toggle-switch" name="active" type="toggle-switch" />
-			</aui:fieldset>
-		</div></div>
+					<aui:input checked="<%= (region == null) ? false : region.isActive() %>" inlineLabel="right" labelCssClass="simple-toggle-switch" name="active" type="toggle-switch" />
+				</aui:fieldset>
+			</div>
+		</div>
 	</div>
 
 	<aui:button-row>

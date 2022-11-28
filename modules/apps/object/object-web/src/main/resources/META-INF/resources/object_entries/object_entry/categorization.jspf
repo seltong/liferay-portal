@@ -30,36 +30,37 @@ ObjectLayoutBox categorizationObjectLayoutBox = objectEntryDisplayContext.getObj
 		<liferay-asset:asset-tags-error />
 
 		<div class="sheet">
-	<div class="panel-group panel-group-flush">
-			<aui:fieldset collapsed="<%= categorizationObjectLayoutBox.isCollapsable() %>" collapsible="<%= categorizationObjectLayoutBox.isCollapsable() %>" label="categorization">
-				<c:choose>
-					<c:when test="<%= objectEntryDisplayContext.isReadOnly() %>">
-						<liferay-asset:asset-categories-summary
-							className="<%= objectDefinition.getClassName() %>"
-							classPK="<%= classPK %>"
-							visibleTypes="<%= AssetVocabularyConstants.VISIBILITY_TYPES %>"
-						/>
+			<div class="panel-group panel-group-flush">
+				<aui:fieldset collapsed="<%= categorizationObjectLayoutBox.isCollapsable() %>" collapsible="<%= categorizationObjectLayoutBox.isCollapsable() %>" label="categorization">
+					<c:choose>
+						<c:when test="<%= objectEntryDisplayContext.isReadOnly() %>">
+							<liferay-asset:asset-categories-summary
+								className="<%= objectDefinition.getClassName() %>"
+								classPK="<%= classPK %>"
+								visibleTypes="<%= AssetVocabularyConstants.VISIBILITY_TYPES %>"
+							/>
 
-						<liferay-asset:asset-tags-summary
-							className="<%= objectDefinition.getClassName() %>"
-							classPK="<%= classPK %>"
-							message="tags"
-						/>
-					</c:when>
-					<c:otherwise>
-						<liferay-asset:asset-categories-selector
-							className="<%= objectDefinition.getClassName() %>"
-							classPK="<%= classPK %>"
-							visibilityTypes="<%= AssetVocabularyConstants.VISIBILITY_TYPES %>"
-						/>
+							<liferay-asset:asset-tags-summary
+								className="<%= objectDefinition.getClassName() %>"
+								classPK="<%= classPK %>"
+								message="tags"
+							/>
+						</c:when>
+						<c:otherwise>
+							<liferay-asset:asset-categories-selector
+								className="<%= objectDefinition.getClassName() %>"
+								classPK="<%= classPK %>"
+								visibilityTypes="<%= AssetVocabularyConstants.VISIBILITY_TYPES %>"
+							/>
 
-						<liferay-asset:asset-tags-selector
-							className="<%= objectDefinition.getClassName() %>"
-							classPK="<%= classPK %>"
-						/>
-					</c:otherwise>
-				</c:choose>
-			</aui:fieldset>
-		</div></div>
+							<liferay-asset:asset-tags-selector
+								className="<%= objectDefinition.getClassName() %>"
+								classPK="<%= classPK %>"
+							/>
+						</c:otherwise>
+					</c:choose>
+				</aui:fieldset>
+			</div>
+		</div>
 	</div>
 </c:if>

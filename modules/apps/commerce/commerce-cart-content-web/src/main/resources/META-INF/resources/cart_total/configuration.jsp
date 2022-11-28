@@ -31,19 +31,20 @@ CommerceCartContentTotalDisplayContext commerceCartContentTotalDisplayContext = 
 	<div class="portlet-configuration-body-content">
 		<div class="container-fluid container-fluid-max-xl">
 			<div class="sheet">
-	<div class="panel-group panel-group-flush">
-				<aui:fieldset>
-					<div class="display-template">
-						<liferay-template:template-selector
-							className="<%= CommerceCartContentTotalPortlet.class.getName() %>"
-							displayStyle="<%= commerceCartContentTotalDisplayContext.getDisplayStyle() %>"
-							displayStyleGroupId="<%= commerceCartContentTotalDisplayContext.getDisplayStyleGroupId() %>"
-							refreshURL="<%= PortalUtil.getCurrentURL(request) %>"
-							showEmptyOption="<%= true %>"
-						/>
-					</div>
-				</aui:fieldset>
-			</div></div>
+				<div class="panel-group panel-group-flush">
+					<aui:fieldset>
+						<div class="display-template">
+							<liferay-template:template-selector
+								className="<%= CommerceCartContentTotalPortlet.class.getName() %>"
+								displayStyle="<%= commerceCartContentTotalDisplayContext.getDisplayStyle() %>"
+								displayStyleGroupId="<%= commerceCartContentTotalDisplayContext.getDisplayStyleGroupId() %>"
+								refreshURL="<%= PortalUtil.getCurrentURL(request) %>"
+								showEmptyOption="<%= true %>"
+							/>
+						</div>
+					</aui:fieldset>
+				</div>
+			</div>
 		</div>
 	</div>
 
