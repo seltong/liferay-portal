@@ -57,12 +57,10 @@ public class AnalyticsSettingsManagerTest {
 	public void setUp() throws Exception {
 		_analyticsChannelId1 = RandomTestUtil.randomString(8);
 		_analyticsChannelId2 = RandomTestUtil.randomString(8);
-
-		_siteGroup1 = _addSiteGroup();
-		_siteGroup2 = _addSiteGroup();
-
 		_commerceChannelGroup1 = _addCommerceChannelGroup();
 		_commerceChannelGroup2 = _addCommerceChannelGroup();
+		_siteGroup1 = GroupTestUtil.addGroup();
+		_siteGroup2 = GroupTestUtil.addGroup();
 	}
 
 	@After
@@ -308,10 +306,6 @@ public class AnalyticsSettingsManagerTest {
 			GroupConstants.DEFAULT_MEMBERSHIP_RESTRICTION,
 			"/" + RandomTestUtil.randomString(6), false, false, true,
 			ServiceContextTestUtil.getServiceContext());
-	}
-
-	private Group _addSiteGroup() throws Exception {
-		return GroupTestUtil.addGroup();
 	}
 
 	private String _analyticsChannelId1;
