@@ -2863,7 +2863,7 @@
 					</license>
 				</licenses>
 				<current-version-publish-date>2019-10-28 15:54:30</current-version-publish-date>
-				<latest-version-publish-date>2022-10-31 09:42:13</latest-version-publish-date>
+				<latest-version-publish-date>2022-11-25 10:09:34</latest-version-publish-date>
 			</library>
 			<library>
 				<file-name>com.liferay.portal.configuration.metatype.api.jar!asm.jar</file-name>
@@ -5194,7 +5194,7 @@
 					</license>
 				</licenses>
 				<current-version-publish-date>2022-07-15 20:54:32</current-version-publish-date>
-				<latest-version-publish-date>2022-11-23 21:29:00</latest-version-publish-date>
+				<latest-version-publish-date>2022-11-28 06:41:49</latest-version-publish-date>
 			</library>
 			<library>
 				<file-name>com.liferay.portal.store.s3.jar!aws-java-sdk-kms.jar</file-name>
@@ -5208,7 +5208,7 @@
 					</license>
 				</licenses>
 				<current-version-publish-date>2022-07-15 20:54:29</current-version-publish-date>
-				<latest-version-publish-date>2022-11-23 21:29:05</latest-version-publish-date>
+				<latest-version-publish-date>2022-11-28 06:41:10</latest-version-publish-date>
 			</library>
 			<library>
 				<file-name>com.liferay.portal.store.s3.jar!aws-java-sdk-s3.jar</file-name>
@@ -5222,7 +5222,7 @@
 					</license>
 				</licenses>
 				<current-version-publish-date>2022-07-15 20:53:45</current-version-publish-date>
-				<latest-version-publish-date>2022-11-23 21:29:33</latest-version-publish-date>
+				<latest-version-publish-date>2022-11-28 06:41:03</latest-version-publish-date>
 			</library>
 			<library>
 				<file-name>com.liferay.portal.store.s3.jar!commons-codec.jar</file-name>
@@ -5970,7 +5970,7 @@
 					</license>
 				</licenses>
 				<current-version-publish-date>2022-07-26 23:55:52</current-version-publish-date>
-				<latest-version-publish-date>2022-11-22 22:53:33</latest-version-publish-date>
+				<latest-version-publish-date>2022-11-25 03:53:25</latest-version-publish-date>
 			</library>
 			<library>
 				<file-name>com.liferay.portal.vulcan.impl.jar!guava.jar</file-name>
