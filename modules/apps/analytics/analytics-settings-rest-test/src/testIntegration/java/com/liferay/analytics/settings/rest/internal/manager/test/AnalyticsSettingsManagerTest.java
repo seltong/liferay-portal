@@ -68,11 +68,10 @@ public class AnalyticsSettingsManagerTest {
 		_analyticsSettingsManager.deleteCompanyConfiguration(
 			TestPropsValues.getCompanyId());
 
-		_groupLocalService.deleteGroup(_siteGroup1);
-		_groupLocalService.deleteGroup(_siteGroup2);
-
 		_groupLocalService.deleteGroup(_commerceChannelGroup1);
 		_groupLocalService.deleteGroup(_commerceChannelGroup2);
+		_groupLocalService.deleteGroup(_siteGroup1);
+		_groupLocalService.deleteGroup(_siteGroup2);
 	}
 
 	@Test
