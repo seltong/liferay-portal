@@ -31,6 +31,7 @@ const REQUIRED_MSG = Liferay.Language.get('required');
 const defaultLanguageId = Liferay.ThemeDisplay.getDefaultLanguageId();
 export interface IModalState extends Partial<PickListItem> {
 	header?: string;
+	itemExternalReferenceCode?: string;
 	itemId?: number;
 	itemKey?: string;
 	modalType?: 'add' | 'edit';
@@ -43,6 +44,7 @@ function ListTypeEntriesModal() {
 	const [
 		{
 			header,
+			itemExternalReferenceCode,
 			itemId,
 			itemKey,
 			modalType,
@@ -127,7 +129,7 @@ function ListTypeEntriesModal() {
 	const validate = (entry: Partial<PickListItem>): ObjectValidationErrors => {
 		const errors: ObjectValidationErrors = {};
 		const name_i18n = entry.name_i18n?.[defaultLanguageId];
-		const key = entry.key;
+		const {externalReferenceCode, key} = entry;
 
 		if (invalidateRequired(name_i18n)) {
 			errors.name_i18n = REQUIRED_MSG;
@@ -137,11 +139,16 @@ function ListTypeEntriesModal() {
 			errors.name = REQUIRED_MSG;
 		}
 
+		if (invalidateRequired(externalReferenceCode)) {
+			errors.externalReferenceCode = REQUIRED_MSG;
+		}
+
 		return errors;
 	};
 
 	const handleSave = async () => {
 		const errors: ObjectValidationErrors = validate({
+			externalReferenceCode: itemExternalReferenceCode,
 			key: itemKey,
 			name_i18n,
 		});
@@ -166,7 +173,11 @@ function ListTypeEntriesModal() {
 					});
 				}
 				else if (modalType === 'edit') {
-					await API.updatePickListItem({id: itemId, name_i18n});
+					await API.updatePickListItem({
+						externalReferenceCode: itemExternalReferenceCode,
+						id: itemId,
+						name_i18n,
+					});
 					openToast({
 						message: Liferay.Language.get(
 							'the-picklist-item-was-updated-successfully'
