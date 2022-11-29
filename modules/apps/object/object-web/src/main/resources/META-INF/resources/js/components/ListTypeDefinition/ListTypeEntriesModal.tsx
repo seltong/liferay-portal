@@ -56,8 +56,22 @@ function ListTypeEntriesModal() {
 		setState,
 	] = useState<IModalState>({});
 
+	const [
+		externalReferenceCodeChanged,
+		setExternalReferenceCodeChanged,
+	] = useState(false);
 	const [keyChanged, setKeyChanged] = useState(false);
 	const [APIError, setAPIError] = useState<string>('');
+
+	const handleExternalReferenceCodeChange = (value: string) => {
+		if (externalReferenceCodeChanged === false) {
+			setExternalReferenceCodeChanged(true);
+		}
+		setState((previousValues) => ({
+			...previousValues,
+			itemExternalReferenceCode: value,
+		}));
+	};
 
 	const handleKeyChange = (value: string) => {
 		if (keyChanged === false) {
@@ -81,7 +95,12 @@ function ListTypeEntriesModal() {
 		}));
 	};
 
-	const [errors, setErrors] = useState<{name?: string; name_i18n?: string}>({
+	const [errors, setErrors] = useState<{
+		externalReferenceCode?: string;
+		name?: string;
+		name_i18n?: string;
+	}>({
+		externalReferenceCode: '',
 		name: '',
 		name_i18n: '',
 	});
@@ -220,6 +239,19 @@ function ListTypeEntriesModal() {
 					required
 					value={itemKey ?? ''}
 				/>
+
+				{modalType === 'edit' && (
+					<Input
+						error={errors.externalReferenceCode}
+						label={Liferay.Language.get('external-reference-code')}
+						name="externalReferenceCode"
+						onChange={({target}) =>
+							handleExternalReferenceCodeChange(target.value)
+						}
+						required
+						value={itemExternalReferenceCode ?? ''}
+					/>
+				)}
 			</ClayModal.Body>
 
 			<ClayModal.Footer
