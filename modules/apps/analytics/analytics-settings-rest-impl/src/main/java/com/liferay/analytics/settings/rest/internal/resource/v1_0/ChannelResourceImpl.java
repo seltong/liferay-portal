@@ -117,9 +117,8 @@ public class ChannelResourceImpl extends BaseChannelResourceImpl {
 		if (ArrayUtil.isEmpty(dataSources)) {
 			return _channelDTOConverter.toDTO(
 				new ChannelDTOConverterContext(
-					channel.getChannelId(),
-					contextAcceptLanguage.getPreferredLocale(),
-					commerceSyncEnabledChannelIds),
+					commerceSyncEnabledChannelIds, channel.getChannelId(),
+					contextAcceptLanguage.getPreferredLocale()),
 				_analyticsCloudClient.updateAnalyticsChannel(
 					channel.getChannelId(),
 					_analyticsSettingsManager.getCommerceChannelIds(
@@ -181,9 +180,8 @@ public class ChannelResourceImpl extends BaseChannelResourceImpl {
 
 		return _channelDTOConverter.toDTO(
 			new ChannelDTOConverterContext(
-				channel.getChannelId(),
-				contextAcceptLanguage.getPreferredLocale(),
-				commerceSyncEnabledChannelIds),
+				commerceSyncEnabledChannelIds, channel.getChannelId(),
+				contextAcceptLanguage.getPreferredLocale()),
 			analyticsChannel);
 	}
 
@@ -195,9 +193,9 @@ public class ChannelResourceImpl extends BaseChannelResourceImpl {
 
 		return _channelDTOConverter.toDTO(
 			new ChannelDTOConverterContext(
+				analyticsConfiguration.commerceSyncEnabledChannelIds(),
 				channel.getChannelId(),
-				contextAcceptLanguage.getPreferredLocale(),
-				analyticsConfiguration.commerceSyncEnabledChannelIds()),
+				contextAcceptLanguage.getPreferredLocale()),
 			_analyticsCloudClient.addAnalyticsChannel(
 				contextCompany.getCompanyId(), channel.getName()));
 	}
