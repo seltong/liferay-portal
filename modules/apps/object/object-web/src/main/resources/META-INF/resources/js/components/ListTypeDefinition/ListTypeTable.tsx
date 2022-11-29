@@ -29,6 +29,7 @@ interface IProps {
 }
 
 interface ItemData {
+	externalReferenceCode: string;
 	id: number;
 	key: string;
 	name: {props: {id: number}};
@@ -87,6 +88,7 @@ function getDataSetProps(
 		if (action.id === 'addListTypeEntry') {
 			fireModal({
 				header: Liferay.Language.get('edit-item'),
+				itemExternalReferenceCode: itemData.externalReferenceCode,
 				itemId: itemData.id,
 				itemKey: itemData.key,
 				modalType: 'edit',
