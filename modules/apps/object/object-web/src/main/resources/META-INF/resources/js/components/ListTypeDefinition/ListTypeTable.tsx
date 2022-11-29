@@ -204,6 +204,15 @@ function getDataSetProps(
 							localizeLabel: true,
 							sortable: false,
 						},
+						{
+							expand: false,
+							fieldName: 'externalReferenceCode',
+							label: Liferay.Language.get(
+								'external-reference-code'
+							),
+							localizeLabel: false,
+							sortable: false,
+						},
 					],
 				},
 				thumbnail: 'table',
