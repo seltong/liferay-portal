@@ -368,12 +368,18 @@ public class ObjectDefinitionResourceImpl
 				serviceBuilderObjectDefinition.getCompanyId(),
 				_listTypeDefinitionLocalService, objectField);
 
+			String dbTableName = null;
+
+			if (objectField.getRelationshipType() != null) {
+				dbTableName = serviceBuilderObjectDefinition.getDBTableName();
+			}
+
 			_objectFieldLocalService.updateObjectField(
 				objectField.getExternalReferenceCode(),
 				GetterUtil.getLong(objectField.getId()),
 				contextUser.getUserId(), listTypeDefinitionId,
 				objectDefinitionId, objectField.getBusinessTypeAsString(), null,
-				null, objectField.getDBTypeAsString(),
+				dbTableName, objectField.getDBTypeAsString(),
 				objectField.getDefaultValue(), objectField.getIndexed(),
 				objectField.getIndexedAsKeyword(),
 				objectField.getIndexedLanguageId(),

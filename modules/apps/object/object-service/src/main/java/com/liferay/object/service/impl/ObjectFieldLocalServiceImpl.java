@@ -187,9 +187,9 @@ public class ObjectFieldLocalServiceImpl
 
 		return objectFieldLocalService.updateCustomObjectField(
 			externalReferenceCode, existingObjectField.getObjectFieldId(),
-			listTypeDefinitionId, businessType, dbType, defaultValue, indexed,
-			indexedAsKeyword, indexedLanguageId, labelMap, name, required,
-			state, objectFieldSettings);
+			listTypeDefinitionId, businessType, dbTableName, dbType,
+			defaultValue, indexed, indexedAsKeyword, indexedLanguageId,
+			labelMap, name, required, state, objectFieldSettings);
 	}
 
 	@Indexable(type = IndexableType.REINDEX)
@@ -632,10 +632,10 @@ public class ObjectFieldLocalServiceImpl
 		}
 
 		return objectFieldLocalService.addOrUpdateCustomObjectField(
-			externalReferenceCode, objectFieldId, userId, listTypeDefinitionId,
-			objectDefinitionId, businessType, dbType, defaultValue, indexed,
-			indexedAsKeyword, indexedLanguageId, labelMap, name, required,
-			state, objectFieldSettings);
+			externalReferenceCode, dbTableName, objectFieldId, userId,
+			listTypeDefinitionId, objectDefinitionId, businessType, dbType,
+			defaultValue, indexed, indexedAsKeyword, indexedLanguageId,
+			labelMap, name, required, state, objectFieldSettings);
 	}
 
 	@Indexable(type = IndexableType.REINDEX)

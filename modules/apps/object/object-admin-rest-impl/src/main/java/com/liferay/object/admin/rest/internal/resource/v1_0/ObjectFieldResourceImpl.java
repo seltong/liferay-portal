@@ -227,6 +227,7 @@ public class ObjectFieldResourceImpl
 					contextUser.getCompanyId(), _listTypeDefinitionLocalService,
 					objectField),
 				objectField.getBusinessTypeAsString(),
+				serviceBuilderObjectField.getDBTableName(),
 				ObjectFieldUtil.getDBType(
 					objectField.getDBTypeAsString(),
 					objectField.getTypeAsString()),
