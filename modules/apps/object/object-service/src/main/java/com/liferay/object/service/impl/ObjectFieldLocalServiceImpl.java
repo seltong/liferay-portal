@@ -149,12 +149,13 @@ public class ObjectFieldLocalServiceImpl
 	@Indexable(type = IndexableType.REINDEX)
 	@Override
 	public ObjectField addOrUpdateCustomObjectField(
-			String externalReferenceCode, long objectFieldId, long userId,
-			long listTypeDefinitionId, long objectDefinitionId,
-			String businessType, String dbType, String defaultValue,
-			boolean indexed, boolean indexedAsKeyword, String indexedLanguageId,
-			Map<Locale, String> labelMap, String name, boolean required,
-			boolean state, List<ObjectFieldSetting> objectFieldSettings)
+			String externalReferenceCode, String dbTableName,
+			long objectFieldId, long userId, long listTypeDefinitionId,
+			long objectDefinitionId, String businessType, String dbType,
+			String defaultValue, boolean indexed, boolean indexedAsKeyword,
+			String indexedLanguageId, Map<Locale, String> labelMap, String name,
+			boolean required, boolean state,
+			List<ObjectFieldSetting> objectFieldSettings)
 		throws PortalException {
 
 		ObjectField existingObjectField = null;
@@ -531,11 +532,11 @@ public class ObjectFieldLocalServiceImpl
 	@Override
 	public ObjectField updateCustomObjectField(
 			String externalReferenceCode, long objectFieldId,
-			long listTypeDefinitionId, String businessType, String dbType,
-			String defaultValue, boolean indexed, boolean indexedAsKeyword,
-			String indexedLanguageId, Map<Locale, String> labelMap, String name,
-			boolean required, boolean state,
-			List<ObjectFieldSetting> objectFieldSettings)
+			long listTypeDefinitionId, String businessType, String dbTableName,
+			String dbType, String defaultValue, boolean indexed,
+			boolean indexedAsKeyword, String indexedLanguageId,
+			Map<Locale, String> labelMap, String name, boolean required,
+			boolean state, List<ObjectFieldSetting> objectFieldSettings)
 		throws PortalException {
 
 		ObjectField oldObjectField = objectFieldPersistence.findByPrimaryKey(
@@ -598,6 +599,7 @@ public class ObjectFieldLocalServiceImpl
 
 		newObjectField.setListTypeDefinitionId(listTypeDefinitionId);
 		newObjectField.setDBColumnName(name + StringPool.UNDERLINE);
+		newObjectField.setDBTableName(dbTableName);
 		newObjectField.setName(name);
 		newObjectField.setRequired(required);
 		newObjectField.setState(state);
