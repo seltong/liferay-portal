@@ -269,6 +269,7 @@ public class ObjectFieldServiceTest {
 
 			objectField = _objectFieldService.updateObjectField(
 				StringPool.BLANK, objectField.getObjectFieldId(), 0, "Text",
+				objectField.getDBTableName(),
 				"String", null, true, false,
 				LanguageUtil.getLanguageId(LocaleUtil.getDefault()),
 				LocalizedMapUtil.getLocalizedMap("baker"), "baker", true, false,
