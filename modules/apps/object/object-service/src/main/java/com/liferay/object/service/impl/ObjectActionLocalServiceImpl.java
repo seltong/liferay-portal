@@ -33,6 +33,7 @@ import com.liferay.object.model.ObjectDefinition;
 import com.liferay.object.model.ObjectField;
 import com.liferay.object.scripting.exception.ObjectScriptingException;
 import com.liferay.object.scripting.validator.ObjectScriptingValidator;
+import com.liferay.object.service.ObjectDefinitionLocalService;
 import com.liferay.object.service.ObjectFieldLocalService;
 import com.liferay.object.service.base.ObjectActionLocalServiceBaseImpl;
 import com.liferay.object.service.persistence.ObjectDefinitionPersistence;
@@ -48,6 +49,8 @@ import com.liferay.portal.kernel.model.SystemEventConstants;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.search.Indexable;
 import com.liferay.portal.kernel.search.IndexableType;
+import com.liferay.portal.kernel.security.auth.CompanyThreadLocal;
+import com.liferay.portal.kernel.security.auth.PrincipalThreadLocal;
 import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.systemevent.SystemEvent;
 import com.liferay.portal.kernel.util.GetterUtil;
@@ -404,22 +407,43 @@ public class ObjectActionLocalServiceImpl
 				objectActionExecutorKey,
 				ObjectActionExecutorConstants.KEY_UPDATE_OBJECT_ENTRY)) {
 
-			long objectDefinitionId = GetterUtil.getLong(
-				parametersUnicodeProperties.get("objectDefinitionId"));
+			ObjectDefinition objectDefinition = null;
 
-			ObjectDefinition objectDefinition =
-				_objectDefinitionPersistence.fetchByPrimaryKey(
-					objectDefinitionId);
+			String externalReferenceCode = GetterUtil.getString(
+				parametersUnicodeProperties.get(
+					"objectDefinitionExternalReferenceCode"));
+
+			if (Validator.isNotNull(externalReferenceCode)) {
+				objectDefinition = _objectDefinitionPersistence.fetchByERC_C(
+					externalReferenceCode, CompanyThreadLocal.getCompanyId());
+
+				if (objectDefinition == null) {
+					objectDefinition =
+						_objectDefinitionLocalService.addObjectDefinition(
+							externalReferenceCode,
+							PrincipalThreadLocal.getUserId());
+				}
+			}
+			else {
+				long objectDefinitionId = GetterUtil.getLong(
+					parametersUnicodeProperties.get("objectDefinitionId"));
+
+				objectDefinition =
+					_objectDefinitionPersistence.fetchByPrimaryKey(
+						objectDefinitionId);
+			}
 
 			if ((objectDefinition == null) || !objectDefinition.isActive() ||
 				!objectDefinition.isApproved() || objectDefinition.isSystem()) {
 
+				errorMessageKeys.put(
+					"objectDefinitionExternalReferenceCode", "invalid");
 				errorMessageKeys.put("objectDefinitionId", "invalid");
 			}
 			else {
 				_validatePredefinedValues(
 					errorMessageKeys, objectActionExecutorKey,
-					objectDefinitionId,
+					objectDefinition.getObjectDefinitionId(),
 					_jsonFactory.createJSONArray(
 						parametersUnicodeProperties.get("predefinedValues")));
 			}
@@ -555,6 +579,9 @@ public class ObjectActionLocalServiceImpl
 
 	@Reference
 	private ObjectActionExecutorRegistry _objectActionExecutorRegistry;
+
+	@Reference
+	private ObjectDefinitionLocalService _objectDefinitionLocalService;
 
 	@Reference
 	private ObjectDefinitionPersistence _objectDefinitionPersistence;
