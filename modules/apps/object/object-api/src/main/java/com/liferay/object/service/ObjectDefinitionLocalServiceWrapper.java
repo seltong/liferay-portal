@@ -80,6 +80,17 @@ public class ObjectDefinitionLocalServiceWrapper
 	}
 
 	@Override
+	public com.liferay.object.model.ObjectField addObjectDefinitionObjectField(
+			com.liferay.object.model.ObjectDefinition objectDefinition,
+			com.liferay.object.model.ObjectField objectField, boolean system,
+			long userId)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		return _objectDefinitionLocalService.addObjectDefinitionObjectField(
+			objectDefinition, objectField, system, userId);
+	}
+
+	@Override
 	public com.liferay.object.model.ObjectDefinition
 			addOrUpdateSystemObjectDefinition(
 				long companyId,

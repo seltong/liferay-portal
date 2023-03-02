@@ -82,6 +82,17 @@ public class ObjectDefinitionLocalServiceUtil {
 		return getService().addObjectDefinition(externalReferenceCode, userId);
 	}
 
+	public static com.liferay.object.model.ObjectField
+			addObjectDefinitionObjectField(
+				ObjectDefinition objectDefinition,
+				com.liferay.object.model.ObjectField objectField,
+				boolean system, long userId)
+		throws PortalException {
+
+		return getService().addObjectDefinitionObjectField(
+			objectDefinition, objectField, system, userId);
+	}
+
 	public static ObjectDefinition addOrUpdateSystemObjectDefinition(
 			long companyId,
 			com.liferay.object.system.SystemObjectDefinitionMetadata

@@ -97,6 +97,12 @@ public interface ObjectDefinitionLocalService
 		throws PortalException;
 
 	@Indexable(type = IndexableType.REINDEX)
+	public ObjectField addObjectDefinitionObjectField(
+			ObjectDefinition objectDefinition, ObjectField objectField,
+			boolean system, long userId)
+		throws PortalException;
+
+	@Indexable(type = IndexableType.REINDEX)
 	public ObjectDefinition addOrUpdateSystemObjectDefinition(
 			long companyId,
 			SystemObjectDefinitionMetadata systemObjectDefinitionMetadata)
