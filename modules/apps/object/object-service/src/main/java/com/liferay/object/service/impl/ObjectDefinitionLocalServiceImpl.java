@@ -215,6 +215,17 @@ public class ObjectDefinitionLocalServiceImpl
 
 	@Indexable(type = IndexableType.REINDEX)
 	@Override
+	public ObjectField addObjectDefinitionObjectField(
+			ObjectDefinition objectDefinition, ObjectField objectField,
+			boolean system, long userId)
+		throws PortalException {
+
+		return _addObjectDefinitionObjectField(
+			objectDefinition, objectField, system, userId);
+	}
+
+	@Indexable(type = IndexableType.REINDEX)
+	@Override
 	public ObjectDefinition addOrUpdateSystemObjectDefinition(
 			long companyId,
 			SystemObjectDefinitionMetadata systemObjectDefinitionMetadata)
@@ -903,32 +914,8 @@ public class ObjectDefinitionLocalServiceImpl
 
 		if (objectFields != null) {
 			for (ObjectField objectField : objectFields) {
-				if (system || objectField.isSystem()) {
-					_objectFieldLocalService.addOrUpdateSystemObjectField(
-						userId, objectDefinition.getObjectDefinitionId(),
-						objectField.getBusinessType(),
-						objectField.getDBColumnName(),
-						objectDefinition.getDBTableName(),
-						objectField.getDBType(), objectField.getDefaultValue(),
-						objectField.isIndexed(),
-						objectField.isIndexedAsKeyword(),
-						objectField.getIndexedLanguageId(),
-						objectField.getLabelMap(), objectField.getName(),
-						objectField.isRequired(), objectField.isState());
-				}
-				else {
-					_objectFieldLocalService.addCustomObjectField(
-						objectField.getExternalReferenceCode(), userId,
-						objectField.getListTypeDefinitionId(),
-						objectDefinition.getObjectDefinitionId(),
-						objectField.getBusinessType(), objectField.getDBType(),
-						objectField.getDefaultValue(), objectField.isIndexed(),
-						objectField.isIndexedAsKeyword(),
-						objectField.getIndexedLanguageId(),
-						objectField.getLabelMap(), objectField.getName(),
-						objectField.isRequired(), objectField.isState(),
-						objectField.getObjectFieldSettings());
-				}
+				_addObjectDefinitionObjectField(
+					objectDefinition, objectField, system, userId);
 			}
 		}
 
@@ -941,6 +928,35 @@ public class ObjectDefinitionLocalServiceImpl
 		}
 
 		return objectDefinition;
+	}
+
+	private ObjectField _addObjectDefinitionObjectField(
+			ObjectDefinition objectDefinition, ObjectField objectField,
+			boolean system, long userId)
+		throws PortalException {
+
+		if (system || objectField.isSystem()) {
+			return _objectFieldLocalService.addOrUpdateSystemObjectField(
+				userId, objectDefinition.getObjectDefinitionId(),
+				objectField.getBusinessType(), objectField.getDBColumnName(),
+				objectDefinition.getDBTableName(), objectField.getDBType(),
+				objectField.getDefaultValue(), objectField.isIndexed(),
+				objectField.isIndexedAsKeyword(),
+				objectField.getIndexedLanguageId(), objectField.getLabelMap(),
+				objectField.getName(), objectField.isRequired(),
+				objectField.isState());
+		}
+
+		return _objectFieldLocalService.addCustomObjectField(
+			objectField.getExternalReferenceCode(), userId,
+			objectField.getListTypeDefinitionId(),
+			objectDefinition.getObjectDefinitionId(),
+			objectField.getBusinessType(), objectField.getDBType(),
+			objectField.getDefaultValue(), objectField.isIndexed(),
+			objectField.isIndexedAsKeyword(),
+			objectField.getIndexedLanguageId(), objectField.getLabelMap(),
+			objectField.getName(), objectField.isRequired(),
+			objectField.isState(), objectField.getObjectFieldSettings());
 	}
 
 	private void _addSystemObjectFields(
