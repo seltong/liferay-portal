@@ -57,7 +57,7 @@ public class DTOConverterUtil {
 				false, Collections.emptyMap(), dtoConverterRegistry,
 				baseModel.getPrimaryKeyObj(), user.getLocale(), null, user);
 
-		return dtoConverter.toDTO(defaultDTOConverterContext, baseModel);
+		return dtoConverter.toDTO(defaultDTOConverterContext);
 	}
 
 }
