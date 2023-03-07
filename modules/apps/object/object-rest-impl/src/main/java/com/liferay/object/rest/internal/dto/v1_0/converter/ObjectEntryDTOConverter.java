@@ -167,9 +167,7 @@ public class ObjectEntryDTOConverter
 							systemObjectDefinitionMetadata.
 								getExternalReferenceCode(primaryKey),
 							objectDefinition.getCompanyId()),
-					_dtoConverterRegistry,
-					systemObjectDefinitionMetadata.
-						getJaxRsApplicationDescriptor(),
+					_dtoConverterRegistry, systemObjectDefinitionMetadata,
 					dtoConverterContext.getUser());
 			}
 		}
