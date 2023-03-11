@@ -100,6 +100,10 @@ export function ScopeContainer({
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [values.scope, companyKeyValuePair, siteKeyValuePair]);
 
+	const editScopeContainer = Liferay.FeatureFlags['LPS-167253']
+		? !values.modifiable && values.system
+		: !values.system;
+
 	return (
 		<ClayPanel
 			collapsable
@@ -134,7 +138,7 @@ export function ScopeContainer({
 						values.defaultLanguageId as Liferay.Language.Locale
 					}
 					disabled={
-						(!values.modifiable && values.system) ||
+						editScopeContainer ||
 						!hasUpdateObjectDefinitionPermission
 					}
 					emptyStateMessage={Liferay.Language.get(

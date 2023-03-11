@@ -436,7 +436,14 @@ public class ObjectDefinitionResourceImpl
 				titleServiceBuilderObjectField.getObjectFieldId();
 		}
 
-		if (serviceBuilderObjectDefinition.isUnmodifiableSystemObject()) {
+		boolean systemObject = serviceBuilderObjectDefinition.isSystem();
+
+		if (FeatureFlagManagerUtil.isEnabled("LPS-167253")) {
+			systemObject =
+				serviceBuilderObjectDefinition.isUnmodifiableSystemObject();
+		}
+
+		if (systemObject) {
 			return _toObjectDefinition(
 				_objectDefinitionService.updateSystemObjectDefinition(
 					objectDefinition.getExternalReferenceCode(),

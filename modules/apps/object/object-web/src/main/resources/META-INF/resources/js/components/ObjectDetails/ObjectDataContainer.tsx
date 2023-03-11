@@ -46,6 +46,10 @@ export function ObjectDataContainer({
 		Liferay.Language.Locale
 	>(defaultLanguageId);
 
+	const editDataContainer = Liferay.FeatureFlags['LPS-167253']
+		? values.system && !values.modifiable
+		: !values.system;
+
 	return (
 		<ClayPanel
 			displayTitle={Liferay.Language.get('object-definition-data')}
@@ -66,7 +70,7 @@ export function ObjectDataContainer({
 
 				<InputLocalized
 					disabled={
-						(!values.modifiable && values.system) ||
+						editDataContainer ||
 						!hasUpdateObjectDefinitionPermission
 					}
 					error={errors.label}
@@ -80,7 +84,7 @@ export function ObjectDataContainer({
 
 				<InputLocalized
 					disabled={
-						(!values.modifiable && values.system) ||
+						editDataContainer ||
 						!hasUpdateObjectDefinitionPermission
 					}
 					error={errors.pluralLabel}
@@ -102,7 +106,7 @@ export function ObjectDataContainer({
 				<ClayToggle
 					disabled={
 						!isApproved ||
-						(!values.modifiable && values.system) ||
+						editDataContainer ||
 						!hasUpdateObjectDefinitionPermission
 					}
 					label={Liferay.Language.get('active')}

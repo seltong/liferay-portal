@@ -83,6 +83,7 @@ import com.liferay.portal.kernel.dao.orm.Property;
 import com.liferay.portal.kernel.dao.orm.PropertyFactoryUtil;
 import com.liferay.portal.kernel.dependency.manager.DependencyManagerSyncUtil;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -660,7 +661,7 @@ public class ObjectDefinitionLocalServiceImpl
 
 	@Override
 	public void undeployObjectDefinition(ObjectDefinition objectDefinition) {
-		if (objectDefinition.isUnmodifiableSystemObject()) {
+		if (_isSystemObject(objectDefinition)) {
 			return;
 		}
 
@@ -708,7 +709,7 @@ public class ObjectDefinitionLocalServiceImpl
 		ObjectDefinition objectDefinition =
 			objectDefinitionPersistence.fetchByPrimaryKey(objectDefinitionId);
 
-		if (objectDefinition.isUnmodifiableSystemObject()) {
+		if (_isSystemObject(objectDefinition)) {
 			throw new ObjectDefinitionStatusException(
 				"Object definition " + objectDefinition);
 		}
@@ -892,7 +893,7 @@ public class ObjectDefinitionLocalServiceImpl
 
 		if (objectFields != null) {
 			for (ObjectField objectField : objectFields) {
-				if (objectDefinition.isUnmodifiableSystemObject() ||
+				if (_isSystemObject(objectDefinition) ||
 					objectField.isSystem()) {
 
 					_objectFieldLocalService.addOrUpdateSystemObjectField(
@@ -926,7 +927,7 @@ public class ObjectDefinitionLocalServiceImpl
 		objectDefinition = _updateTitleObjectFieldId(
 			objectDefinition, titleObjectFieldName);
 
-		if (objectDefinition.isUnmodifiableSystemObject()) {
+		if (_isSystemObject(objectDefinition)) {
 			_createTable(
 				objectDefinition.getExtensionDBTableName(), objectDefinition);
 		}
@@ -970,7 +971,7 @@ public class ObjectDefinitionLocalServiceImpl
 
 		String dbColumnName = ObjectEntryTable.INSTANCE.objectEntryId.getName();
 
-		if (objectDefinition.isUnmodifiableSystemObject()) {
+		if (_isSystemObject(objectDefinition)) {
 			dbColumnName = pkObjectFieldName;
 		}
 
@@ -1147,14 +1148,26 @@ public class ObjectDefinitionLocalServiceImpl
 		}
 	}
 
+	private boolean _isSystemObject(ObjectDefinition objectDefinition) {
+		if (FeatureFlagManagerUtil.isEnabled("LPS-167253")) {
+			return objectDefinition.isUnmodifiableSystemObject();
+		}
+
+		return objectDefinition.isSystem();
+	}
+
 	private boolean _isUnmodifiableSystemObject(
 		boolean modifiable, boolean system) {
 
-		if (!modifiable && system) {
-			return true;
+		if (FeatureFlagManagerUtil.isEnabled("LPS-167253")) {
+			if (!modifiable && system) {
+				return true;
+			}
+
+			return false;
 		}
 
-		return false;
+		return system;
 	}
 
 	private ObjectDefinition _publishObjectDefinition(

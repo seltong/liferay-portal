@@ -200,6 +200,10 @@ export default function EditObjectDetails({
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [objectDefinitionId]);
 
+	const showAccountRestrictionContainer = Liferay.FeatureFlags['LPS-167253']
+		? !values.modifiable && values.system
+		: !values.system;
+
 	return (
 		<>
 			<div className="lfr-objects__object-definition-details-management-toolbar">
@@ -260,7 +264,7 @@ export default function EditObjectDetails({
 						values={values}
 					/>
 
-					{values.modifiable && (
+					{showAccountRestrictionContainer && (
 						<AccountRestrictionContainer
 							errors={errors}
 							isApproved={isApproved}
