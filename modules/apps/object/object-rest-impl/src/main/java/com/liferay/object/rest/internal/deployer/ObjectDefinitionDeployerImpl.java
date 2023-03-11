@@ -113,7 +113,7 @@ public class ObjectDefinitionDeployerImpl implements ObjectDefinitionDeployer {
 	public synchronized List<ServiceRegistration<?>> deploy(
 		ObjectDefinition objectDefinition) {
 
-		if (objectDefinition.isSystem()) {
+		if (objectDefinition.isUnmodifiableSystemObject()) {
 			_initSystemObjectDefinition(
 				_systemObjectDefinitionMetadataRegistry.
 					getSystemObjectDefinitionMetadata(
