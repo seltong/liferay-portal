@@ -19,8 +19,6 @@ import com.liferay.object.admin.rest.dto.v1_0.Status;
 import com.liferay.object.admin.rest.resource.v1_0.ObjectDefinitionResource;
 import com.liferay.portal.instance.lifecycle.BasePortalInstanceLifecycleListener;
 import com.liferay.portal.instance.lifecycle.PortalInstanceLifecycleListener;
-import com.liferay.portal.kernel.dao.orm.QueryUtil;
-import com.liferay.portal.kernel.json.JSONException;
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.model.Company;
@@ -34,8 +32,6 @@ import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.util.PropsUtil;
 
-import java.util.List;
-
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -47,27 +43,18 @@ public class AddObjectDefinitionPortalInstanceLifecycleListener
 	extends BasePortalInstanceLifecycleListener {
 
 	@Override
-	public void portalInstanceRegistered(Company company) {
+	public void portalInstanceRegistered(Company company) throws Exception {
 		if (GetterUtil.getBoolean(PropsUtil.get("feature.flag.LPS-167253"))) {
 			_importJSONObjectDefinition(company);
 		}
 	}
 
-	private void _importJSONObjectDefinition(Company company) {
-		JSONObject objectDefinitionJSONObject = null;
+	private void _importJSONObjectDefinition(Company company) throws Exception {
+		JSONObject objectDefinitionJSONObject = _jsonFactory.createJSONObject(
+			StringUtil.read(getClass(), "dependencies/bookmarks.json"));
 
-		try {
-			objectDefinitionJSONObject = _jsonFactory.createJSONObject(
-				StringUtil.read(getClass(), "dependencies/bookmarks.json"));
-		}
-		catch (JSONException jsonException) {
-			throw new RuntimeException(jsonException);
-		}
-
-		List<User> users = _userLocalService.getCompanyUsers(
-			company.getCompanyId(), QueryUtil.ALL_POS, QueryUtil.ALL_POS);
-
-		User currentUser = users.get(0);
+		User currentUser = _userLocalService.getDefaultUser(
+			company.getCompanyId());
 
 		PermissionThreadLocal.setPermissionChecker(
 			_defaultPermissionCheckerFactory.create(currentUser));
@@ -85,22 +72,15 @@ public class AddObjectDefinitionPortalInstanceLifecycleListener
 		ObjectDefinition objectDefinition = ObjectDefinition.toDTO(
 			objectDefinitionJSONObject.toString());
 
-		try {
-			objectDefinition =
-				objectDefinitionResource.
-					putObjectDefinitionByExternalReferenceCode(
-						objectDefinition.getExternalReferenceCode(),
-						objectDefinition);
+		objectDefinition =
+			objectDefinitionResource.putObjectDefinitionByExternalReferenceCode(
+				objectDefinition.getExternalReferenceCode(), objectDefinition);
 
-			Status status = objectDefinition.getStatus();
+		Status status = objectDefinition.getStatus();
 
-			if (status.getCode() != 0) {
-				objectDefinitionResource.postObjectDefinitionPublish(
-					objectDefinition.getId());
-			}
-		}
-		catch (Exception exception) {
-			throw new RuntimeException(exception);
+		if (status.getCode() != 0) {
+			objectDefinitionResource.postObjectDefinitionPublish(
+				objectDefinition.getId());
 		}
 	}
 
