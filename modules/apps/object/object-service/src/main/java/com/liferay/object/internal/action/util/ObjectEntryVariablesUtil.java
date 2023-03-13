@@ -89,7 +89,7 @@ public class ObjectEntryVariablesUtil {
 			).build();
 		}
 
-		if (objectDefinition.isSystem()) {
+		if (objectDefinition.isUnmodifiableSystemObject()) {
 			String contentType = _getContentType(
 				dtoConverterRegistry, objectDefinition,
 				systemObjectDefinitionMetadataRegistry);
