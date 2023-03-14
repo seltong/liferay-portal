@@ -50,6 +50,7 @@ import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.aop.AopService;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.SystemEventConstants;
@@ -164,7 +165,7 @@ public class ObjectRelationshipLocalServiceImpl
 		ObjectField objectField2 = _objectFieldLocalService.getObjectField(
 			objectRelationship.getObjectFieldId2());
 
-		if (objectDefinition2.isUnmodifiableSystemObject()) {
+		if (_isSystemObject(objectDefinition2)) {
 			_objectEntryLocalService.insertIntoOrUpdateExtensionTable(
 				objectRelationship.getObjectDefinitionId2(), primaryKey2,
 				HashMapBuilder.<String, Serializable>put(
@@ -905,6 +906,14 @@ public class ObjectRelationshipLocalServiceImpl
 		return false;
 	}
 
+	private boolean _isSystemObject(ObjectDefinition objectDefinition) {
+		if (FeatureFlagManagerUtil.isEnabled("LPS-167253")) {
+			return objectDefinition.isUnmodifiableSystemObject();
+		}
+
+		return objectDefinition.isSystem();
+	}
+
 	private void _registerRelatedInfoItemCollectionProvider(
 			ObjectDefinition objectDefinition1,
 			ObjectDefinition objectDefinition2,
@@ -993,14 +1002,14 @@ public class ObjectRelationshipLocalServiceImpl
 		ObjectDefinition objectDefinition2 =
 			_objectDefinitionPersistence.fetchByPrimaryKey(objectDefinitionId2);
 
-		if (objectDefinition1.isUnmodifiableSystemObject() &&
-			objectDefinition2.isUnmodifiableSystemObject()) {
+		if (_isSystemObject(objectDefinition1) &&
+			_isSystemObject(objectDefinition2)) {
 
 			throw new ObjectRelationshipTypeException(
 				"Relationships are not allowed between system objects");
 		}
 
-		if (objectDefinition1.isUnmodifiableSystemObject() &&
+		if (_isSystemObject(objectDefinition1) &&
 			Objects.equals(type, ObjectRelationshipConstants.TYPE_ONE_TO_ONE)) {
 
 			throw new ObjectRelationshipTypeException(
@@ -1030,7 +1039,7 @@ public class ObjectRelationshipLocalServiceImpl
 			ObjectDefinition objectDefinition, long primaryKey)
 		throws PortalException {
 
-		if (objectDefinition.isUnmodifiableSystemObject()) {
+		if (_isSystemObject(objectDefinition)) {
 			SystemObjectDefinitionMetadata systemObjectDefinitionMetadata =
 				_systemObjectDefinitionMetadataRegistry.
 					getSystemObjectDefinitionMetadata(
@@ -1053,7 +1062,7 @@ public class ObjectRelationshipLocalServiceImpl
 
 		String restContextPath = StringPool.BLANK;
 
-		if (!objectDefinition1.isUnmodifiableSystemObject()) {
+		if (!_isSystemObject(objectDefinition1)) {
 			restContextPath = objectDefinition1.getRESTContextPath();
 		}
 		else {
