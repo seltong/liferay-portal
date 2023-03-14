@@ -37,6 +37,7 @@ import com.liferay.object.service.persistence.ObjectLayoutRowPersistence;
 import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.portal.aop.AopService;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.model.SystemEventConstants;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.search.Indexable;
@@ -78,7 +79,13 @@ public class ObjectLayoutLocalServiceImpl
 		ObjectDefinition objectDefinition =
 			_objectDefinitionPersistence.findByPrimaryKey(objectDefinitionId);
 
-		if (objectDefinition.isUnmodifiableSystemObject()) {
+		boolean systemObject = objectDefinition.isSystem();
+
+		if (FeatureFlagManagerUtil.isEnabled("LPS-167253")) {
+			systemObject = objectDefinition.isUnmodifiableSystemObject();
+		}
+
+		if (systemObject) {
 
 			// TODO Add test
 

@@ -27,6 +27,7 @@ import com.liferay.object.system.JaxRsApplicationDescriptor;
 import com.liferay.object.system.SystemObjectDefinitionMetadata;
 import com.liferay.object.system.SystemObjectDefinitionMetadataRegistry;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
@@ -89,7 +90,13 @@ public class ObjectEntryVariablesUtil {
 			).build();
 		}
 
-		if (objectDefinition.isUnmodifiableSystemObject()) {
+		boolean systemObject = objectDefinition.isSystem();
+
+		if (FeatureFlagManagerUtil.isEnabled("LPS-167253")) {
+			systemObject = objectDefinition.isUnmodifiableSystemObject();
+		}
+
+		if (systemObject) {
 			String contentType = _getContentType(
 				dtoConverterRegistry, objectDefinition,
 				systemObjectDefinitionMetadataRegistry);
