@@ -734,7 +734,7 @@ public class ObjectEntryLocalServiceImpl
 			ObjectDefinition objectDefinition, long primaryKey)
 		throws PortalException {
 
-		if (!objectDefinition.isSystem()) {
+		if (!objectDefinition.isUnmodifiableSystemObject()) {
 			return new HashMap<>();
 		}
 
