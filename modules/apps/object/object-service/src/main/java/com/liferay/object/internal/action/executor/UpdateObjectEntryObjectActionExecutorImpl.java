@@ -90,7 +90,7 @@ public class UpdateObjectEntryObjectActionExecutorImpl
 			Map<String, Object> values)
 		throws Exception {
 
-		if (objectDefinition.isSystem()) {
+		if (objectDefinition.isUnmodifiableSystemObject()) {
 			if (!FeatureFlagManagerUtil.isEnabled(
 					objectDefinition.getCompanyId(), "LPS-173537")) {
 
