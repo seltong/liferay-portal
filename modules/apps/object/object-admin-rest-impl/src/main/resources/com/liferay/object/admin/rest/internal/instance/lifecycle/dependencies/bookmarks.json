@@ -158,6 +158,21 @@
 	],
 	"objectRelationships": [
 	],
+	"objectValidationRules": [
+		{
+			"active": true,
+			"engine": "ddm",
+			"engineLabel": "Expression Builder",
+			"errorLabel": {
+				"en_US": "Please enter a valid URL."
+			},
+			"name": {
+				"en_US": "URL validation"
+			},
+			"objectDefinitionExternalReferenceCode": "9e12c0d0-5855-35d0-cef9-ed9794b05dcb",
+			"script": "isURL(uRL)"
+		}
+	],
 	"objectViews": [
 		{
 			"defaultObjectView": true,
