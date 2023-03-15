@@ -323,7 +323,7 @@ public class ObjectEntryVariablesUtil {
 		SystemObjectDefinitionMetadataRegistry
 			systemObjectDefinitionMetadataRegistry) {
 
-		if (!objectDefinition.isSystem()) {
+		if (!objectDefinition.isUnmodifiableSystemObject()) {
 			return "ObjectEntry";
 		}
 
@@ -352,7 +352,7 @@ public class ObjectEntryVariablesUtil {
 
 		Map<String, Object> variables = new HashMap<>();
 
-		if (objectDefinition.isSystem()) {
+		if (objectDefinition.isUnmodifiableSystemObject()) {
 			SystemObjectDefinitionMetadata systemObjectDefinitionMetadata =
 				systemObjectDefinitionMetadataRegistry.
 					getSystemObjectDefinitionMetadata(
