@@ -900,7 +900,7 @@ public class ObjectDefinitionLocalServiceImpl
 				objectDefinition.getObjectDefinitionId(), className, modifiable,
 				system));
 		objectDefinition.setEnableCategorization(
-			!system &&
+			!objectDefinition.isUnmodifiableSystemObject() &&
 			StringUtil.equals(
 				storageType, ObjectDefinitionConstants.STORAGE_TYPE_DEFAULT));
 		objectDefinition.setEnableComments(enableComments);
