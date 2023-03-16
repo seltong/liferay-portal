@@ -818,7 +818,8 @@ public class ObjectFieldLocalServiceImpl
 			_objectDefinitionPersistence.findByPrimaryKey(
 				objectField.getObjectDefinitionId());
 
-		if ((objectDefinition.isApproved() || objectDefinition.isSystem()) &&
+		if ((objectDefinition.isApproved() ||
+			 objectDefinition.isUnmodifiableSystemObject()) &&
 			!Objects.equals(
 				objectDefinition.getExtensionDBTableName(),
 				objectField.getDBTableName()) &&
