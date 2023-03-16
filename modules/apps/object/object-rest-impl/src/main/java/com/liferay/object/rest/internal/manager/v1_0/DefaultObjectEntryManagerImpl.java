@@ -569,7 +569,7 @@ public class DefaultObjectEntryManagerImpl
 				relatedObjectDefinition.getCompanyId(),
 				objectRelationship.getType());
 
-		if (objectDefinition.isSystem()) {
+		if (objectDefinition.isUnmodifiableSystemObject()) {
 			return _getSystemObjectRelatedObjectEntries(
 				dtoConverterContext, objectDefinition, objectEntryId,
 				objectRelationship, objectRelatedModelsProvider, pagination);
