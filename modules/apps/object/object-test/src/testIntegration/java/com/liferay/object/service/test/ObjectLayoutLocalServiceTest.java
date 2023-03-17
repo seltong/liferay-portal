@@ -17,6 +17,7 @@ package com.liferay.object.service.test;
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.frontend.taglib.servlet.taglib.ScreenNavigationCategory;
 import com.liferay.frontend.taglib.servlet.taglib.ScreenNavigationRegistry;
+import com.liferay.object.constants.ObjectDefinitionConstants;
 import com.liferay.object.constants.ObjectFieldConstants;
 import com.liferay.object.constants.ObjectLayoutBoxConstants;
 import com.liferay.object.model.ObjectDefinition;
@@ -42,15 +43,18 @@ import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
 import com.liferay.portal.kernel.transaction.Propagation;
 import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.kernel.util.UnicodePropertiesBuilder;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.TransactionalTestRule;
+import com.liferay.portal.util.PropsUtil;
 import com.liferay.portal.vulcan.util.LocalizedMapUtil;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -74,8 +78,21 @@ public class ObjectLayoutLocalServiceTest {
 
 	@Before
 	public void setUp() throws Exception {
+		PropsUtil.addProperties(
+			UnicodePropertiesBuilder.setProperty(
+				"feature.flag.LPS-167253", "true"
+			).build());
+
 		_objectDefinition = ObjectDefinitionTestUtil.addObjectDefinition(
 			_objectDefinitionLocalService);
+	}
+
+	@After
+	public void tearDown() throws Exception {
+		PropsUtil.addProperties(
+			UnicodePropertiesBuilder.setProperty(
+				"feature.flag.LPS-167253", "false"
+			).build());
 	}
 
 	@Test
@@ -254,6 +271,26 @@ public class ObjectLayoutLocalServiceTest {
 					Collections.singletonList(objectLayoutTab));
 			});
 
+		_objectDefinitionLocalService.deleteObjectDefinition(
+			_objectDefinition.getObjectDefinitionId());
+
+		_objectDefinition = _addSystemObjectDefinition(false);
+
+		_assertFailure(
+			"Object layouts require a custom object definition or modifiable " +
+				"system object definition",
+			() -> _objectLayoutLocalService.addObjectLayout(
+				TestPropsValues.getUserId(),
+				_objectDefinition.getObjectDefinitionId(), false,
+				LocalizedMapUtil.getLocalizedMap(RandomTestUtil.randomString()),
+				Collections.singletonList(_addObjectLayoutTab())));
+
+		_objectDefinitionLocalService.deleteObjectDefinition(
+			_objectDefinition.getObjectDefinitionId());
+
+		_objectDefinition = ObjectDefinitionTestUtil.addObjectDefinition(
+			_objectDefinitionLocalService);
+
 		_assertFailure(
 			"There can only be one categorization layout box per layout",
 			() -> {
@@ -317,6 +354,27 @@ public class ObjectLayoutLocalServiceTest {
 		_assertObjectLayout(objectLayout);
 
 		_deleteObjectFields();
+
+		_objectDefinitionLocalService.deleteObjectDefinition(
+			_objectDefinition.getObjectDefinitionId());
+
+		_objectDefinition = _addSystemObjectDefinition(true);
+
+		objectLayout = _objectLayoutLocalService.addObjectLayout(
+			TestPropsValues.getUserId(),
+			_objectDefinition.getObjectDefinitionId(), true,
+			LocalizedMapUtil.getLocalizedMap("Test"),
+			Collections.singletonList(_addObjectLayoutTab()));
+
+		Assert.assertTrue(objectLayout.isDefaultObjectLayout());
+		Assert.assertEquals(
+			LocalizedMapUtil.getLocalizedMap("Test"),
+			objectLayout.getNameMap());
+		Assert.assertEquals(
+			_objectDefinition.getObjectDefinitionId(),
+			objectLayout.getObjectDefinitionId());
+		Assert.assertEquals(
+			TestPropsValues.getUserId(), objectLayout.getUserId());
 
 		_objectLayoutLocalService.deleteObjectLayout(
 			objectLayout.getObjectLayoutId());
@@ -513,6 +571,19 @@ public class ObjectLayoutLocalServiceTest {
 			Arrays.asList(_addObjectLayoutBox(), _addObjectLayoutBox()));
 
 		return objectLayoutTab;
+	}
+
+	private ObjectDefinition _addSystemObjectDefinition(boolean modifiable)
+		throws Exception {
+
+		return ObjectDefinitionTestUtil.addSystemObjectDefinition(
+			TestPropsValues.getUserId(), modifiable ? null : "Test", null,
+			LocalizedMapUtil.getLocalizedMap(RandomTestUtil.randomString()),
+			modifiable, "Test", null, null,
+			LocalizedMapUtil.getLocalizedMap(RandomTestUtil.randomString()),
+			ObjectDefinitionConstants.SCOPE_COMPANY, null, 1,
+			_objectDefinitionLocalService,
+			Collections.<ObjectField>emptyList());
 	}
 
 	private void _assertFailure(

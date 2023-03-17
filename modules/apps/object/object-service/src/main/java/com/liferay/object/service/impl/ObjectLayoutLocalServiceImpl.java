@@ -86,9 +86,6 @@ public class ObjectLayoutLocalServiceImpl
 		}
 
 		if (systemObject) {
-
-			// TODO Add test
-
 			throw new NoSuchObjectDefinitionException(
 				"Object layouts require a custom object definition or " +
 					"modifiable system object definition");
