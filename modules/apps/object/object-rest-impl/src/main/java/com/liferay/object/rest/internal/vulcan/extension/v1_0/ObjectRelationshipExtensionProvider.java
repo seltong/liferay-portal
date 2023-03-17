@@ -134,7 +134,7 @@ public class ObjectRelationshipExtensionProvider
 					objectDefinition, objectRelationship);
 
 			if (!relatedObjectDefinition.isActive() ||
-				relatedObjectDefinition.isSystem()) {
+				relatedObjectDefinition.isUnmodifiableSystemObject()) {
 
 				continue;
 			}
@@ -216,7 +216,7 @@ public class ObjectRelationshipExtensionProvider
 					objectDefinition, objectRelationship);
 
 			if (!relatedObjectDefinition.isActive() ||
-				relatedObjectDefinition.isSystem()) {
+				relatedObjectDefinition.isUnmodifiableSystemObject()) {
 
 				continue;
 			}

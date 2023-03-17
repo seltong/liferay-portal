@@ -79,7 +79,7 @@ public class ObjectEntryRelatedObjectsResourceImpl
 			_objectDefinitionLocalService.getObjectDefinition(
 				objectRelationship.getObjectDefinitionId2());
 
-		if (relatedObjectDefinition.isSystem()) {
+		if (relatedObjectDefinition.isUnmodifiableSystemObject()) {
 			if (!FeatureFlagManagerUtil.isEnabled("LPS-162966")) {
 				throw new NotFoundException();
 			}
@@ -124,7 +124,7 @@ public class ObjectEntryRelatedObjectsResourceImpl
 			_objectDefinitionLocalService.getObjectDefinition(
 				objectRelationship.getObjectDefinitionId2());
 
-		if (relatedObjectDefinition.isSystem()) {
+		if (relatedObjectDefinition.isUnmodifiableSystemObject()) {
 			if (!FeatureFlagManagerUtil.isEnabled("LPS-162966")) {
 				throw new NotFoundException();
 			}
@@ -167,7 +167,7 @@ public class ObjectEntryRelatedObjectsResourceImpl
 			_objectDefinitionLocalService.getObjectDefinition(
 				objectRelationship.getObjectDefinitionId2());
 
-		if (relatedObjectDefinition.isSystem()) {
+		if (relatedObjectDefinition.isUnmodifiableSystemObject()) {
 			if (!FeatureFlagManagerUtil.isEnabled("LPS-162966")) {
 				throw new NotFoundException();
 			}
