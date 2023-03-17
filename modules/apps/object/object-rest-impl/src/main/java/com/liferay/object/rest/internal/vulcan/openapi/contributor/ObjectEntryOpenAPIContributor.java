@@ -123,7 +123,7 @@ public class ObjectEntryOpenAPIContributor extends BaseOpenAPIContributor {
 					ObjectDefinition relatedObjectDefinition = entry.getValue();
 					String relatedSchemaName = null;
 
-					if (!relatedObjectDefinition.isSystem() ||
+					if (!relatedObjectDefinition.isUnmodifiableSystemObject() ||
 						FeatureFlagManagerUtil.isEnabled("LPS-162966")) {
 
 						relatedSchemaName = getSchemaName(
@@ -233,7 +233,7 @@ public class ObjectEntryOpenAPIContributor extends BaseOpenAPIContributor {
 
 		Map<String, Schema> sourceSchemas = null;
 
-		if (objectDefinition.isSystem()) {
+		if (objectDefinition.isUnmodifiableSystemObject()) {
 			sourceSchemas = OpenAPIContributorUtil.getSystemObjectSchemas(
 				_bundleContext, getExternalDTOClassName(objectDefinition),
 				_openAPIResource);
@@ -247,7 +247,7 @@ public class ObjectEntryOpenAPIContributor extends BaseOpenAPIContributor {
 		}
 
 		OpenAPIContributorUtil.copySchemas(
-			schemaName, sourceSchemas, objectDefinition.isSystem(), openAPI);
+			schemaName, sourceSchemas, objectDefinition.isUnmodifiableSystemObject(), openAPI);
 	}
 
 	private PathItem _createObjectActionPathItem(
