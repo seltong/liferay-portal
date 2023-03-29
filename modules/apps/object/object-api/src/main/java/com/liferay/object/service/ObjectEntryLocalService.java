@@ -27,6 +27,7 @@ import com.liferay.portal.kernel.dao.orm.IndexableActionableDynamicQuery;
 import com.liferay.portal.kernel.dao.orm.Projection;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.model.BaseModel;
 import com.liferay.portal.kernel.model.PersistedModel;
 import com.liferay.portal.kernel.model.SystemEventConstants;
 import com.liferay.portal.kernel.search.BaseModelSearchResult;
@@ -268,6 +269,10 @@ public interface ObjectEntryLocalService
 			long groupId, long objectDefinitionId, String aggregationTerm,
 			Predicate predicate, int start, int end)
 		throws PortalException;
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public Map<String, Object> getBaseModelAttributes(BaseModel<?> baseModel)
+		throws Exception;
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public ExportActionableDynamicQuery getExportActionableDynamicQuery(

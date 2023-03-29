@@ -355,6 +355,14 @@ public class ObjectEntryLocalServiceWrapper
 	}
 
 	@Override
+	public java.util.Map<String, Object> getBaseModelAttributes(
+			com.liferay.portal.kernel.model.BaseModel<?> baseModel)
+		throws Exception {
+
+		return _objectEntryLocalService.getBaseModelAttributes(baseModel);
+	}
+
+	@Override
 	public com.liferay.portal.kernel.dao.orm.ExportActionableDynamicQuery
 		getExportActionableDynamicQuery(
 			com.liferay.exportimport.kernel.lar.PortletDataContext

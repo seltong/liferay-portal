@@ -315,6 +315,13 @@ public class ObjectEntryLocalServiceUtil {
 			end);
 	}
 
+	public static Map<String, Object> getBaseModelAttributes(
+			com.liferay.portal.kernel.model.BaseModel<?> baseModel)
+		throws Exception {
+
+		return getService().getBaseModelAttributes(baseModel);
+	}
+
 	public static com.liferay.portal.kernel.dao.orm.ExportActionableDynamicQuery
 		getExportActionableDynamicQuery(
 			com.liferay.exportimport.kernel.lar.PortletDataContext
