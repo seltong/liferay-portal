@@ -160,7 +160,8 @@ public class SystemRelatedModelsTableFDSView
 				}
 
 				Map<String, Object> modelAttributes =
-					relatedModel.getModelAttributes();
+					_objectEntryLocalService.getBaseModelAttributes(
+						relatedModel);
 
 				Object value = modelAttributes.get(objectFieldDBColumnName);
 
