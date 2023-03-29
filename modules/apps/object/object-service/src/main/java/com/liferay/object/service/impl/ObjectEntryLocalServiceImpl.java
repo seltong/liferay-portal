@@ -22,6 +22,12 @@ import com.liferay.asset.kernel.model.AssetEntry;
 import com.liferay.asset.kernel.model.AssetLinkConstants;
 import com.liferay.asset.kernel.service.AssetEntryLocalService;
 import com.liferay.asset.kernel.service.AssetLinkLocalService;
+import com.liferay.commerce.account.constants.CommerceAccountConstants;
+import com.liferay.commerce.product.model.CPDefinition;
+import com.liferay.commerce.product.model.CPDefinitionModel;
+import com.liferay.commerce.product.model.CPInstance;
+import com.liferay.commerce.product.model.CProduct;
+import com.liferay.commerce.product.model.CommerceCatalog;
 import com.liferay.document.library.kernel.model.DLFileEntry;
 import com.liferay.document.library.kernel.model.DLFolder;
 import com.liferay.document.library.kernel.model.DLFolderConstants;
@@ -113,6 +119,7 @@ import com.liferay.portal.kernel.json.JSONException;
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
+import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.BaseModel;
@@ -566,6 +573,64 @@ public class ObjectEntryLocalServiceImpl
 		}
 
 		return aggregationCounts;
+	}
+
+	@Override
+	public Map<String, Object> getBaseModelAttributes(BaseModel<?> baseModel)
+		throws Exception {
+
+		Map<String, Object> modelAttributes = baseModel.getModelAttributes();
+
+		if (baseModel instanceof CPDefinitionModel) {
+			CPDefinition cpDefinition = (CPDefinition)baseModel;
+
+			modelAttributes.put("description", cpDefinition.getDescription());
+
+			CommerceCatalog commerceCatalog = cpDefinition.getCommerceCatalog();
+
+			modelAttributes.put(
+				"catalogId", commerceCatalog.getCommerceCatalogId());
+
+			CProduct cProduct = cpDefinition.getCProduct();
+
+			modelAttributes.put(
+				"externalReferenceCode", cProduct.getExternalReferenceCode());
+
+			modelAttributes.put("name", cpDefinition.getName());
+
+			modelAttributes.put(
+				"productType", cpDefinition.getProductTypeName());
+			modelAttributes.put(
+				"shortDescription", cpDefinition.getShortDescription());
+
+			List<CPInstance> cpInstances = cpDefinition.getCPInstances();
+
+			String skuFormatted = null;
+
+			if (cpInstances.isEmpty()) {
+				skuFormatted = StringPool.BLANK;
+			}
+			else if (cpInstances.size() > 1) {
+				User user = _userLocalService.getUser(
+					PrincipalThreadLocal.getUserId());
+
+				skuFormatted = _language.get(user.getLocale(), "multiple-skus");
+			}
+			else {
+				CPInstance cpInstance = cpInstances.get(0);
+
+				skuFormatted = cpInstance.getSku();
+			}
+
+			modelAttributes.put("skuFormatted", skuFormatted);
+
+			modelAttributes.put(
+				"thumbnail",
+				cpDefinition.getDefaultImageThumbnailSrc(
+					CommerceAccountConstants.ACCOUNT_ID_GUEST));
+		}
+
+		return modelAttributes;
 	}
 
 	@Override
@@ -3675,6 +3740,9 @@ public class ObjectEntryLocalServiceImpl
 
 	@Reference
 	private JSONFactory _jsonFactory;
+
+	@Reference
+	private Language _language;
 
 	@Reference
 	private ListTypeEntryLocalService _listTypeEntryLocalService;
