@@ -75,6 +75,15 @@ public class GetObjectDefinitionsRelationshipsMVCResourceCommand
 					_portal.getCompanyId(resourceRequest), true,
 					WorkflowConstants.STATUS_APPROVED);
 		}
+		else if (FeatureFlagManagerUtil.isEnabled("LPS-167253")) {
+			objectDefinitions =
+				ListUtil.filter(
+					_objectDefinitionLocalService.getObjectDefinitions(
+						_portal.getCompanyId(resourceRequest), true,
+						WorkflowConstants.STATUS_APPROVED),
+					objectDefinition ->
+						!objectDefinition.isUnmodifiableSystemObject());
+		}
 		else {
 			objectDefinitions =
 				_objectDefinitionLocalService.getObjectDefinitions(
