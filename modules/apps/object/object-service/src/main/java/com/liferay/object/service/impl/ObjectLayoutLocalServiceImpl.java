@@ -78,12 +78,10 @@ public class ObjectLayoutLocalServiceImpl
 		ObjectDefinition objectDefinition =
 			_objectDefinitionPersistence.findByPrimaryKey(objectDefinitionId);
 
-		if (objectDefinition.isSystem()) {
-
-			// TODO Add test
-
+		if (objectDefinition.isUnmodifiableSystemObject()) {
 			throw new NoSuchObjectDefinitionException(
-				"Object layouts require a custom object definition");
+				"Object layouts require a custom object definition or " +
+					"modifiable system object definition");
 		}
 
 		_validate(0, objectDefinitionId, defaultObjectLayout, objectLayoutTabs);

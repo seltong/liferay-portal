@@ -250,7 +250,7 @@ EOF
 	rm liferay-sample-theme-spritemap-2/README.md
 
 	echo "assemble:" > liferay-sample-theme-spritemap-2/client-extension.yaml
-	echo "    - from: build" >> liferay-sample-theme-spritemap-2/client-extension.yaml
+	echo "    - from: build/spritemap.svg" >> liferay-sample-theme-spritemap-2/client-extension.yaml
 	echo "      into: static" >> liferay-sample-theme-spritemap-2/client-extension.yaml
 	echo "liferay-sample-theme-spritemap-2:" >> liferay-sample-theme-spritemap-2/client-extension.yaml
 	echo "    name: Liferay Sample Theme Spritemap 2" >> liferay-sample-theme-spritemap-2/client-extension.yaml

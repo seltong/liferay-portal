@@ -18,7 +18,6 @@ import com.liferay.configuration.admin.display.ConfigurationScreen;
 import com.liferay.knowledge.base.configuration.KBServiceConfigurationProvider;
 import com.liferay.knowledge.base.web.internal.display.context.KBArticleCompanyConfigurationDisplayContext;
 import com.liferay.portal.configuration.metatype.annotations.ExtendedObjectClassDefinition;
-import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.util.JavaConstants;
 import com.liferay.portal.kernel.util.Portal;
@@ -62,15 +61,6 @@ public class KBConfigurationScreen implements ConfigurationScreen {
 	@Override
 	public String getScope() {
 		return ExtendedObjectClassDefinition.Scope.SYSTEM.getValue();
-	}
-
-	@Override
-	public boolean isVisible() {
-		if (FeatureFlagManagerUtil.isEnabled("LPS-165476")) {
-			return true;
-		}
-
-		return false;
 	}
 
 	@Override

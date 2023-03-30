@@ -38,7 +38,6 @@ import com.liferay.knowledge.base.web.internal.security.permission.resource.KBFo
 import com.liferay.knowledge.base.web.internal.security.permission.resource.KBTemplatePermission;
 import com.liferay.petra.function.UnsafeConsumer;
 import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
@@ -119,7 +118,6 @@ public class KBDropdownItemsProvider {
 				dropdownGroupItem.setDropdownItems(
 					DropdownItemListBuilder.add(
 						() ->
-							_isExpirationEnabled() &&
 							_hasExpirationPermission(kbArticle) &&
 							!kbArticle.isExpired(),
 						_getExpireArticleActionConsumer(kbArticle)
@@ -1368,14 +1366,6 @@ public class KBDropdownItemsProvider {
 				_themeDisplay.getPermissionChecker(), kbTemplate,
 				KBActionKeys.VIEW)) {
 
-			return true;
-		}
-
-		return false;
-	}
-
-	private Boolean _isExpirationEnabled() {
-		if (FeatureFlagManagerUtil.isEnabled("LPS-165476")) {
 			return true;
 		}
 

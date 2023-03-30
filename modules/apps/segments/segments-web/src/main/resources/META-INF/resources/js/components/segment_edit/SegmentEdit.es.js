@@ -34,9 +34,9 @@ import {
 	applyConjunctionChangeToContributor,
 	applyCriteriaChangeToContributors,
 	initialContributorsToContributors,
-} from '../../utils/contributors.es';
+} from '../../utils/contributors';
 import {initialContributorShape} from '../../utils/types.es';
-import {sub} from '../../utils/utils.es';
+import {sub} from '../../utils/utils';
 import ContributorInputs from '../criteria_builder/ContributorInputs.es';
 import ContributorsBuilder from '../criteria_builder/ContributorsBuilder.es';
 import ClayToggle from '../shared/ClayToggle.es';
