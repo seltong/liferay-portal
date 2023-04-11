@@ -659,6 +659,12 @@ public class ObjectEntryLocalServiceImpl
 	}
 
 	@Override
+	public List<ObjectEntry> getObjectEntries(long objectDefinitionId) {
+		return objectEntryPersistence.findByObjectDefinitionId(
+			objectDefinitionId);
+	}
+
+	@Override
 	public List<ObjectEntry> getObjectEntries(
 		long groupId, long objectDefinitionId, int start, int end) {
 

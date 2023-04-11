@@ -230,6 +230,11 @@ public class ObjectEntryServiceImpl extends ObjectEntryServiceBaseImpl {
 	}
 
 	@Override
+	public List<ObjectEntry> getObjectEntries(long objectDefinitionId) {
+		return objectEntryLocalService.getObjectEntries(objectDefinitionId);
+	}
+
+	@Override
 	public ObjectEntry getObjectEntry(long objectEntryId)
 		throws PortalException {
 
