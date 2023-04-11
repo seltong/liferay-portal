@@ -425,6 +425,13 @@ public class ObjectEntryLocalServiceWrapper
 
 	@Override
 	public java.util.List<com.liferay.object.model.ObjectEntry>
+		getObjectEntries(long objectDefinitionId) {
+
+		return _objectEntryLocalService.getObjectEntries(objectDefinitionId);
+	}
+
+	@Override
+	public java.util.List<com.liferay.object.model.ObjectEntry>
 		getObjectEntries(
 			long groupId, long objectDefinitionId, int start, int end) {
 

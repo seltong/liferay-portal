@@ -309,6 +309,9 @@ public interface ObjectEntryLocalService
 	public List<ObjectEntry> getObjectEntries(int start, int end);
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public List<ObjectEntry> getObjectEntries(long objectDefinitionId);
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public List<ObjectEntry> getObjectEntries(
 		long groupId, long objectDefinitionId, int start, int end);
 
