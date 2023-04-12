@@ -14,7 +14,13 @@
 
 package com.liferay.object.internal.model.listener;
 
+import com.liferay.asset.kernel.model.AssetEntry;
+import com.liferay.asset.kernel.model.AssetLink;
+import com.liferay.asset.kernel.service.AssetEntryLocalService;
+import com.liferay.asset.kernel.service.AssetLinkLocalService;
 import com.liferay.object.model.ObjectDefinition;
+import com.liferay.object.model.ObjectEntry;
+import com.liferay.object.service.ObjectEntryLocalService;
 import com.liferay.portal.kernel.audit.AuditMessage;
 import com.liferay.portal.kernel.audit.AuditRouter;
 import com.liferay.portal.kernel.exception.ModelListenerException;
@@ -37,6 +43,50 @@ import org.osgi.service.component.annotations.Reference;
 @Component(service = ModelListener.class)
 public class ObjectDefinitionModelListener
 	extends BaseModelListener<ObjectDefinition> {
+
+	@Override
+	public void onAfterUpdate(
+			ObjectDefinition originalObjectDefinition,
+			ObjectDefinition objectDefinition)
+		throws ModelListenerException {
+
+		if (originalObjectDefinition.getTitleObjectFieldId() ==
+				objectDefinition.getTitleObjectFieldId()) {
+
+			return;
+		}
+
+		for (ObjectEntry objectEntry :
+				_objectEntryLocalService.getObjectEntries(
+					objectDefinition.getObjectDefinitionId())) {
+
+			try {
+				AssetEntry assetEntry = _assetEntryLocalService.getEntry(
+					objectDefinition.getClassName(),
+					objectEntry.getObjectEntryId());
+
+				List<AssetLink> assetLinks =
+					_assetLinkLocalService.getDirectLinks(
+						assetEntry.getEntryId());
+
+				long[] assetLinkEntryIds = new long[assetLinks.size()];
+
+				for (int i = 0; i < assetLinks.size(); i++) {
+					AssetLink assetLink = assetLinks.get(i);
+
+					assetLinkEntryIds[i] = assetLink.getLinkId();
+				}
+
+				_objectEntryLocalService.updateAsset(
+					assetEntry.getUserId(), objectEntry,
+					assetEntry.getCategoryIds(), assetEntry.getTagNames(),
+					assetLinkEntryIds, assetEntry.getPriority());
+			}
+			catch (Exception exception) {
+				throw new ModelListenerException(exception);
+			}
+		}
+	}
 
 	@Override
 	public void onBeforeCreate(ObjectDefinition objectDefinition)
@@ -121,6 +171,15 @@ public class ObjectDefinitionModelListener
 	}
 
 	@Reference
+	private AssetEntryLocalService _assetEntryLocalService;
+
+	@Reference
+	private AssetLinkLocalService _assetLinkLocalService;
+
+	@Reference
 	private AuditRouter _auditRouter;
+
+	@Reference
+	private ObjectEntryLocalService _objectEntryLocalService;
 
 }
