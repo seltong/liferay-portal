@@ -18,22 +18,55 @@ import com.liferay.asset.kernel.model.AssetEntry;
 import com.liferay.asset.kernel.model.AssetLink;
 import com.liferay.asset.kernel.service.AssetEntryLocalService;
 import com.liferay.asset.kernel.service.AssetLinkLocalService;
+import com.liferay.object.constants.ObjectFieldConstants;
+import com.liferay.object.constants.ObjectRelationshipConstants;
 import com.liferay.object.model.ObjectDefinition;
 import com.liferay.object.model.ObjectEntry;
 import com.liferay.object.service.ObjectEntryLocalService;
+import com.liferay.object.service.persistence.ObjectEntryPersistence;
+import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.dao.orm.common.SQLTransformer;
 import com.liferay.portal.kernel.audit.AuditMessage;
 import com.liferay.portal.kernel.audit.AuditRouter;
+import com.liferay.portal.kernel.bean.BeanReference;
+import com.liferay.portal.kernel.dao.jdbc.AutoBatchPreparedStatementUtil;
+import com.liferay.portal.kernel.dao.jdbc.CurrentConnection;
 import com.liferay.portal.kernel.exception.ModelListenerException;
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.model.BaseModelListener;
 import com.liferay.portal.kernel.model.ModelListener;
+import com.liferay.portal.kernel.model.WorkflowInstanceLink;
+import com.liferay.portal.kernel.search.Indexer;
+import com.liferay.portal.kernel.search.IndexerRegistryUtil;
+import com.liferay.portal.kernel.search.SearchException;
+import com.liferay.portal.kernel.security.permission.ResourceActionsUtil;
+import com.liferay.portal.kernel.service.ClassNameLocalService;
+import com.liferay.portal.kernel.service.WorkflowInstanceLinkLocalService;
+import com.liferay.portal.kernel.transaction.TransactionCommitCallbackUtil;
+import com.liferay.portal.kernel.util.Localization;
 import com.liferay.portal.security.audit.event.generators.constants.EventTypes;
 import com.liferay.portal.security.audit.event.generators.util.Attribute;
 import com.liferay.portal.security.audit.event.generators.util.AttributesBuilder;
 import com.liferay.portal.security.audit.event.generators.util.AuditMessageBuilder;
+import com.liferay.portal.workflow.kaleo.model.KaleoInstance;
+import com.liferay.portal.workflow.kaleo.service.KaleoInstanceLocalService;
+import com.liferay.portal.workflow.metrics.search.index.InstanceWorkflowMetricsIndexer;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.Callable;
 
+import com.liferay.portal.workflow.metrics.search.index.reindexer.WorkflowMetricsReindexer;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -56,37 +89,127 @@ public class ObjectDefinitionModelListener
 			return;
 		}
 
-		for (ObjectEntry objectEntry :
-				_objectEntryLocalService.getObjectEntries(
-					objectDefinition.getObjectDefinitionId())) {
+		Connection connection = _currentConnection.getConnection(
+			_objectEntryPersistence.getDataSource());
 
-			try {
-				AssetEntry assetEntry = _assetEntryLocalService.getEntry(
-					objectDefinition.getClassName(),
-					objectEntry.getObjectEntryId());
+		try (PreparedStatement preparedStatement1 = connection.prepareStatement(
+			"select objectEntryId from ObjectEntry where " +
+			"objectDefinitionId = " + objectDefinition.getObjectDefinitionId());
 
-				List<AssetLink> assetLinks =
-					_assetLinkLocalService.getDirectLinks(
-						assetEntry.getEntryId());
+			PreparedStatement preparedStatement2 =
+			 AutoBatchPreparedStatementUtil.concurrentAutoBatch(
+				 connection,
+				 "update AssetEntry set title = ? where " +
+				 "classNameId = ? and classPK = ?");
 
-				long[] assetLinkEntryIds = new long[assetLinks.size()];
+			ResultSet resultSet = preparedStatement1.executeQuery()) {
 
-				for (int i = 0; i < assetLinks.size(); i++) {
-					AssetLink assetLink = assetLinks.get(i);
+			while (resultSet.next()) {
+				long objectEntryId = resultSet.getLong("objectEntryId");
 
-					assetLinkEntryIds[i] = assetLink.getLinkId();
-				}
+				preparedStatement2.setString(
+					1,
+					_objectEntryLocalService.getTitleValue(
+						objectDefinition.getObjectDefinitionId(),
+						objectEntryId));
+				preparedStatement2.setLong(
+					2, _classNameLocalService.getClassNameId(
+						objectDefinition.getClassName()));
+				preparedStatement2.setLong(
+					3, objectEntryId);
 
-				_objectEntryLocalService.updateAsset(
-					assetEntry.getUserId(), objectEntry,
-					assetEntry.getCategoryIds(), assetEntry.getTagNames(),
-					assetLinkEntryIds, assetEntry.getPriority());
+				preparedStatement2.addBatch();
 			}
-			catch (Exception exception) {
-				throw new ModelListenerException(exception);
+
+			preparedStatement2.executeBatch();
+		}
+		catch (Exception exception) {
+			throw new ModelListenerException(exception);
+		}
+		finally {
+			try {
+				_instanceWorkflowMetricsReindexer.reindex(
+					objectDefinition.getCompanyId());
+			}
+			catch (PortalException portalException) {
+				throw new ModelListenerException(portalException);
 			}
 		}
+
+//		for (ObjectEntry objectEntry :
+//				_objectEntryLocalService.getObjectEntries(
+//					objectDefinition.getObjectDefinitionId())) {
+//
+//			TransactionCommitCallbackUtil.registerCallback(
+//				() -> {
+//					try {
+//						AssetEntry assetEntry =
+//							_assetEntryLocalService.getEntry(
+//								objectDefinition.getClassName(),
+//								objectEntry.getObjectEntryId());
+//
+//						List<AssetLink> assetLinks =
+//							_assetLinkLocalService.getDirectLinks(
+//								assetEntry.getEntryId());
+//
+//						long[] assetLinkEntryIds = new long[assetLinks.size()];
+//
+//						for (int i = 0; i < assetLinks.size(); i++) {
+//							AssetLink assetLink = assetLinks.get(i);
+//
+//							assetLinkEntryIds[i] = assetLink.getLinkId();
+//						}
+//
+//						_objectEntryLocalService.updateAsset(
+//							assetEntry.getUserId(), objectEntry,
+//							assetEntry.getCategoryIds(),
+//							assetEntry.getTagNames(), assetLinkEntryIds,
+//							assetEntry.getPriority());
+//
+//						WorkflowInstanceLink workflowInstanceLink =
+//							_workflowInstanceLinkLocalService.
+//								fetchWorkflowInstanceLink(
+//									objectEntry.getCompanyId(),
+//									objectEntry.getNonzeroGroupId(),
+//									objectDefinition.getClassName(),
+//									objectEntry.getObjectEntryId());
+//
+//						KaleoInstance kaleoInstance =
+//							_kaleoInstanceLocalService.getKaleoInstance(
+//								workflowInstanceLink.getWorkflowInstanceId());
+//
+//						if (kaleoInstance == null) {
+//							return null;
+//						}
+//
+//						assetEntry = _assetEntryLocalService.getEntry(
+//							objectDefinition.getClassName(),
+//							objectEntry.getObjectEntryId());
+//
+//						_instanceWorkflowMetricsIndexer.updateInstance(
+//							kaleoInstance.isActive(),
+//							_localization.populateLocalizationMap(
+//								assetEntry.getTitleMap(),
+//								assetEntry.getDefaultLanguageId(),
+//								assetEntry.getGroupId()),
+//							_createAssetTypeLocalizationMap(
+//								kaleoInstance.getClassName(),
+//								kaleoInstance.getGroupId()),
+//							kaleoInstance.getCompanyId(),
+//							kaleoInstance.getKaleoInstanceId(),
+//							kaleoInstance.getModifiedDate());
+//					}
+//					catch (Exception exception) {
+//						throw new ModelListenerException(exception);
+//					}
+//
+//					return null;
+//				});
+//		}
 	}
+
+	@Reference
+	private CurrentConnection _currentConnection;
 
 	@Override
 	public void onBeforeCreate(ObjectDefinition objectDefinition)
@@ -119,6 +242,21 @@ public class ObjectDefinitionModelListener
 		catch (Exception exception) {
 			throw new ModelListenerException(exception);
 		}
+	}
+
+	private Map<Locale, String> _createAssetTypeLocalizationMap(
+		String className, long groupId) {
+
+		Map<Locale, String> localizationMap = new HashMap<>();
+
+		for (Locale availableLocale : _language.getAvailableLocales(groupId)) {
+			localizationMap.put(
+				availableLocale,
+				ResourceActionsUtil.getModelResource(
+					availableLocale, className));
+		}
+
+		return localizationMap;
 	}
 
 	private List<Attribute> _getModifiedAttributes(
@@ -171,6 +309,12 @@ public class ObjectDefinitionModelListener
 	}
 
 	@Reference
+	private ObjectEntryPersistence _objectEntryPersistence;
+
+	@Reference
+	private ClassNameLocalService _classNameLocalService;
+
+	@Reference
 	private AssetEntryLocalService _assetEntryLocalService;
 
 	@Reference
@@ -180,6 +324,24 @@ public class ObjectDefinitionModelListener
 	private AuditRouter _auditRouter;
 
 	@Reference
+	private InstanceWorkflowMetricsIndexer _instanceWorkflowMetricsIndexer;
+
+	@Reference
+	private WorkflowMetricsReindexer _instanceWorkflowMetricsReindexer;
+
+	@Reference
+	private KaleoInstanceLocalService _kaleoInstanceLocalService;
+
+	@Reference
+	private Language _language;
+
+	@Reference
+	private Localization _localization;
+
+	@Reference
 	private ObjectEntryLocalService _objectEntryLocalService;
+
+	@Reference
+	private WorkflowInstanceLinkLocalService _workflowInstanceLinkLocalService;
 
 }
