@@ -36,6 +36,8 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.language.Language;
+import com.liferay.portal.kernel.messaging.Message;
+import com.liferay.portal.kernel.messaging.MessageBus;
 import com.liferay.portal.kernel.model.BaseModelListener;
 import com.liferay.portal.kernel.model.ModelListener;
 import com.liferay.portal.kernel.model.WorkflowInstanceLink;
@@ -47,6 +49,7 @@ import com.liferay.portal.kernel.service.ClassNameLocalService;
 import com.liferay.portal.kernel.service.WorkflowInstanceLinkLocalService;
 import com.liferay.portal.kernel.transaction.TransactionCommitCallbackUtil;
 import com.liferay.portal.kernel.util.Localization;
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.security.audit.event.generators.constants.EventTypes;
 import com.liferay.portal.security.audit.event.generators.util.Attribute;
 import com.liferay.portal.security.audit.event.generators.util.AttributesBuilder;
@@ -89,59 +92,72 @@ public class ObjectDefinitionModelListener
 			return;
 		}
 
-		Connection connection = _currentConnection.getConnection(
-			_objectEntryPersistence.getDataSource());
+		List<AssetEntry> assetEntries = new ArrayList<>();
+		List<KaleoInstance> kaleoInstances = new ArrayList<>();
 
-		try (PreparedStatement preparedStatement1 = connection.prepareStatement(
-			"select objectEntryId from ObjectEntry where " +
-			"objectDefinitionId = " + objectDefinition.getObjectDefinitionId());
+		TransactionCommitCallbackUtil.registerCallback(
+			() -> {
+				for (ObjectEntry objectEntry :
+					_objectEntryLocalService.getObjectEntries(
+						objectDefinition.getObjectDefinitionId())) {
 
-			PreparedStatement preparedStatement2 =
-			 AutoBatchPreparedStatementUtil.concurrentAutoBatch(
-				 connection,
-				 "update AssetEntry set title = ? where " +
-				 "classNameId = ? and classPK = ?");
+					try {
+						AssetEntry assetEntry =
+							_assetEntryLocalService.getEntry(
+								objectDefinition.getClassName(),
+								objectEntry.getObjectEntryId());
 
-			ResultSet resultSet = preparedStatement1.executeQuery()) {
+						List<AssetLink> assetLinks =
+							_assetLinkLocalService.getDirectLinks(
+								assetEntry.getEntryId());
 
-			while (resultSet.next()) {
-				long objectEntryId = resultSet.getLong("objectEntryId");
+						long[] assetLinkEntryIds = new long[assetLinks.size()];
 
-				preparedStatement2.setString(
-					1,
-					_objectEntryLocalService.getTitleValue(
-						objectDefinition.getObjectDefinitionId(),
-						objectEntryId));
-				preparedStatement2.setLong(
-					2, _classNameLocalService.getClassNameId(
-						objectDefinition.getClassName()));
-				preparedStatement2.setLong(
-					3, objectEntryId);
+						for (int i = 0; i < assetLinks.size(); i++) {
+							AssetLink assetLink = assetLinks.get(i);
 
-				preparedStatement2.addBatch();
-			}
+							assetLinkEntryIds[i] = assetLink.getLinkId();
+						}
 
-			preparedStatement2.executeBatch();
-		}
-		catch (Exception exception) {
-			throw new ModelListenerException(exception);
-		}
+						_objectEntryLocalService.updateAsset(
+							assetEntry.getUserId(), objectEntry,
+							assetEntry.getCategoryIds(),
+							assetEntry.getTagNames(), assetLinkEntryIds,
+							assetEntry.getPriority());
 
-		try {
-			connection.getTransactionIsolation();
-			connection.isClosed();
-		}
-		catch (SQLException e) {
-			e.printStackTrace();
-		}
+						WorkflowInstanceLink workflowInstanceLink =
+							_workflowInstanceLinkLocalService.
+								fetchWorkflowInstanceLink(
+									objectEntry.getCompanyId(),
+									objectEntry.getNonzeroGroupId(),
+									objectDefinition.getClassName(),
+									objectEntry.getObjectEntryId());
 
-		try {
-			_instanceWorkflowMetricsReindexer.reindex(
-				objectDefinition.getCompanyId());
-		}
-		catch (PortalException portalException) {
-			throw new ModelListenerException(portalException);
-		}
+						assetEntries.add(_assetEntryLocalService.getEntry(
+							objectDefinition.getClassName(),
+							objectEntry.getObjectEntryId()));
+
+						kaleoInstances.add(
+							_kaleoInstanceLocalService.getKaleoInstance(
+								workflowInstanceLink.getWorkflowInstanceId()));
+					}
+					catch (Exception exception) {
+						throw new ModelListenerException(exception);
+					}
+
+					return null;
+				}
+
+				Message message = new Message();
+
+				message.put("assetEntries", assetEntries);
+				message.put("className", objectDefinition.getClassName());
+				message.put("kaleoInstances", kaleoInstances);
+
+				_messageBus.sendMessage("liferay/kaleo_definition", message);
+
+				return null;
+			});
 	}
 
 	@Reference
@@ -273,6 +289,9 @@ public class ObjectDefinitionModelListener
 
 	@Reference
 	private Localization _localization;
+
+	@Reference
+	private MessageBus _messageBus;
 
 	@Reference
 	private ObjectEntryLocalService _objectEntryLocalService;
