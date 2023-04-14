@@ -126,86 +126,22 @@ public class ObjectDefinitionModelListener
 		catch (Exception exception) {
 			throw new ModelListenerException(exception);
 		}
-		finally {
-			try {
-				_instanceWorkflowMetricsReindexer.reindex(
-					objectDefinition.getCompanyId());
-			}
-			catch (PortalException portalException) {
-				throw new ModelListenerException(portalException);
-			}
+
+		try {
+			connection.getTransactionIsolation();
+			connection.isClosed();
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
 		}
 
-//		for (ObjectEntry objectEntry :
-//				_objectEntryLocalService.getObjectEntries(
-//					objectDefinition.getObjectDefinitionId())) {
-//
-//			TransactionCommitCallbackUtil.registerCallback(
-//				() -> {
-//					try {
-//						AssetEntry assetEntry =
-//							_assetEntryLocalService.getEntry(
-//								objectDefinition.getClassName(),
-//								objectEntry.getObjectEntryId());
-//
-//						List<AssetLink> assetLinks =
-//							_assetLinkLocalService.getDirectLinks(
-//								assetEntry.getEntryId());
-//
-//						long[] assetLinkEntryIds = new long[assetLinks.size()];
-//
-//						for (int i = 0; i < assetLinks.size(); i++) {
-//							AssetLink assetLink = assetLinks.get(i);
-//
-//							assetLinkEntryIds[i] = assetLink.getLinkId();
-//						}
-//
-//						_objectEntryLocalService.updateAsset(
-//							assetEntry.getUserId(), objectEntry,
-//							assetEntry.getCategoryIds(),
-//							assetEntry.getTagNames(), assetLinkEntryIds,
-//							assetEntry.getPriority());
-//
-//						WorkflowInstanceLink workflowInstanceLink =
-//							_workflowInstanceLinkLocalService.
-//								fetchWorkflowInstanceLink(
-//									objectEntry.getCompanyId(),
-//									objectEntry.getNonzeroGroupId(),
-//									objectDefinition.getClassName(),
-//									objectEntry.getObjectEntryId());
-//
-//						KaleoInstance kaleoInstance =
-//							_kaleoInstanceLocalService.getKaleoInstance(
-//								workflowInstanceLink.getWorkflowInstanceId());
-//
-//						if (kaleoInstance == null) {
-//							return null;
-//						}
-//
-//						assetEntry = _assetEntryLocalService.getEntry(
-//							objectDefinition.getClassName(),
-//							objectEntry.getObjectEntryId());
-//
-//						_instanceWorkflowMetricsIndexer.updateInstance(
-//							kaleoInstance.isActive(),
-//							_localization.populateLocalizationMap(
-//								assetEntry.getTitleMap(),
-//								assetEntry.getDefaultLanguageId(),
-//								assetEntry.getGroupId()),
-//							_createAssetTypeLocalizationMap(
-//								kaleoInstance.getClassName(),
-//								kaleoInstance.getGroupId()),
-//							kaleoInstance.getCompanyId(),
-//							kaleoInstance.getKaleoInstanceId(),
-//							kaleoInstance.getModifiedDate());
-//					}
-//					catch (Exception exception) {
-//						throw new ModelListenerException(exception);
-//					}
-//
-//					return null;
-//				});
-//		}
+		try {
+			_instanceWorkflowMetricsReindexer.reindex(
+				objectDefinition.getCompanyId());
+		}
+		catch (PortalException portalException) {
+			throw new ModelListenerException(portalException);
+		}
 	}
 
 	@Reference
