@@ -211,19 +211,6 @@ public class ObjectDefinitionResourceTest
 
 		ObjectDefinition randomObjectDefinition = randomObjectDefinition();
 
-		Status status = new Status() {
-			{
-				code = 0;
-				label = WorkflowConstants.getStatusLabel(0);
-				label_i18n = _language.get(
-					LanguageResources.getResourceBundle(
-						LocaleUtil.getDefault()),
-					WorkflowConstants.getStatusLabel(0));
-			}
-		};
-
-		randomObjectDefinition.setStatus(status);
-
 		ObjectDefinition postObjectDefinition =
 			testPostObjectDefinition_addObjectDefinition(
 				randomObjectDefinition);
@@ -306,6 +293,19 @@ public class ObjectDefinitionResourceTest
 					}
 				}
 			});
+
+		objectDefinition.setStatus(
+			new Status() {
+				{
+					code = 0;
+					label = WorkflowConstants.getStatusLabel(0);
+					label_i18n = _language.get(
+						LanguageResources.getResourceBundle(
+							LocaleUtil.getDefault()),
+						WorkflowConstants.getStatusLabel(0));
+				}
+			});
+
 		objectDefinition.setScope(ObjectDefinitionConstants.SCOPE_COMPANY);
 
 		if (!FeatureFlagManagerUtil.isEnabled("LPS-135430")) {
