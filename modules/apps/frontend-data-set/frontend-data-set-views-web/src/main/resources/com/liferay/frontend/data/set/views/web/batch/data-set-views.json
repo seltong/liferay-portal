@@ -22,12 +22,12 @@
 	"items": [
 		{
 			"accountEntryRestricted": false,
-			"externalReferenceCode": "MSOD_FDS_ACTION",
+			"externalReferenceCode": "MSOD_FDS_ENTRY_ACTIONS",
 			"label": {
-				"en_US": "FDS Action"
+				"en_US": "FDS Entry Actions"
 			},
 			"modifiable": true,
-			"name": "FDSAction",
+			"name": "FDSEntryActions",
 			"objectFields": [
 				{
 					"DBType": "Clob",
@@ -172,7 +172,7 @@
 			],
 			"panelCategoryKey": "",
 			"pluralLabel": {
-				"en_US": "FDS Actions"
+				"en_US": "FDS Entries Actions"
 			},
 			"scope": "company",
 			"status": {
@@ -279,8 +279,8 @@
 					},
 					"name": "creationMenuPrimaryActions",
 					"objectDefinitionExternalReferenceCode1": "MSOD_FDS_ENTRY",
-					"objectDefinitionExternalReferenceCode2": "MSOD_FDS_ACTION",
-					"objectDefinitionName2": "FDSAction",
+					"objectDefinitionExternalReferenceCode2": "MSOD_FDS_ENTRY_ACTIONS",
+					"objectDefinitionName2": "FDSEntryActions",
 					"type": "oneToMany"
 				},
 				{
@@ -290,8 +290,8 @@
 					},
 					"name": "creationMenuSecondaryActions",
 					"objectDefinitionExternalReferenceCode1": "MSOD_FDS_ENTRY",
-					"objectDefinitionExternalReferenceCode2": "MSOD_FDS_ACTION",
-					"objectDefinitionName2": "FDSAction",
+					"objectDefinitionExternalReferenceCode2": "MSOD_FDS_ENTRY_ACTIONS",
+					"objectDefinitionName2": "FDSEntryActions",
 					"type": "oneToMany"
 				},
 				{
@@ -301,8 +301,8 @@
 					},
 					"name": "entryViews",
 					"objectDefinitionExternalReferenceCode1": "MSOD_FDS_ENTRY",
-					"objectDefinitionExternalReferenceCode2": "MSOD_FDS_VIEW",
-					"objectDefinitionName2": "FDSView",
+					"objectDefinitionExternalReferenceCode2": "MSOD_FDS_ENTRY_VIEWS",
+					"objectDefinitionName2": "FDSEntryViews",
 					"type": "manyToMany"
 				}
 			],
@@ -319,12 +319,12 @@
 		},
 		{
 			"accountEntryRestricted": false,
-			"externalReferenceCode": "MSOD_FDS_FIELD_MAPPING",
+			"externalReferenceCode": "MSOD_FDS_ENTRY_FIELD_MAPPINGS",
 			"label": {
-				"en_US": "FDS Field Mapping"
+				"en_US": "FDS Entry Field Mappings"
 			},
 			"modifiable": true,
-			"name": "FDSFieldMapping",
+			"name": "FDSEntryFieldMappings",
 			"objectFields": [
 				{
 					"DBType": "Clob",
@@ -441,7 +441,7 @@
 			],
 			"panelCategoryKey": "",
 			"pluralLabel": {
-				"en_US": "FDS Field Mappings"
+				"en_US": "FDS Entries Field Mappings"
 			},
 			"scope": "company",
 			"status": {
@@ -452,12 +452,12 @@
 		},
 		{
 			"accountEntryRestricted": false,
-			"externalReferenceCode": "MSOD_FDS_FILTER",
+			"externalReferenceCode": "MSOD_FDS_ENTRY_FILTERS",
 			"label": {
-				"en_US": "FDS Filter"
+				"en_US": "FDS Entry Filters"
 			},
 			"modifiable": true,
-			"name": "FDSFilter",
+			"name": "FDSEntryFilters",
 			"objectFields": [
 				{
 					"DBType": "String",
@@ -559,15 +559,15 @@
 						"en_US": "Filters"
 					},
 					"name": "filters",
-					"objectDefinitionExternalReferenceCode1": "MSOD_FDS_FILTER",
-					"objectDefinitionExternalReferenceCode2": "MSOD_FDS_VIEW",
-					"objectDefinitionName2": "FDSView",
+					"objectDefinitionExternalReferenceCode1": "MSOD_FDS_ENTRY_FILTERS",
+					"objectDefinitionExternalReferenceCode2": "MSOD_FDS_ENTRY_VIEWS",
+					"objectDefinitionName2": "FDSEntryViews",
 					"type": "manyToMany"
 				}
 			],
 			"panelCategoryKey": "",
 			"pluralLabel": {
-				"en_US": "FDS Filters"
+				"en_US": "FDS Entries Filters"
 			},
 			"scope": "company",
 			"status": {
@@ -578,12 +578,12 @@
 		},
 		{
 			"accountEntryRestricted": false,
-			"externalReferenceCode": "MSOD_FDS_SORT",
+			"externalReferenceCode": "MSOD_FDS_ENTRY_SORTS",
 			"label": {
-				"en_US": "FDS Sort"
+				"en_US": "FDS Entry Sorts"
 			},
 			"modifiable": true,
-			"name": "FDSSort",
+			"name": "FDSEntrySorts",
 			"objectFields": [
 				{
 					"DBType": "String",
@@ -637,7 +637,7 @@
 			],
 			"panelCategoryKey": "",
 			"pluralLabel": {
-				"en_US": "FDS Sorts"
+				"en_US": "FDS Entries Sorts"
 			},
 			"scope": "company",
 			"status": {
@@ -648,12 +648,12 @@
 		},
 		{
 			"accountEntryRestricted": false,
-			"externalReferenceCode": "MSOD_FDS_VIEW",
+			"externalReferenceCode": "MSOD_FDS_ENTRY_VIEWS",
 			"label": {
-				"en_US": "FDS View"
+				"en_US": "FDS Entry Views"
 			},
 			"modifiable": true,
-			"name": "FDSView",
+			"name": "FDSEntryViews",
 			"objectFields": [
 				{
 					"DBType": "Boolean",
@@ -810,9 +810,9 @@
 						"en_US": "Sorts"
 					},
 					"name": "sorts",
-					"objectDefinitionExternalReferenceCode1": "MSOD_FDS_VIEW",
-					"objectDefinitionExternalReferenceCode2": "MSOD_FDS_SORT",
-					"objectDefinitionName2": "FDSSort",
+					"objectDefinitionExternalReferenceCode1": "MSOD_FDS_ENTRY_VIEWS",
+					"objectDefinitionExternalReferenceCode2": "MSOD_FDS_ENTRY_SORTS",
+					"objectDefinitionName2": "FDSEntrySorts",
 					"type": "oneToMany"
 				},
 				{
@@ -821,15 +821,15 @@
 						"en_US": "View Modes"
 					},
 					"name": "viewModes",
-					"objectDefinitionExternalReferenceCode1": "MSOD_FDS_VIEW",
-					"objectDefinitionExternalReferenceCode2": "MSOD_FDS_VIEW_MODE",
-					"objectDefinitionName2": "FDSViewMode",
+					"objectDefinitionExternalReferenceCode1": "MSOD_FDS_ENTRY_VIEWS",
+					"objectDefinitionExternalReferenceCode2": "MSOD_FDS_ENTRY_VIEW_MODES",
+					"objectDefinitionName2": "FDSEntryViewModes",
 					"type": "oneToMany"
 				}
 			],
 			"panelCategoryKey": "",
 			"pluralLabel": {
-				"en_US": "FDS Views"
+				"en_US": "FDS Entries Views"
 			},
 			"scope": "company",
 			"status": {
@@ -840,12 +840,12 @@
 		},
 		{
 			"accountEntryRestricted": false,
-			"externalReferenceCode": "MSOD_FDS_VIEW_MODE",
+			"externalReferenceCode": "MSOD_FDS_ENTRY_VIEW_MODES",
 			"label": {
-				"en_US": "FDS View Mode"
+				"en_US": "FDS Entry View Modes"
 			},
 			"modifiable": true,
-			"name": "FDSViewMode",
+			"name": "FDSEntryViewModes",
 			"objectFields": [
 				{
 					"DBType": "Clob",
@@ -983,15 +983,15 @@
 						"en_US": "Field Mappings"
 					},
 					"name": "fieldMappings",
-					"objectDefinitionExternalReferenceCode1": "MSOD_FDS_VIEW_MODE",
-					"objectDefinitionExternalReferenceCode2": "MSOD_FDS_FIELD_MAPPING",
-					"objectDefinitionName2": "FDSFieldMapping",
+					"objectDefinitionExternalReferenceCode1": "MSOD_FDS_ENTRY_VIEW_MODES",
+					"objectDefinitionExternalReferenceCode2": "MSOD_FDS_ENTRY_FIELD_MAPPINGS",
+					"objectDefinitionName2": "FDSEntryFieldMappings",
 					"type": "oneToMany"
 				}
 			],
 			"panelCategoryKey": "",
 			"pluralLabel": {
-				"en_US": "FDS View Modes"
+				"en_US": "FDS Entry View Modes"
 			},
 			"scope": "company",
 			"status": {
