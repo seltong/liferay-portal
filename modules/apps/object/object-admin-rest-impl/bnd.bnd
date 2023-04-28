@@ -1,3 +1,4 @@
 Bundle-Name: Liferay Object Admin REST Implementation
 Bundle-SymbolicName: com.liferay.object.admin.rest.impl
+Liferay-Client-Extension-Batch: com/liferay/object/admin/rest/internal/batch
 Bundle-Version: 1.0.90
