@@ -14,6 +14,7 @@
 
 package com.liferay.object.web.internal.object.entries.frontend.data.set.view.table;
 
+import com.liferay.commerce.product.model.CPDefinition;
 import com.liferay.frontend.data.set.provider.FDSActionProvider;
 import com.liferay.frontend.data.set.provider.FDSDataProvider;
 import com.liferay.frontend.data.set.provider.search.FDSKeywords;
@@ -161,6 +162,49 @@ public class SystemRelatedModelsTableFDSView
 
 				Map<String, Object> modelAttributes =
 					relatedModel.getModelAttributes();
+
+				if (relatedModel instanceof CPDefinition) {
+					CPDefinition cpDefinition = (CPDefinition)relatedModel;
+
+					modelAttributes.put("description", cpDefinition.getDescription());
+					modelAttributes.put("catalogId", cpDefinition.getDescription());
+					modelAttributes.put(
+						"externalReferenceCode", cpDefinition.getExternalReferenceCode());
+					modelAttributes.put("name", cpDefinition.getName());
+					modelAttributes.put(
+						"productType", cpDefinition.getProductTypeName());
+					modelAttributes.put(
+						"shortDescription", cpDefinition.getShortDescription());
+
+
+
+
+//					List<CPInstance> cpInstances = cpDefinition.getCPInstances();
+//
+//					String skuFormatted = null;
+//
+//					if (cpInstances.isEmpty()) {
+//						skuFormatted = StringPool.BLANK;
+//					}
+//					else if (cpInstances.size() > 1) {
+//						User user = _userLocalService.getUser(
+//							PrincipalThreadLocal.getUserId());
+//
+//						skuFormatted = _language.get(user.getLocale(), "multiple-skus");
+//					}
+//					else {
+//						CPInstance cpInstance = cpInstances.get(0);
+//
+//						skuFormatted = cpInstance.getSku();
+//					}
+//
+//					modelAttributes.put("skuFormatted", skuFormatted);
+//
+//					modelAttributes.put(
+//						"thumbnail",
+//						cpDefinition.getDefaultImageThumbnailSrc(
+//							CommerceAccountConstants.ACCOUNT_ID_GUEST));
+				}
 
 				Object value = modelAttributes.get(objectFieldDBColumnName);
 
