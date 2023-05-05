@@ -90,6 +90,8 @@ public interface CPDefinition extends CPDefinitionModel, PersistedModel {
 
 	public java.util.Map<java.util.Locale, String> getDescriptionMap();
 
+	public String getExternalReferenceCode();
+
 	public java.util.Map<java.util.Locale, String> getMetaDescriptionMap();
 
 	public java.util.Map<java.util.Locale, String> getMetaKeywordsMap();
@@ -101,6 +103,8 @@ public interface CPDefinition extends CPDefinitionModel, PersistedModel {
 	public java.util.Map<java.util.Locale, String> getNameMap();
 
 	public java.util.Map<java.util.Locale, String> getShortDescriptionMap();
+
+	public String getSkuFormatted(java.util.Locale locale);
 
 	public com.liferay.portal.kernel.util.UnicodeProperties
 		getSubscriptionTypeSettingsUnicodeProperties();
@@ -117,6 +121,8 @@ public interface CPDefinition extends CPDefinitionModel, PersistedModel {
 
 	public void setDescriptionMap(
 		java.util.Map<java.util.Locale, String> descriptionMap);
+
+	public void setExternalReferenceCode(String externalReferenceCode);
 
 	public void setNameMap(java.util.Map<java.util.Locale, String> nameMap);
 

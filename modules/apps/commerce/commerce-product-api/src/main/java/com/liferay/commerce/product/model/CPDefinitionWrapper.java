@@ -706,6 +706,11 @@ public class CPDefinitionWrapper
 		return model.getExpirationDate();
 	}
 
+	@Override
+	public String getExternalReferenceCode() {
+		return model.getExternalReferenceCode();
+	}
+
 	/**
 	 * Returns the free shipping of this cp definition.
 	 *
@@ -1004,6 +1009,11 @@ public class CPDefinitionWrapper
 	@Override
 	public String getShortDescriptionMapAsXML() {
 		return model.getShortDescriptionMapAsXML();
+	}
+
+	@Override
+	public String getSkuFormatted(java.util.Locale locale) {
+		return model.getSkuFormatted(locale);
 	}
 
 	/**
@@ -1626,6 +1636,11 @@ public class CPDefinitionWrapper
 	@Override
 	public void setExpirationDate(Date expirationDate) {
 		model.setExpirationDate(expirationDate);
+	}
+
+	@Override
+	public void setExternalReferenceCode(String externalReferenceCode) {
+		model.setExternalReferenceCode(externalReferenceCode);
 	}
 
 	/**
