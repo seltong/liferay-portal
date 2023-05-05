@@ -277,6 +277,11 @@ public class CPDefinitionImpl extends CPDefinitionBaseImpl {
 	}
 
 	@Override
+	public String getExternalReferenceCode() {
+		return _externalReferenceCode;
+	}
+
+	@Override
 	public Map<Locale, String> getMetaDescriptionMap() {
 		if (_metaDescriptionMap != null) {
 			return _metaDescriptionMap;
@@ -431,6 +436,11 @@ public class CPDefinitionImpl extends CPDefinitionBaseImpl {
 	}
 
 	@Override
+	public void setExternalReferenceCode(String externalReferenceCode) {
+		_externalReferenceCode = externalReferenceCode;
+	}
+
+	@Override
 	public void setNameMap(Map<Locale, String> nameMap) {
 		_nameMap = nameMap;
 	}
@@ -476,6 +486,7 @@ public class CPDefinitionImpl extends CPDefinitionBaseImpl {
 	private UnicodeProperties
 		_deliverySubscriptionTypeSettingsUnicodeProperties;
 	private Map<Locale, String> _descriptionMap;
+	private String _externalReferenceCode;
 	private Map<Locale, String> _metaDescriptionMap;
 	private Map<Locale, String> _metaKeywordsMap;
 	private Map<Locale, String> _metaTitleMap;
