@@ -353,6 +353,23 @@ public class CPDefinitionImpl extends CPDefinitionBaseImpl {
 	}
 
 	@Override
+	public String getSkuFormatted(Locale locale) {
+		List<CPInstance> cpInstances = getCPInstances();
+
+		if (cpInstances.isEmpty()) {
+			return StringPool.BLANK;
+		}
+
+		if (cpInstances.size() > 1) {
+			return LanguageUtil.get(locale, "multiple-skus");
+		}
+
+		CPInstance cpInstance = cpInstances.get(0);
+
+		return cpInstance.getSku();
+	}
+
+	@Override
 	public UnicodeProperties getSubscriptionTypeSettingsUnicodeProperties() {
 		if (_subscriptionTypeSettingsUnicodeProperties == null) {
 			_subscriptionTypeSettingsUnicodeProperties =
