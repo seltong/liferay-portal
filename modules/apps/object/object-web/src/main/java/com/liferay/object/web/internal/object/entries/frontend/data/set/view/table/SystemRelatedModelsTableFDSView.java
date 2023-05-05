@@ -14,6 +14,7 @@
 
 package com.liferay.object.web.internal.object.entries.frontend.data.set.view.table;
 
+import com.liferay.commerce.account.constants.CommerceAccountConstants;
 import com.liferay.commerce.product.model.CPDefinition;
 import com.liferay.frontend.data.set.provider.FDSActionProvider;
 import com.liferay.frontend.data.set.provider.FDSDataProvider;
@@ -44,8 +45,11 @@ import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.language.Language;
 import com.liferay.portal.kernel.model.BaseModel;
+import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.portlet.url.builder.PortletURLBuilder;
 import com.liferay.portal.kernel.search.Sort;
+import com.liferay.portal.kernel.security.auth.PrincipalThreadLocal;
+import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.util.Constants;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
@@ -166,44 +170,30 @@ public class SystemRelatedModelsTableFDSView
 				if (relatedModel instanceof CPDefinition) {
 					CPDefinition cpDefinition = (CPDefinition)relatedModel;
 
-					modelAttributes.put("description", cpDefinition.getDescription());
-					modelAttributes.put("catalogId", cpDefinition.getDescription());
 					modelAttributes.put(
-						"externalReferenceCode", cpDefinition.getExternalReferenceCode());
+						"description", cpDefinition.getDescription());
+					modelAttributes.put(
+						"catalogId", cpDefinition.getDescription());
+					modelAttributes.put(
+						"externalReferenceCode",
+						cpDefinition.getExternalReferenceCode());
 					modelAttributes.put("name", cpDefinition.getName());
 					modelAttributes.put(
 						"productType", cpDefinition.getProductTypeName());
 					modelAttributes.put(
 						"shortDescription", cpDefinition.getShortDescription());
 
+					User user = _userLocalService.getUser(
+						PrincipalThreadLocal.getUserId());
 
+					modelAttributes.put(
+						"skuFormatted",
+						cpDefinition.getSkuFormatted(user.getLocale()));
 
-
-//					List<CPInstance> cpInstances = cpDefinition.getCPInstances();
-//
-//					String skuFormatted = null;
-//
-//					if (cpInstances.isEmpty()) {
-//						skuFormatted = StringPool.BLANK;
-//					}
-//					else if (cpInstances.size() > 1) {
-//						User user = _userLocalService.getUser(
-//							PrincipalThreadLocal.getUserId());
-//
-//						skuFormatted = _language.get(user.getLocale(), "multiple-skus");
-//					}
-//					else {
-//						CPInstance cpInstance = cpInstances.get(0);
-//
-//						skuFormatted = cpInstance.getSku();
-//					}
-//
-//					modelAttributes.put("skuFormatted", skuFormatted);
-//
-//					modelAttributes.put(
-//						"thumbnail",
-//						cpDefinition.getDefaultImageThumbnailSrc(
-//							CommerceAccountConstants.ACCOUNT_ID_GUEST));
+					modelAttributes.put(
+						"thumbnail",
+						cpDefinition.getDefaultImageThumbnailSrc(
+							CommerceAccountConstants.ACCOUNT_ID_ADMIN));
 				}
 
 				Object value = modelAttributes.get(objectFieldDBColumnName);
@@ -315,5 +305,8 @@ public class SystemRelatedModelsTableFDSView
 
 	@Reference
 	private Portal _portal;
+
+	@Reference
+	private UserLocalService _userLocalService;
 
 }
