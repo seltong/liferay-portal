@@ -1458,44 +1458,62 @@ public class ObjectEntryLocalServiceImpl
 					_objectDefinitionPersistence.findByPrimaryKey(
 						objectDefinitionId));
 
-		for (ObjectField objectField :
-				_objectFieldLocalService.getObjectFields(
-					objectDefinitionId, false)) {
+		List<Column<DynamicObjectDefinitionLocalizationTable, ?>>
+			objectFieldColumns =
+				dynamicObjectDefinitionLocalizationTable.
+					getObjectFieldColumns();
 
-			if (!objectField.isLocalized()) {
-				continue;
-			}
+		List<Expression<?>> selectExpressions = new ArrayList<>(
+			objectFieldColumns);
 
-			List<Object[]> localizedValues = ObjectMapperUtil.readValue(
-				List.class,
-				(Serializable)objectEntryPersistence.dslQuery(
-					DSLQueryFactoryUtil.select(
-						dynamicObjectDefinitionLocalizationTable.
-							getLanguageIdColumn(),
-						dynamicObjectDefinitionLocalizationTable.getColumn(
-							objectField.getDBColumnName())
-					).from(
-						dynamicObjectDefinitionLocalizationTable
-					).where(
-						dynamicObjectDefinitionLocalizationTable.
-							getForeignKeyColumn(
-							).eq(
-								objectEntryId
-							)
-					)));
+		selectExpressions.add(
+			dynamicObjectDefinitionLocalizationTable.getLanguageIdColumn());
 
-			if (ListUtil.isEmpty(localizedValues)) {
-				continue;
-			}
+		List<Object[]> localizedValues = ObjectMapperUtil.readValue(
+			List.class,
+			(Serializable)objectEntryPersistence.dslQuery(
+				DSLQueryFactoryUtil.select(
+					selectExpressions.toArray(new Expression<?>[0])
+				).from(
+					dynamicObjectDefinitionLocalizationTable
+				).where(
+					dynamicObjectDefinitionLocalizationTable.
+						getForeignKeyColumn(
+						).eq(
+							objectEntryId
+						)
+				)));
 
+		if (ListUtil.isEmpty(localizedValues)) {
+			return;
+		}
+
+		List<Map<String, String>> temp = new ArrayList<>();
+
+		for (int i = 0; i < objectFieldColumns.size(); i++) {
 			Map<String, String> map = new HashMap<>();
 
 			for (Object[] localizedValue : localizedValues) {
 				map.put(
-					localizedValue[0].toString(), localizedValue[1].toString());
+					String.valueOf(localizedValue[objectFieldColumns.size()]),
+					String.valueOf(localizedValue[i]));
 			}
 
-			values.put(objectField.getI18nObjectFieldName(), (Serializable)map);
+			temp.add(map);
+		}
+
+		for (int i = 0; i < objectFieldColumns.size(); i++) {
+			Column<DynamicObjectDefinitionLocalizationTable, ?> column =
+				objectFieldColumns.get(i);
+
+			ObjectField objectField = _objectFieldLocalService.getObjectField(
+				objectDefinitionId,
+				StringUtil.removeSubstring(
+					column.getName(), StringPool.UNDERLINE));
+
+			values.put(
+				objectField.getI18nObjectFieldName(),
+				(Serializable)temp.get(i));
 		}
 	}
 
