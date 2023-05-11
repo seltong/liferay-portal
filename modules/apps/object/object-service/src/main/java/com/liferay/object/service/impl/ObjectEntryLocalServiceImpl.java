@@ -158,6 +158,7 @@ import com.liferay.portal.kernel.util.DateUtil;
 import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
+import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.Localization;
 import com.liferay.portal.kernel.util.SetUtil;
@@ -175,6 +176,7 @@ import com.liferay.portal.search.searcher.SearchResponse;
 import com.liferay.portal.search.searcher.Searcher;
 import com.liferay.portal.search.sort.SortOrder;
 import com.liferay.portal.search.sort.Sorts;
+import com.liferay.portal.vulcan.util.ObjectMapperUtil;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -955,6 +957,10 @@ public class ObjectEntryLocalServiceImpl
 		_addObjectRelationshipERCFieldValue(
 			objectEntry.getObjectDefinitionId(), values);
 
+		_addLocalizedValues(
+			objectEntry.getObjectDefinitionId(), objectEntry.getObjectEntryId(),
+			values);
+
 		return values;
 	}
 
@@ -1438,6 +1444,58 @@ public class ObjectEntryLocalServiceImpl
 				TempFileEntryUtil.deleteTempFileEntry(
 					dlFileEntry.getFileEntryId());
 			}
+		}
+	}
+
+	private void _addLocalizedValues(
+			long objectDefinitionId, long objectEntryId,
+			Map<String, Serializable> values)
+		throws PortalException {
+
+		DynamicObjectDefinitionLocalizationTable
+			dynamicObjectDefinitionLocalizationTable =
+				_dynamicObjectDefinitionLocalizationTableFactory.create(
+					_objectDefinitionPersistence.findByPrimaryKey(
+						objectDefinitionId));
+
+		for (ObjectField objectField :
+				_objectFieldLocalService.getObjectFields(
+					objectDefinitionId, false)) {
+
+			if (!objectField.isLocalized()) {
+				continue;
+			}
+
+			List<Object[]> localizedValues = ObjectMapperUtil.readValue(
+				List.class,
+				(Serializable)objectEntryPersistence.dslQuery(
+					DSLQueryFactoryUtil.select(
+						dynamicObjectDefinitionLocalizationTable.
+							getLanguageIdColumn(),
+						dynamicObjectDefinitionLocalizationTable.getColumn(
+							objectField.getDBColumnName())
+					).from(
+						dynamicObjectDefinitionLocalizationTable
+					).where(
+						dynamicObjectDefinitionLocalizationTable.
+							getForeignKeyColumn(
+							).eq(
+								objectEntryId
+							)
+					)));
+
+			if (ListUtil.isEmpty(localizedValues)) {
+				continue;
+			}
+
+			Map<String, String> map = new HashMap<>();
+
+			for (Object[] localizedValue : localizedValues) {
+				map.put(
+					localizedValue[0].toString(), localizedValue[1].toString());
+			}
+
+			values.put(objectField.getI18nObjectFieldName(), (Serializable)map);
 		}
 	}
 
