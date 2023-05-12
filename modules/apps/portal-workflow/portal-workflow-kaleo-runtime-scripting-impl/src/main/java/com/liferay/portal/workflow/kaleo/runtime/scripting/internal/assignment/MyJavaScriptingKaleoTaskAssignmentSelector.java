@@ -15,14 +15,17 @@
 package com.liferay.portal.workflow.kaleo.runtime.scripting.internal.assignment;
 
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.model.Role;
 import com.liferay.portal.kernel.model.User;
+import com.liferay.portal.kernel.model.role.RoleConstants;
+import com.liferay.portal.kernel.service.RoleLocalService;
 import com.liferay.portal.workflow.kaleo.KaleoTaskAssignmentFactory;
 import com.liferay.portal.workflow.kaleo.model.KaleoTaskAssignment;
 import com.liferay.portal.workflow.kaleo.runtime.ExecutionContext;
 import com.liferay.portal.workflow.kaleo.runtime.assignment.KaleoTaskAssignmentSelector;
 
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -43,17 +46,29 @@ public class MyJavaScriptingKaleoTaskAssignmentSelector
 			ExecutionContext executionContext)
 		throws PortalException {
 
-		KaleoTaskAssignment newKaleoTaskAssignment =
+		KaleoTaskAssignment kaleoTaskAssignmentToRole =
 			kaleoTaskAssignmentFactory.createKaleoTaskAssignment();
 
-		newKaleoTaskAssignment.setAssigneeClassName(User.class.getName());
-		newKaleoTaskAssignment.setAssigneeClassPK(
-			kaleoTaskAssignment.getUserId());
+		Role role = _roleLocalService.getRole(
+			kaleoTaskAssignment.getCompanyId(), RoleConstants.POWER_USER);
 
-		return Collections.singletonList(newKaleoTaskAssignment);
+		kaleoTaskAssignmentToRole.setAssigneeClassName(Role.class.getName());
+		kaleoTaskAssignmentToRole.setAssigneeClassPK(role.getRoleId());
+
+		KaleoTaskAssignment kaleoTaskAssignmentToUser =
+			kaleoTaskAssignmentFactory.createKaleoTaskAssignment();
+
+		kaleoTaskAssignmentToUser.setAssigneeClassName(User.class.getName());
+		kaleoTaskAssignmentToUser.setAssigneeClassPK(43486L);
+
+		return Arrays.asList(
+			kaleoTaskAssignmentToRole, kaleoTaskAssignmentToUser);
 	}
 
 	@Reference
 	protected KaleoTaskAssignmentFactory kaleoTaskAssignmentFactory;
+
+	@Reference
+	private RoleLocalService _roleLocalService;
 
 }
