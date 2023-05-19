@@ -103,7 +103,13 @@ portletDisplay.setURLBack(backURL);
 					value = {key: value.length ? field.value[0] : ''};
 				}
 
-				return Object.assign(obj, {[field.fieldName]: value});
+				let fieldName = field.fieldName;
+
+				if (field.localizable) {
+					fieldName += '_i18n';
+				}
+
+				return Object.assign(obj, {[fieldName]: value});
 			}, {});
 		}
 
