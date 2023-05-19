@@ -103,6 +103,7 @@ import com.liferay.portal.vulcan.fields.NestedFieldsSupplier;
 import com.liferay.portal.vulcan.pagination.Page;
 import com.liferay.portal.vulcan.pagination.Pagination;
 import com.liferay.portal.vulcan.util.ActionUtil;
+import com.liferay.portal.vulcan.util.ObjectMapperUtil;
 import com.liferay.portal.vulcan.util.SearchUtil;
 
 import java.io.Serializable;
@@ -1275,7 +1276,10 @@ public class DefaultObjectEntryManagerImpl
 			if (objectField.isLocalized()) {
 				Map<String, Object> properties = objectEntry.getProperties();
 
-				value = properties.get(objectField.getI18nObjectFieldName());
+				value = ObjectMapperUtil.readValue(
+					Map.class,
+					String.valueOf(
+						properties.get(objectField.getI18nObjectFieldName())));
 
 				if (value == null) {
 					continue;

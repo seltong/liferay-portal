@@ -33,6 +33,7 @@ import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.vulcan.extension.PropertyDefinition;
+import com.liferay.portal.vulcan.util.ObjectMapperUtil;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -91,8 +92,9 @@ public interface ObjectFieldBusinessType {
 			return values.get(objectField.getName());
 		}
 
-		Map<String, String> localizedValues = (Map<String, String>)values.get(
-			objectField.getI18nObjectFieldName());
+		Map<String, String> localizedValues = ObjectMapperUtil.readValue(
+			Map.class,
+			String.valueOf(values.get(objectField.getI18nObjectFieldName())));
 
 		if (localizedValues == null) {
 			return values.get(objectField.getName());
