@@ -393,6 +393,10 @@ public class ObjectDDMStorageAdapter implements DDMStorageAdapter {
 						).build());
 				}
 				else {
+					if (objectField.isLocalized()) {
+						objectFieldName = objectField.getI18nObjectFieldName();
+					}
+
 					properties.put(
 						objectFieldName,
 						_getOptionReferenceValue(
@@ -515,7 +519,9 @@ public class ObjectDDMStorageAdapter implements DDMStorageAdapter {
 			_getValue(
 				ddmFormFieldValue, value.getDefaultLocale(),
 				objectFieldDBTypes.get(objectFieldName),
-				values.get(value.getDefaultLocale())));
+				value.isLocalized() ?
+					String.valueOf(_jsonFactory.createJSONObject(values)) :
+						values.get(value.getDefaultLocale())));
 	}
 
 	private Object _getValue(
