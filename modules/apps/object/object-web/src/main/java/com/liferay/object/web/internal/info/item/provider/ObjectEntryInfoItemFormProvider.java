@@ -633,6 +633,8 @@ public class ObjectEntryInfoItemFormProvider
 								).values(
 									objectField.getLabelMap()
 								).build()
+							).localizable(
+								objectField.isLocalized()
 							).required(
 								objectField.isRequired()
 							),

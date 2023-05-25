@@ -45,6 +45,8 @@ import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextThreadLocal;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.HashMapBuilder;
+import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.vulcan.util.GroupUtil;
 
 import java.io.Serializable;
@@ -89,9 +91,23 @@ public class ObjectEntryInfoItemCreator
 
 				InfoField<?> infoField = infoFieldValue.getInfoField();
 
-				values.put(
-					infoField.getName(),
-					(Serializable)infoFieldValue.getValue());
+				String objectFieldName = infoField.getName();
+
+				Serializable value = null;
+
+				if (infoField.isLocalizable()) {
+					objectFieldName += "_i18n";
+
+					value = HashMapBuilder.put(
+						LocaleUtil.toLanguageId(LocaleUtil.getDefault()),
+						infoFieldValue.getValue(serviceContext.getLocale())
+					).build();
+				}
+				else {
+					value = (Serializable)infoFieldValue.getValue();
+				}
+
+				values.put(objectFieldName, value);
 			}
 
 			return _objectEntryService.addObjectEntry(
