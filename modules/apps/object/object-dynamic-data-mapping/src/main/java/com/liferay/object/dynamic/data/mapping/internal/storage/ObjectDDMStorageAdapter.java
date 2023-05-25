@@ -382,23 +382,33 @@ public class ObjectDDMStorageAdapter implements DDMStorageAdapter {
 
 				ObjectField objectField = objectFieldsMap.get(objectFieldName);
 
+				Object propertyValue = null;
+
 				if (objectField.getListTypeDefinitionId() > 0) {
-					properties.put(
-						objectFieldName,
-						HashMapBuilder.put(
-							"key",
-							_getOptionReferenceValue(
-								ddmFormFieldValue, ddmFormFieldsMap,
-								objectFieldName, objectFieldDBTypes, value)
-						).build());
+					propertyValue = HashMapBuilder.put(
+						"key",
+						_getOptionReferenceValue(
+							ddmFormFieldValue, ddmFormFieldsMap,
+							objectFieldName, objectFieldDBTypes, value)
+					).build();
 				}
-				else {
-					properties.put(
-						objectFieldName,
+				else if (objectField.isLocalized()) {
+					objectFieldName = objectField.getI18nObjectFieldName();
+
+					JSONObject jsonObject = _jsonFactory.createJSONObject(
 						_getOptionReferenceValue(
 							ddmFormFieldValue, ddmFormFieldsMap,
 							objectFieldName, objectFieldDBTypes, value));
+
+					propertyValue = jsonObject.toMap();
 				}
+				else {
+					propertyValue = _getOptionReferenceValue(
+						ddmFormFieldValue, ddmFormFieldsMap, objectFieldName,
+						objectFieldDBTypes, value);
+				}
+
+				properties.put(objectFieldName, propertyValue);
 			}
 		}
 
@@ -515,7 +525,9 @@ public class ObjectDDMStorageAdapter implements DDMStorageAdapter {
 			_getValue(
 				ddmFormFieldValue, value.getDefaultLocale(),
 				objectFieldDBTypes.get(objectFieldName),
-				values.get(value.getDefaultLocale())));
+				value.isLocalized() ?
+					String.valueOf(_jsonFactory.createJSONObject(values)) :
+						values.get(value.getDefaultLocale())));
 	}
 
 	private Object _getValue(
