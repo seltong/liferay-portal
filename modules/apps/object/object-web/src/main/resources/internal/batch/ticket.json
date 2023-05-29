@@ -1,0 +1,83 @@
+{
+	"actions": {
+		"createBatch": {
+			"href": "/o/object-admin/v1.0/import-task/com.liferay.object.admin.rest.dto.v1_0.ObjectDefinition",
+			"method": "POST"
+		}
+	},
+	"configuration": {
+		"className": "com.liferay.object.admin.rest.dto.v1_0.ObjectDefinition",
+		"companyId": 0,
+		"parameters": {
+			"containsHeaders": "true",
+			"createStrategy": "UPSERT",
+			"importStrategy": "ON_ERROR_FAIL",
+			"taskItemDelegateName": "DEFAULT",
+			"updateStrategy": "UPDATE"
+		},
+		"userId": 0,
+		"version": "v1.0"
+	},
+	"items": [
+		{
+			"accountEntryRestricted": false,
+			"externalReferenceCode": "MSOD_TICKET",
+			"label": {
+				"en_US": "Ticket"
+			},
+			"modifiable": true,
+			"name": "ticket",
+			"objectFields": [
+				{
+					"DBType": "Clob",
+					"businessType": "LongText",
+					"defaultValue": "",
+					"externalReferenceCode": "DESCRIPTION",
+					"indexed": true,
+					"indexedAsKeyword": false,
+					"indexedLanguageId": "",
+					"label": {
+						"en_US": "Description"
+					},
+					"listTypeDefinitionExternalReferenceCode": "",
+					"name": "description",
+					"objectFieldSettings": [],
+					"required": false,
+					"state": false,
+					"system": false
+				},
+				{
+					"DBType": "String",
+					"businessType": "Text",
+					"defaultValue": "",
+					"externalReferenceCode": "TITLE",
+					"indexed": true,
+					"indexedAsKeyword": false,
+					"indexedLanguageId": "en_US",
+					"label": {
+						"en_US": "Title"
+					},
+					"listTypeDefinitionExternalReferenceCode": "",
+					"name": "title",
+					"objectFieldSettings": [],
+					"required": false,
+					"state": false,
+					"system": false
+				}
+			],
+			"objectLayouts": [],
+			"objectValidationRules": [],
+			"objectViews": [],
+			"panelCategoryKey": "site_administration.content",
+			"pluralLabel": {
+				"en_US": "Tickets"
+			},
+			"scope": "site",
+			"status": {
+				"code": 0
+			},
+			"system": true,
+			"titleObjectFieldName": "title"
+		}
+	]
+}
