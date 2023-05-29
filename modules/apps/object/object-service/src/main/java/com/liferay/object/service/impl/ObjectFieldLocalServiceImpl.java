@@ -35,6 +35,7 @@ import com.liferay.object.field.business.type.ObjectFieldBusinessTypeRegistry;
 import com.liferay.object.field.setting.util.ObjectFieldSettingUtil;
 import com.liferay.object.internal.field.setting.contributor.ObjectFieldSettingContributor;
 import com.liferay.object.internal.field.setting.contributor.ObjectFieldSettingContributorRegistry;
+import com.liferay.object.internal.petra.sql.dsl.DynamicObjectDefinitionLocalizationTableFactory;
 import com.liferay.object.model.ObjectDefinition;
 import com.liferay.object.model.ObjectEntry;
 import com.liferay.object.model.ObjectEntryTable;
@@ -42,6 +43,7 @@ import com.liferay.object.model.ObjectField;
 import com.liferay.object.model.ObjectFieldSetting;
 import com.liferay.object.model.ObjectRelationship;
 import com.liferay.object.petra.sql.dsl.DynamicObjectDefinitionTable;
+import com.liferay.object.petra.sql.dsl.DynamicObjectDefinitionTableUtil;
 import com.liferay.object.service.ObjectFieldSettingLocalService;
 import com.liferay.object.service.ObjectStateFlowLocalService;
 import com.liferay.object.service.ObjectViewLocalService;
@@ -139,14 +141,23 @@ public class ObjectFieldLocalServiceImpl
 		_addOrUpdateObjectFieldSettings(
 			objectDefinition, objectField, null, objectFieldSettings);
 
-		if (objectDefinition.isApproved() &&
-			!objectField.compareBusinessType(
-				ObjectFieldConstants.BUSINESS_TYPE_AGGREGATION) &&
-			!objectField.compareBusinessType(
-				ObjectFieldConstants.BUSINESS_TYPE_FORMULA)) {
+		if (!objectDefinition.isApproved()) {
+			return objectField;
+		}
+
+		if (localized) {
+			runSQL(
+				DynamicObjectDefinitionTableUtil.getAlterTableAddColumnSQL(
+					objectDefinition.getLocalizationDBTableName(),
+					objectField.getDBColumnName(), dbType));
+		}
+		else if (!objectField.compareBusinessType(
+					ObjectFieldConstants.BUSINESS_TYPE_AGGREGATION) &&
+				 !objectField.compareBusinessType(
+					 ObjectFieldConstants.BUSINESS_TYPE_FORMULA)) {
 
 			runSQL(
-				DynamicObjectDefinitionTable.getAlterTableAddColumnSQL(
+				DynamicObjectDefinitionTableUtil.getAlterTableAddColumnSQL(
 					dbTableName, objectField.getDBColumnName(), dbType));
 
 			if (GetterUtil.getBoolean(
@@ -444,6 +455,11 @@ public class ObjectFieldLocalServiceImpl
 	}
 
 	@Override
+	public List<ObjectField> getLocalizedObjectFields(long objectDefinitionId) {
+		return objectFieldPersistence.findByODI_L(objectDefinitionId, true);
+	}
+
+	@Override
 	public ObjectField getObjectField(long objectFieldId)
 		throws PortalException {
 
@@ -553,6 +569,11 @@ public class ObjectFieldLocalServiceImpl
 		ObjectDefinition objectDefinition =
 			_objectDefinitionPersistence.fetchByPrimaryKey(objectDefinitionId);
 
+		if (objectField.isLocalized()) {
+			return DynamicObjectDefinitionLocalizationTableFactory.create(
+				objectDefinition, this);
+		}
+
 		if (Objects.equals(
 				objectField.getDBTableName(),
 				objectDefinition.getDBTableName())) {
@@ -599,7 +620,8 @@ public class ObjectFieldLocalServiceImpl
 			businessType, dbType, indexed, indexedAsKeyword, indexedLanguageId);
 		_validateLabel(labelMap, newObjectField);
 		_validateLocalized(
-			businessType, localized, oldObjectField.getObjectDefinition());
+			businessType, localized, oldObjectField.getObjectDefinition(),
+			required);
 
 		ObjectDefinition objectDefinition =
 			_objectDefinitionPersistence.findByPrimaryKey(
@@ -731,7 +753,7 @@ public class ObjectFieldLocalServiceImpl
 		_validateIndexed(
 			businessType, dbType, indexed, indexedAsKeyword, indexedLanguageId);
 		_validateLabel(labelMap, null);
-		_validateLocalized(businessType, localized, objectDefinition);
+		_validateLocalized(businessType, localized, objectDefinition, required);
 		_validateName(0, objectDefinition, name, system);
 		_validateState(required, state);
 
@@ -965,6 +987,14 @@ public class ObjectFieldLocalServiceImpl
 				objectField.getDBTableName(), objectField.getDBColumnName());
 		}
 
+		if (objectDefinition.isEnableLocalization() &&
+			objectField.isLocalized() && objectDefinition.isApproved()) {
+
+			_alterTableDropColumn(
+				objectDefinition.getLocalizationDBTableName(),
+				objectField.getDBColumnName());
+		}
+
 		return objectField;
 	}
 
@@ -1151,11 +1181,16 @@ public class ObjectFieldLocalServiceImpl
 
 	private void _validateLocalized(
 			String businessType, boolean localized,
-			ObjectDefinition objectDefinition)
+			ObjectDefinition objectDefinition, boolean required)
 		throws PortalException {
 
 		if (!localized) {
 			return;
+		}
+
+		if (required) {
+			throw new ObjectFieldLocalizedException(
+				"Localized object fields must not be required");
 		}
 
 		if (!businessType.equals(

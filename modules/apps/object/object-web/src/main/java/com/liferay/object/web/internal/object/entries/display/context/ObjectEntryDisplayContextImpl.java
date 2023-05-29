@@ -76,8 +76,10 @@ import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
+import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.log.Log;
@@ -732,6 +734,15 @@ public class ObjectEntryDisplayContextImpl
 		ddmFormField.setProperty(
 			"objectFieldId", String.valueOf(objectField.getObjectFieldId()));
 
+		ddmFormField.setLocalizable(objectField.isLocalized());
+
+		if (objectField.isLocalized() &&
+			StringUtil.equals(
+				ddmFormField.getType(), DDMFormFieldTypeConstants.TEXT)) {
+
+			ddmFormField.setType(DDMFormFieldTypeConstants.LOCALIZABLE_TEXT);
+		}
+
 		if (Validator.isNotNull(objectField.getRelationshipType())) {
 			ObjectRelationship objectRelationship =
 				_objectRelationshipLocalService.
@@ -1096,6 +1107,10 @@ public class ObjectEntryDisplayContextImpl
 			ObjectField objectField = _objectFieldLocalService.getObjectField(
 				GetterUtil.getLong(ddmFormField.getProperty("objectFieldId")));
 
+			if (objectField.isLocalized()) {
+				return values.get(objectField.getI18nObjectFieldName());
+			}
+
 			ObjectFieldBusinessType objectFieldBusinessType =
 				_objectFieldBusinessTypeRegistry.getObjectFieldBusinessType(
 					objectField.getBusinessType());
@@ -1202,6 +1217,15 @@ public class ObjectEntryDisplayContextImpl
 
 			ddmFormFieldValue.setValue(
 				new UnlocalizedValue(listEntry.getKey()));
+		}
+		else if (FeatureFlagManagerUtil.isEnabled("LPS-172017") &&
+				 (value instanceof Map)) {
+
+			JSONObject jsonObject = JSONFactoryUtil.createJSONObject(
+				(Map<String, String>)value);
+
+			ddmFormFieldValue.setValue(
+				new UnlocalizedValue(jsonObject.toString()));
 		}
 		else {
 			if (value instanceof Double) {

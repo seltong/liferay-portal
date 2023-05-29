@@ -107,7 +107,7 @@ import org.junit.runner.RunWith;
  * @author Marco Leo
  * @author Brian Wing Shun Chan
  */
-@FeatureFlags({"LPS-146755", "LPS-163716"})
+@FeatureFlags({"LPS-146755", "LPS-163716", "LPS-172017"})
 @RunWith(Arquillian.class)
 public class ObjectFieldLocalServiceTest {
 
@@ -182,6 +182,26 @@ public class ObjectFieldLocalServiceTest {
 					).name(
 						"a" + RandomTestUtil.randomString()
 					).localized(
+						true
+					).build())));
+
+		// Localized object fields must be required
+
+		_assertFailure(
+			ObjectFieldLocalizedException.class,
+			"Localized object fields must not be required",
+			() -> ObjectDefinitionTestUtil.addObjectDefinition(
+				_objectDefinitionLocalService,
+				Arrays.asList(
+					new TextObjectFieldBuilder(
+					).labelMap(
+						LocalizedMapUtil.getLocalizedMap(
+							RandomTestUtil.randomString())
+					).name(
+						"a" + RandomTestUtil.randomString()
+					).localized(
+						true
+					).required(
 						true
 					).build())));
 
@@ -1336,7 +1356,7 @@ public class ObjectFieldLocalServiceTest {
 		Assert.assertEquals(
 			labelMap.get(LocaleUtil.GERMANY), labelMap.get(LocaleUtil.US));
 
-		// Object field relationship name and DB type cannot be changed
+		// Object field relationship
 
 		ObjectDefinition relatedObjectDefinition =
 			ObjectDefinitionTestUtil.addObjectDefinition(
@@ -1356,6 +1376,29 @@ public class ObjectFieldLocalServiceTest {
 				relatedObjectDefinition.getObjectDefinitionId(),
 				"r_relationship_" + objectDefinition.getPKObjectFieldName());
 
+		long relationshipObjectFieldId =
+			relationshipObjectField.getObjectFieldId();
+
+		relationshipObjectField = _updateCustomObjectField(
+			relationshipObjectField,
+			Arrays.asList(
+				_objectFieldSettingLocalService.fetchObjectFieldSetting(
+					relationshipObjectFieldId,
+					ObjectFieldSettingConstants.
+						NAME_OBJECT_DEFINITION_1_SHORT_NAME),
+				_objectFieldSettingLocalService.fetchObjectFieldSetting(
+					relationshipObjectFieldId,
+					ObjectFieldSettingConstants.
+						NAME_OBJECT_RELATIONSHIP_ERC_OBJECT_FIELD_NAME)));
+
+		String relationshipObjectFieldDBColumnName =
+			relationshipObjectField.getDBColumnName();
+
+		Assert.assertNotEquals(
+			StringPool.UNDERLINE,
+			relationshipObjectFieldDBColumnName.charAt(
+				relationshipObjectFieldDBColumnName.length() - 1));
+
 		_assertFailure(
 			ObjectFieldRelationshipTypeException.class,
 			"Object field relationship name and DB type cannot be changed",
@@ -1367,7 +1410,7 @@ public class ObjectFieldLocalServiceTest {
 				).name(
 					"able"
 				).objectFieldId(
-					relationshipObjectField.getObjectFieldId()
+					relationshipObjectFieldId
 				).objectFieldSettings(
 					Collections.emptyList()
 				).build()));
