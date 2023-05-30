@@ -55,8 +55,8 @@ public class ContentSecurityPolicyFilterTest {
 	@Test
 	public void testProcessFilter() throws Exception {
 		try (CompanyConfigurationTemporarySwapper
-				configurationTemporarySwapper = _configureContentSecurityPolicy(
-					false, "")) {
+				configurationTemporarySwapper =
+					_getCompanyConfigurationTemporarySwapper(false, "")) {
 
 			HttpURLConnection httpURLConnection = _openHttpURLConnection();
 
@@ -70,8 +70,8 @@ public class ContentSecurityPolicyFilterTest {
 		}
 
 		try (CompanyConfigurationTemporarySwapper
-				configurationTemporarySwapper = _configureContentSecurityPolicy(
-					true, "")) {
+				configurationTemporarySwapper =
+					_getCompanyConfigurationTemporarySwapper(true, "")) {
 
 			HttpURLConnection httpURLConnection = _openHttpURLConnection();
 
@@ -91,8 +91,8 @@ public class ContentSecurityPolicyFilterTest {
 		String policy = "default-src 'self';";
 
 		try (CompanyConfigurationTemporarySwapper
-				configurationTemporarySwapper = _configureContentSecurityPolicy(
-					true, policy)) {
+				configurationTemporarySwapper =
+					_getCompanyConfigurationTemporarySwapper(true, policy)) {
 
 			HttpURLConnection httpURLConnection = _openHttpURLConnection();
 
@@ -114,8 +114,8 @@ public class ContentSecurityPolicyFilterTest {
 				"'self' '[$NONCE$]'";
 
 		try (CompanyConfigurationTemporarySwapper
-				configurationTemporarySwapper = _configureContentSecurityPolicy(
-					true, policy)) {
+				configurationTemporarySwapper =
+					_getCompanyConfigurationTemporarySwapper(true, policy)) {
 
 			HttpURLConnection httpURLConnection = _openHttpURLConnection();
 
@@ -152,7 +152,8 @@ public class ContentSecurityPolicyFilterTest {
 	}
 
 	private CompanyConfigurationTemporarySwapper
-			_configureContentSecurityPolicy(boolean enabled, String policy)
+			_getCompanyConfigurationTemporarySwapper(
+				boolean enabled, String policy)
 		throws Exception {
 
 		return new CompanyConfigurationTemporarySwapper(
@@ -165,17 +166,6 @@ public class ContentSecurityPolicyFilterTest {
 				"policy", policy
 			).build(),
 			SettingsFactoryUtil.getSettingsFactory());
-	}
-
-	private HttpURLConnection _openHttpURLConnection() throws IOException {
-		URL url = new URL("http://localhost:8080/web/guest");
-
-		HttpURLConnection httpURLConnection =
-			(HttpURLConnection)url.openConnection();
-
-		httpURLConnection.setRequestMethod("GET");
-
-		return httpURLConnection;
 	}
 
 	private String _getContent(HttpURLConnection httpURLConnection)
@@ -194,6 +184,17 @@ public class ContentSecurityPolicyFilterTest {
 		}
 
 		return sb.toString();
+	}
+
+	private HttpURLConnection _openHttpURLConnection() throws IOException {
+		URL url = new URL("http://localhost:8080/web/guest");
+
+		HttpURLConnection httpURLConnection =
+			(HttpURLConnection)url.openConnection();
+
+		httpURLConnection.setRequestMethod("GET");
+
+		return httpURLConnection;
 	}
 
 }
