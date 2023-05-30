@@ -119,18 +119,18 @@ public class ContentSecurityPolicyFilterTest {
 			Assert.assertTrue(
 				headerFields.containsKey("Content-Security-Policy"));
 
-			String value =
-				httpURLConnection.getHeaderField("Content-Security-Policy");
+			String value = httpURLConnection.getHeaderField(
+				"Content-Security-Policy");
 
 			Assert.assertNotNull(value);
 
 			int index = value.indexOf("nonce-") + "nonce-".length();
 
-			String nonce = value.substring(
-				index, index + 24);
+			String nonce = value.substring(index, index + 24);
 
 			Assert.assertEquals(
-				value, StringUtil.replace(policy, "[$NONCE$]", "nonce-" + nonce));
+				value,
+				StringUtil.replace(policy, "[$NONCE$]", "nonce-" + nonce));
 
 			String content = _getContent(httpURLConnection);
 
