@@ -171,9 +171,7 @@ public class StructuredContentResourceTest
 		super.testGetSiteStructuredContentsPage();
 
 		_testGetSiteStructuredContentsPageByDefaultPriority();
-
 		_testGetSiteStructuredContentsPageByGivenPriority();
-
 		_testGetSiteStructuredContentsPageOrderedByDescendingPriority();
 	}
 
