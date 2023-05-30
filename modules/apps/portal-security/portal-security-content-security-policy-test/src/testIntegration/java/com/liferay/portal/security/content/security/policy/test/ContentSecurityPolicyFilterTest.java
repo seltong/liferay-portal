@@ -104,9 +104,9 @@ public class ContentSecurityPolicyFilterTest {
 			Assert.assertFalse(
 				headerFields.containsKey("Content-Security-Policy"));
 
-			String responseBody = _getResponseBody(httpURLConnection);
+			String content = _getContent(httpURLConnection);
 
-			Assert.assertFalse(responseBody.contains("nonce="));
+			Assert.assertFalse(content.contains("nonce="));
 		}
 	}
 
@@ -175,16 +175,16 @@ public class ContentSecurityPolicyFilterTest {
 			Assert.assertEquals(
 				contentSecurityPolicyHeaderValue, substitutedCspPolicy);
 
-			String responseBody = _getResponseBody(httpURLConnection);
+			String content = _getContent(httpURLConnection);
 
 			Assert.assertTrue(
-				responseBody.contains("<link nonce=\"" + nonce + "\""));
+				content.contains("<link nonce=\"" + nonce + "\""));
 
 			Assert.assertTrue(
-				responseBody.contains("<script nonce=\"" + nonce + "\""));
+				content.contains("<script nonce=\"" + nonce + "\""));
 
 			Assert.assertTrue(
-				responseBody.contains("<style nonce=\"" + nonce + "\""));
+				content.contains("<style nonce=\"" + nonce + "\""));
 		}
 	}
 
@@ -215,7 +215,7 @@ public class ContentSecurityPolicyFilterTest {
 		return httpURLConnection;
 	}
 
-	private String _getResponseBody(HttpURLConnection httpURLConnection)
+	private String _getContent(HttpURLConnection httpURLConnection)
 		throws IOException {
 
 		StringBuilder sb = new StringBuilder();
