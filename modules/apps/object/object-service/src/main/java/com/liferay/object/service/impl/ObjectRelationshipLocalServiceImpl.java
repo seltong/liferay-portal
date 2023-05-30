@@ -562,6 +562,14 @@ public class ObjectRelationshipLocalServiceImpl
 	}
 
 	@Override
+	public ObjectRelationship getObjectRelationshipByExternalReferenceCode(
+		String externalReferenceCode, long companyId) {
+
+		return objectRelationshipPersistence.fetchByERC_C(
+			externalReferenceCode, companyId);
+	}
+
+	@Override
 	public ObjectRelationship getObjectRelationshipByObjectDefinitionId(
 			long objectDefinitionId, String name)
 		throws Exception {
