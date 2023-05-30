@@ -508,6 +508,10 @@
 	</entity>
 	<entity local-service="true" name="ObjectRelationship" remote-service="true" uuid="true">
 
+		<!-- External reference code -->
+
+		<column name="externalReferenceCode" type="String" />
+
 		<!-- PK fields -->
 
 		<column name="objectRelationshipId" primary="true" type="long" />
@@ -543,6 +547,10 @@
 		</finder>
 		<finder name="ObjectFieldId2" return-type="ObjectRelationship">
 			<finder-column name="objectFieldId2" />
+		</finder>
+		<finder name="ERC_C" return-type="ObjectRelationship">
+			<finder-column name="externalReferenceCode" />
+			<finder-column name="companyId" />
 		</finder>
 		<finder name="ODI1_N" return-type="Collection">
 			<finder-column name="objectDefinitionId1" />
