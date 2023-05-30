@@ -45,9 +45,9 @@ public interface ContentSecurityPolicyConfiguration {
 
 	@Meta.AD(
 		deflt = "/api/,/c/portal/layout,/combo,/documents/,/image/,/layouttpl/,/o/,/webdav/",
-		description = "content-security-policy-excluded-uri-path-help",
-		name = "excluded-uri-path", required = false
+		description = "content-security-policy-excluded-paths-help",
+		name = "excluded-paths", required = false
 	)
-	public String[] excludedURIPaths();
+	public String[] excludedPaths();
 
 }

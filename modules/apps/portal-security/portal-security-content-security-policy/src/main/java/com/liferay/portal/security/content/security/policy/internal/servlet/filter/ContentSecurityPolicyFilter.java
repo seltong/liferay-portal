@@ -174,13 +174,12 @@ public class ContentSecurityPolicyFilter extends BasePortalFilter {
 		ContentSecurityPolicyConfiguration contentSecurityPolicyConfiguration =
 			_getContentSecurityPolicyConfiguration(httpServletRequest);
 
-		String[] excludedURIPaths =
-			contentSecurityPolicyConfiguration.excludedURIPaths();
+		for (String excludedPath :
+				contentSecurityPolicyConfiguration.excludedPaths()) {
 
-		for (String excludedURIPath : excludedURIPaths) {
-			if (Validator.isNotNull(excludedURIPath) &&
+			if (Validator.isNotNull(excludedPath) &&
 				requestURI.startsWith(
-					StringUtil.toLowerCase(excludedURIPath))) {
+					StringUtil.toLowerCase(excludedPath))) {
 
 				return true;
 			}
