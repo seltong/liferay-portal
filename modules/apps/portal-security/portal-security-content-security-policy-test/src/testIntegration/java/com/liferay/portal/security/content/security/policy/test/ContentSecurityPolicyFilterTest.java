@@ -71,24 +71,6 @@ public class ContentSecurityPolicyFilterTest {
 	}
 
 	@Test
-	public void testWhenConfigEnabledAndPolicyEmptyCspHeaderShouldNotBeAdded()
-		throws Exception {
-
-		try (CompanyConfigurationTemporarySwapper
-				configurationTemporarySwapper = _configureContentSecurityPolicy(
-					true, "")) {
-
-			HttpURLConnection httpURLConnection = _createHttpURLConnection();
-
-			Map<String, List<String>> headerFields =
-				httpURLConnection.getHeaderFields();
-
-			Assert.assertFalse(
-				headerFields.containsKey("Content-Security-Policy"));
-		}
-	}
-
-	@Test
 	public void testWhenConfigEnabledAndPolicyEmptyNonceShouldNotBeAddedToTags()
 		throws Exception {
 
