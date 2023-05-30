@@ -58,7 +58,7 @@ public class ContentSecurityPolicyFilterTest {
 				configurationTemporarySwapper = _configureContentSecurityPolicy(
 					false, "")) {
 
-			HttpURLConnection httpURLConnection = _createHttpURLConnection();
+			HttpURLConnection httpURLConnection = _openHttpURLConnection();
 
 			Map<String, List<String>> headerFields =
 				httpURLConnection.getHeaderFields();
@@ -71,7 +71,7 @@ public class ContentSecurityPolicyFilterTest {
 				configurationTemporarySwapper = _configureContentSecurityPolicy(
 					true, "")) {
 
-			HttpURLConnection httpURLConnection = _createHttpURLConnection();
+			HttpURLConnection httpURLConnection = _openHttpURLConnection();
 
 			Map<String, List<String>> headerFields =
 				httpURLConnection.getHeaderFields();
@@ -90,7 +90,7 @@ public class ContentSecurityPolicyFilterTest {
 				configurationTemporarySwapper = _configureContentSecurityPolicy(
 					true, policy)) {
 
-			HttpURLConnection httpURLConnection = _createHttpURLConnection();
+			HttpURLConnection httpURLConnection = _openHttpURLConnection();
 
 			Map<String, List<String>> headerFields =
 				httpURLConnection.getHeaderFields();
@@ -111,7 +111,7 @@ public class ContentSecurityPolicyFilterTest {
 				configurationTemporarySwapper = _configureContentSecurityPolicy(
 					true, policy)) {
 
-			HttpURLConnection httpURLConnection = _createHttpURLConnection();
+			HttpURLConnection httpURLConnection = _openHttpURLConnection();
 
 			Map<String, List<String>> headerFields =
 				httpURLConnection.getHeaderFields();
@@ -159,7 +159,7 @@ public class ContentSecurityPolicyFilterTest {
 			SettingsFactoryUtil.getSettingsFactory());
 	}
 
-	private HttpURLConnection _createHttpURLConnection() throws IOException {
+	private HttpURLConnection _openHttpURLConnection() throws IOException {
 		URL url = new URL("http://localhost:8080/web/guest");
 
 		HttpURLConnection httpURLConnection =
