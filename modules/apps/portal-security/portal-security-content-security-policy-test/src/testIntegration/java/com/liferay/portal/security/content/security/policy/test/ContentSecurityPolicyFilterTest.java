@@ -65,6 +65,8 @@ public class ContentSecurityPolicyFilterTest {
 
 			Assert.assertFalse(
 				headerFields.containsKey("Content-Security-Policy"));
+
+			httpURLConnection.disconnect();
 		}
 
 		try (CompanyConfigurationTemporarySwapper
@@ -82,6 +84,8 @@ public class ContentSecurityPolicyFilterTest {
 			String content = _getContent(httpURLConnection);
 
 			Assert.assertFalse(content.contains("nonce="));
+
+			httpURLConnection.disconnect();
 		}
 
 		String policy = "default-src 'self';";
@@ -101,6 +105,8 @@ public class ContentSecurityPolicyFilterTest {
 			Assert.assertEquals(
 				httpURLConnection.getHeaderField("Content-Security-Policy"),
 				policy);
+
+			httpURLConnection.disconnect();
 		}
 
 		policy =
@@ -140,6 +146,8 @@ public class ContentSecurityPolicyFilterTest {
 				content.contains("<script nonce=\"" + nonce + "\""));
 			Assert.assertTrue(
 				content.contains("<style nonce=\"" + nonce + "\""));
+
+			httpURLConnection.disconnect();
 		}
 	}
 
