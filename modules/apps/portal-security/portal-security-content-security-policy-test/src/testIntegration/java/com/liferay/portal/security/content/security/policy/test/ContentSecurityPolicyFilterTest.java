@@ -119,35 +119,25 @@ public class ContentSecurityPolicyFilterTest {
 			Assert.assertTrue(
 				headerFields.containsKey("Content-Security-Policy"));
 
-			String contentSecurityPolicyHeaderValue =
+			String value =
 				httpURLConnection.getHeaderField("Content-Security-Policy");
 
-			Assert.assertNotNull(contentSecurityPolicyHeaderValue);
+			Assert.assertNotNull(value);
 
-			int nonceStartPos = contentSecurityPolicyHeaderValue.indexOf(
-				"nonce-");
+			int index = value.indexOf("nonce-") + "nonce-".length();
 
-			int noncePrefixLength = "nonce-".length();
-
-			int nonceRandomStartPos = nonceStartPos + noncePrefixLength;
-
-			String nonce = contentSecurityPolicyHeaderValue.substring(
-				nonceRandomStartPos, nonceRandomStartPos + 24);
-
-			String substitutedCspPolicy = StringUtil.replace(
-				policy, "[$NONCE$]", "nonce-" + nonce);
+			String nonce = value.substring(
+				index, index + 24);
 
 			Assert.assertEquals(
-				contentSecurityPolicyHeaderValue, substitutedCspPolicy);
+				value, StringUtil.replace(policy, "[$NONCE$]", "nonce-" + nonce));
 
 			String content = _getContent(httpURLConnection);
 
 			Assert.assertTrue(
 				content.contains("<link nonce=\"" + nonce + "\""));
-
 			Assert.assertTrue(
 				content.contains("<script nonce=\"" + nonce + "\""));
-
 			Assert.assertTrue(
 				content.contains("<style nonce=\"" + nonce + "\""));
 		}
