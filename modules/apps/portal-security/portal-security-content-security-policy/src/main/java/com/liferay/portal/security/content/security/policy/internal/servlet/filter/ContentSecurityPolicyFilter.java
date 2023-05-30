@@ -95,17 +95,17 @@ public class ContentSecurityPolicyFilter extends BasePortalFilter {
 
 		PrintWriter printWriter = httpServletResponse.getWriter();
 
-		ContentSecurityPolicyNonceIncludeServletResponse
-			contentSecurityPolicyNonceIncludeServletResponse =
-				new ContentSecurityPolicyNonceIncludeServletResponse(
+		ContentSecurityPolicyHttpServletResponse
+			contentSecurityPolicyHttpServletResponse =
+				new ContentSecurityPolicyHttpServletResponse(
 					httpServletResponse);
 
 		filterChain.doFilter(
 			httpServletRequest,
-			contentSecurityPolicyNonceIncludeServletResponse);
+			contentSecurityPolicyHttpServletResponse);
 
 		String content =
-			contentSecurityPolicyNonceIncludeServletResponse.
+			contentSecurityPolicyHttpServletResponse.
 				getContent();
 
 		String nonce = _generateNonce();
@@ -197,10 +197,10 @@ public class ContentSecurityPolicyFilter extends BasePortalFilter {
 	@Reference
 	private Portal _portal;
 
-	private static class ContentSecurityPolicyNonceIncludeServletResponse
+	private static class ContentSecurityPolicyHttpServletResponse
 		extends HttpServletResponseWrapper {
 
-		public ContentSecurityPolicyNonceIncludeServletResponse(
+		public ContentSecurityPolicyHttpServletResponse(
 			HttpServletResponse httpServletResponse) {
 
 			super(httpServletResponse);
