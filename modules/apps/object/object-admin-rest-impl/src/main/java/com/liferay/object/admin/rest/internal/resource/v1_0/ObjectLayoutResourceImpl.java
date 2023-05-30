@@ -26,6 +26,7 @@ import com.liferay.object.model.ObjectField;
 import com.liferay.object.service.ObjectDefinitionLocalService;
 import com.liferay.object.service.ObjectFieldLocalService;
 import com.liferay.object.service.ObjectLayoutService;
+import com.liferay.object.service.ObjectRelationshipLocalService;
 import com.liferay.object.service.persistence.ObjectLayoutBoxPersistence;
 import com.liferay.object.service.persistence.ObjectLayoutColumnPersistence;
 import com.liferay.object.service.persistence.ObjectLayoutRowPersistence;
@@ -223,7 +224,7 @@ public class ObjectLayoutResourceImpl
 					serviceBuilderObjectLayout.getObjectDefinitionId())
 			).build(),
 			_objectDefinitionLocalService, _objectFieldLocalService,
-			serviceBuilderObjectLayout);
+			_objectRelationshipLocalService, serviceBuilderObjectLayout);
 	}
 
 	private com.liferay.object.model.ObjectLayoutBox _toObjectLayoutBox(
@@ -291,8 +292,7 @@ public class ObjectLayoutResourceImpl
 	}
 
 	private com.liferay.object.model.ObjectLayoutTab _toObjectLayoutTab(
-			long objectDefinitionId, ObjectLayoutTab objectLayoutTab)
-		throws PortalException {
+		long objectDefinitionId, ObjectLayoutTab objectLayoutTab) {
 
 		com.liferay.object.model.ObjectLayoutTab serviceBuilderObjectLayoutTab =
 			_objectLayoutTabPersistence.create(0L);
@@ -332,5 +332,8 @@ public class ObjectLayoutResourceImpl
 
 	@Reference
 	private ObjectLayoutTabPersistence _objectLayoutTabPersistence;
+
+	@Reference
+	private ObjectRelationshipLocalService _objectRelationshipLocalService;
 
 }
