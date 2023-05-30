@@ -225,7 +225,7 @@ public class ContentSecurityPolicyFilter extends BasePortalFilter {
 		public ServletOutputStream getOutputStream() {
 			if (_printWriter != null) {
 				throw new IllegalStateException(
-					"getWriter() has already been called on this response");
+					"Get writer has already been called");
 			}
 
 			if (_servletOutputStream == null) {
@@ -277,8 +277,7 @@ public class ContentSecurityPolicyFilter extends BasePortalFilter {
 		public PrintWriter getWriter() throws IOException {
 			if (_servletOutputStream != null) {
 				throw new IllegalStateException(
-					"getOutputStream() has already been called on this " +
-						"response");
+					"Get output stream has already been called");
 			}
 
 			if (_printWriter == null) {
