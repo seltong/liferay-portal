@@ -53,9 +53,7 @@ public class ContentSecurityPolicyFilterTest {
 		new LiferayIntegrationTestRule();
 
 	@Test
-	public void testWhenConfigDisabledFilterShouldBeDisabled()
-		throws Exception {
-
+	public void testProcessFilter() throws Exception {
 		try (CompanyConfigurationTemporarySwapper
 				configurationTemporarySwapper = _configureContentSecurityPolicy(
 					false, "")) {
@@ -68,11 +66,6 @@ public class ContentSecurityPolicyFilterTest {
 			Assert.assertFalse(
 				headerFields.containsKey("Content-Security-Policy"));
 		}
-	}
-
-	@Test
-	public void testWhenConfigEnabledAndPolicyEmptyNonceShouldNotBeAddedToTags()
-		throws Exception {
 
 		try (CompanyConfigurationTemporarySwapper
 				configurationTemporarySwapper = _configureContentSecurityPolicy(
@@ -90,17 +83,12 @@ public class ContentSecurityPolicyFilterTest {
 
 			Assert.assertFalse(content.contains("nonce="));
 		}
-	}
 
-	@Test
-	public void testWhenConfiguredCorrectlyCspHeaderShouldBeAdded()
-		throws Exception {
-
-		String cspPolicy = "default-src 'self';";
+		String policy = "default-src 'self';";
 
 		try (CompanyConfigurationTemporarySwapper
 				configurationTemporarySwapper = _configureContentSecurityPolicy(
-					true, cspPolicy)) {
+					true, policy)) {
 
 			HttpURLConnection httpURLConnection = _createHttpURLConnection();
 
@@ -112,21 +100,16 @@ public class ContentSecurityPolicyFilterTest {
 
 			Assert.assertEquals(
 				httpURLConnection.getHeaderField("Content-Security-Policy"),
-				cspPolicy);
+				policy);
 		}
-	}
 
-	@Test
-	public void testWhenConfiguredCorrectlyNonceShouldBeGeneratedToBodyAndHeader()
-		throws Exception {
-
-		String cspPolicy =
+		policy =
 			"default-src 'self'; script-src 'self' '[$NONCE$]'; style-src " +
 				"'self' '[$NONCE$]'";
 
 		try (CompanyConfigurationTemporarySwapper
 				configurationTemporarySwapper = _configureContentSecurityPolicy(
-					true, cspPolicy)) {
+					true, policy)) {
 
 			HttpURLConnection httpURLConnection = _createHttpURLConnection();
 
@@ -152,7 +135,7 @@ public class ContentSecurityPolicyFilterTest {
 				nonceRandomStartPos, nonceRandomStartPos + 24);
 
 			String substitutedCspPolicy = StringUtil.replace(
-				cspPolicy, "[$NONCE$]", "nonce-" + nonce);
+				policy, "[$NONCE$]", "nonce-" + nonce);
 
 			Assert.assertEquals(
 				contentSecurityPolicyHeaderValue, substitutedCspPolicy);
