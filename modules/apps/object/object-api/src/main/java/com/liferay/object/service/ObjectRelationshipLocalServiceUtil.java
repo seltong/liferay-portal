@@ -371,6 +371,14 @@ public class ObjectRelationshipLocalServiceUtil {
 		return getService().getObjectRelationship(objectDefinitionId1, name);
 	}
 
+	public static ObjectRelationship
+		getObjectRelationshipByExternalReferenceCode(
+			String externalReferenceCode, long companyId) {
+
+		return getService().getObjectRelationshipByExternalReferenceCode(
+			externalReferenceCode, companyId);
+	}
+
 	public static ObjectRelationship getObjectRelationshipByObjectDefinitionId(
 			long objectDefinitionId, String name)
 		throws Exception {

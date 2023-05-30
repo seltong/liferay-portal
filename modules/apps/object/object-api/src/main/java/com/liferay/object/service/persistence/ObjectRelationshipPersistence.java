@@ -673,6 +673,59 @@ public interface ObjectRelationshipPersistence
 	public int countByObjectFieldId2(long objectFieldId2);
 
 	/**
+	 * Returns the object relationship where externalReferenceCode = &#63; and companyId = &#63; or throws a <code>NoSuchObjectRelationshipException</code> if it could not be found.
+	 *
+	 * @param externalReferenceCode the external reference code
+	 * @param companyId the company ID
+	 * @return the matching object relationship
+	 * @throws NoSuchObjectRelationshipException if a matching object relationship could not be found
+	 */
+	public ObjectRelationship findByERC_C(
+			String externalReferenceCode, long companyId)
+		throws NoSuchObjectRelationshipException;
+
+	/**
+	 * Returns the object relationship where externalReferenceCode = &#63; and companyId = &#63; or returns <code>null</code> if it could not be found. Uses the finder cache.
+	 *
+	 * @param externalReferenceCode the external reference code
+	 * @param companyId the company ID
+	 * @return the matching object relationship, or <code>null</code> if a matching object relationship could not be found
+	 */
+	public ObjectRelationship fetchByERC_C(
+		String externalReferenceCode, long companyId);
+
+	/**
+	 * Returns the object relationship where externalReferenceCode = &#63; and companyId = &#63; or returns <code>null</code> if it could not be found, optionally using the finder cache.
+	 *
+	 * @param externalReferenceCode the external reference code
+	 * @param companyId the company ID
+	 * @param useFinderCache whether to use the finder cache
+	 * @return the matching object relationship, or <code>null</code> if a matching object relationship could not be found
+	 */
+	public ObjectRelationship fetchByERC_C(
+		String externalReferenceCode, long companyId, boolean useFinderCache);
+
+	/**
+	 * Removes the object relationship where externalReferenceCode = &#63; and companyId = &#63; from the database.
+	 *
+	 * @param externalReferenceCode the external reference code
+	 * @param companyId the company ID
+	 * @return the object relationship that was removed
+	 */
+	public ObjectRelationship removeByERC_C(
+			String externalReferenceCode, long companyId)
+		throws NoSuchObjectRelationshipException;
+
+	/**
+	 * Returns the number of object relationships where externalReferenceCode = &#63; and companyId = &#63;.
+	 *
+	 * @param externalReferenceCode the external reference code
+	 * @param companyId the company ID
+	 * @return the number of matching object relationships
+	 */
+	public int countByERC_C(String externalReferenceCode, long companyId);
+
+	/**
 	 * Returns all the object relationships where objectDefinitionId1 = &#63; and name = &#63;.
 	 *
 	 * @param objectDefinitionId1 the object definition id1

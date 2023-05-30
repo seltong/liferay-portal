@@ -431,6 +431,16 @@ public class ObjectRelationshipLocalServiceWrapper
 
 	@Override
 	public com.liferay.object.model.ObjectRelationship
+		getObjectRelationshipByExternalReferenceCode(
+			String externalReferenceCode, long companyId) {
+
+		return _objectRelationshipLocalService.
+			getObjectRelationshipByExternalReferenceCode(
+				externalReferenceCode, companyId);
+	}
+
+	@Override
+	public com.liferay.object.model.ObjectRelationship
 			getObjectRelationshipByObjectDefinitionId(
 				long objectDefinitionId, String name)
 		throws Exception {
