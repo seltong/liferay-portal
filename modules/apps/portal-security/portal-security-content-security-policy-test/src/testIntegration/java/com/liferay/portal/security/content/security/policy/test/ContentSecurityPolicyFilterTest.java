@@ -139,8 +139,8 @@ public class ContentSecurityPolicyFilterTest {
 		throws Exception {
 
 		String cspPolicy =
-			"default-src 'self'; script-src 'self' '[$NONCE$]'; " +
-				"style-src 'self' '[$NONCE$]'";
+			"default-src 'self'; script-src 'self' '[$NONCE$]'; style-src " +
+				"'self' '[$NONCE$]'";
 
 		try (CompanyConfigurationTemporarySwapper
 				configurationTemporarySwapper = _configureContentSecurityPolicy(

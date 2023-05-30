@@ -101,12 +101,9 @@ public class ContentSecurityPolicyFilter extends BasePortalFilter {
 					httpServletResponse);
 
 		filterChain.doFilter(
-			httpServletRequest,
-			contentSecurityPolicyHttpServletResponse);
+			httpServletRequest, contentSecurityPolicyHttpServletResponse);
 
-		String content =
-			contentSecurityPolicyHttpServletResponse.
-				getContent();
+		String content = contentSecurityPolicyHttpServletResponse.getContent();
 
 		String nonce = _generateNonce();
 
@@ -129,8 +126,7 @@ public class ContentSecurityPolicyFilter extends BasePortalFilter {
 
 		httpServletResponse.setContentLength(content.length());
 
-		policy = StringUtil.replace(
-			policy, "[$NONCE$]", "nonce-" + nonce);
+		policy = StringUtil.replace(policy, "[$NONCE$]", "nonce-" + nonce);
 
 		httpServletResponse.setHeader("Content-Security-Policy", policy);
 	}
@@ -183,7 +179,8 @@ public class ContentSecurityPolicyFilter extends BasePortalFilter {
 
 		for (String excludedURIPath : excludedURIPaths) {
 			if (Validator.isNotNull(excludedURIPath) &&
-				requestURI.startsWith(StringUtil.toLowerCase(excludedURIPath))) {
+				requestURI.startsWith(
+					StringUtil.toLowerCase(excludedURIPath))) {
 
 				return true;
 			}
@@ -220,6 +217,17 @@ public class ContentSecurityPolicyFilter extends BasePortalFilter {
 			else if (_servletOutputStream != null) {
 				_servletOutputStream.flush();
 			}
+		}
+
+		public String getContent() throws IOException {
+			if (_printWriter != null) {
+				_printWriter.close();
+			}
+			else if (_servletOutputStream != null) {
+				_servletOutputStream.close();
+			}
+
+			return _byteArrayOutputStream.toString(getCharacterEncoding());
 		}
 
 		@Override
@@ -261,17 +269,6 @@ public class ContentSecurityPolicyFilter extends BasePortalFilter {
 			}
 
 			return _servletOutputStream;
-		}
-
-		public String getContent() throws IOException {
-			if (_printWriter != null) {
-				_printWriter.close();
-			}
-			else if (_servletOutputStream != null) {
-				_servletOutputStream.close();
-			}
-
-			return _byteArrayOutputStream.toString(getCharacterEncoding());
 		}
 
 		@Override
