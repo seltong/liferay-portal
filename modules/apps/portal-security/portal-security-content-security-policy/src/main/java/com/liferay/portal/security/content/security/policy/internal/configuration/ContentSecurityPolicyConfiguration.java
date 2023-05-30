@@ -36,7 +36,7 @@ public interface ContentSecurityPolicyConfiguration {
 	@Meta.AD(deflt = "false", name = "enabled", required = false)
 	public boolean enabled();
 
-	@ExtendedAttributeDefinition(descriptionArguments = "[$NONCE_TOKEN$]")
+	@ExtendedAttributeDefinition(descriptionArguments = "[$NONCE$]")
 	@Meta.AD(
 		description = "content-security-policy-help",
 		name = "content-security-policy", required = false
