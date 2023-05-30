@@ -572,6 +572,8 @@ public class Mutation {
 	@GraphQLField
 	public ObjectLayout createObjectDefinitionObjectLayout(
 			@GraphQLName("objectDefinitionId") Long objectDefinitionId,
+			@GraphQLName("objectRelationships") ObjectRelationship[]
+				objectRelationships,
 			@GraphQLName("objectLayout") ObjectLayout objectLayout)
 		throws Exception {
 
@@ -580,12 +582,14 @@ public class Mutation {
 			this::_populateResourceContext,
 			objectLayoutResource ->
 				objectLayoutResource.postObjectDefinitionObjectLayout(
-					objectDefinitionId, objectLayout));
+					objectDefinitionId, objectRelationships, objectLayout));
 	}
 
 	@GraphQLField
 	public Response createObjectDefinitionObjectLayoutBatch(
 			@GraphQLName("objectDefinitionId") Long objectDefinitionId,
+			@GraphQLName("objectRelationships") ObjectRelationship[]
+				objectRelationships,
 			@GraphQLName("callbackURL") String callbackURL,
 			@GraphQLName("object") Object object)
 		throws Exception {
@@ -595,7 +599,8 @@ public class Mutation {
 			this::_populateResourceContext,
 			objectLayoutResource ->
 				objectLayoutResource.postObjectDefinitionObjectLayoutBatch(
-					objectDefinitionId, callbackURL, object));
+					objectDefinitionId, objectRelationships, callbackURL,
+					object));
 	}
 
 	@GraphQLField

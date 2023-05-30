@@ -15,6 +15,7 @@
 package com.liferay.object.admin.rest.client.resource.v1_0;
 
 import com.liferay.object.admin.rest.client.dto.v1_0.ObjectLayout;
+import com.liferay.object.admin.rest.client.dto.v1_0.ObjectRelationship;
 import com.liferay.object.admin.rest.client.http.HttpInvoker;
 import com.liferay.object.admin.rest.client.pagination.Page;
 import com.liferay.object.admin.rest.client.pagination.Pagination;
@@ -83,21 +84,27 @@ public interface ObjectLayoutResource {
 		throws Exception;
 
 	public ObjectLayout postObjectDefinitionObjectLayout(
-			Long objectDefinitionId, ObjectLayout objectLayout)
+			Long objectDefinitionId, ObjectRelationship[] objectRelationships,
+			ObjectLayout objectLayout)
 		throws Exception;
 
 	public HttpInvoker.HttpResponse
 			postObjectDefinitionObjectLayoutHttpResponse(
-				Long objectDefinitionId, ObjectLayout objectLayout)
+				Long objectDefinitionId,
+				ObjectRelationship[] objectRelationships,
+				ObjectLayout objectLayout)
 		throws Exception;
 
 	public void postObjectDefinitionObjectLayoutBatch(
-			Long objectDefinitionId, String callbackURL, Object object)
+			Long objectDefinitionId, ObjectRelationship[] objectRelationships,
+			String callbackURL, Object object)
 		throws Exception;
 
 	public HttpInvoker.HttpResponse
 			postObjectDefinitionObjectLayoutBatchHttpResponse(
-				Long objectDefinitionId, String callbackURL, Object object)
+				Long objectDefinitionId,
+				ObjectRelationship[] objectRelationships, String callbackURL,
+				Object object)
 		throws Exception;
 
 	public void deleteObjectLayout(Long objectLayoutId) throws Exception;
@@ -703,12 +710,14 @@ public interface ObjectLayoutResource {
 		}
 
 		public ObjectLayout postObjectDefinitionObjectLayout(
-				Long objectDefinitionId, ObjectLayout objectLayout)
+				Long objectDefinitionId,
+				ObjectRelationship[] objectRelationships,
+				ObjectLayout objectLayout)
 			throws Exception {
 
 			HttpInvoker.HttpResponse httpResponse =
 				postObjectDefinitionObjectLayoutHttpResponse(
-					objectDefinitionId, objectLayout);
+					objectDefinitionId, objectRelationships, objectLayout);
 
 			String content = httpResponse.getContent();
 
@@ -771,7 +780,9 @@ public interface ObjectLayoutResource {
 
 		public HttpInvoker.HttpResponse
 				postObjectDefinitionObjectLayoutHttpResponse(
-					Long objectDefinitionId, ObjectLayout objectLayout)
+					Long objectDefinitionId,
+					ObjectRelationship[] objectRelationships,
+					ObjectLayout objectLayout)
 			throws Exception {
 
 			HttpInvoker httpInvoker = HttpInvoker.newHttpInvoker();
@@ -803,6 +814,7 @@ public interface ObjectLayoutResource {
 						"/o/object-admin/v1.0/object-definitions/{objectDefinitionId}/object-layouts");
 
 			httpInvoker.path("objectDefinitionId", objectDefinitionId);
+			httpInvoker.path("objectRelationships", objectRelationships);
 
 			httpInvoker.userNameAndPassword(
 				_builder._login + ":" + _builder._password);
@@ -811,12 +823,15 @@ public interface ObjectLayoutResource {
 		}
 
 		public void postObjectDefinitionObjectLayoutBatch(
-				Long objectDefinitionId, String callbackURL, Object object)
+				Long objectDefinitionId,
+				ObjectRelationship[] objectRelationships, String callbackURL,
+				Object object)
 			throws Exception {
 
 			HttpInvoker.HttpResponse httpResponse =
 				postObjectDefinitionObjectLayoutBatchHttpResponse(
-					objectDefinitionId, callbackURL, object);
+					objectDefinitionId, objectRelationships, callbackURL,
+					object);
 
 			String content = httpResponse.getContent();
 
@@ -868,7 +883,9 @@ public interface ObjectLayoutResource {
 
 		public HttpInvoker.HttpResponse
 				postObjectDefinitionObjectLayoutBatchHttpResponse(
-					Long objectDefinitionId, String callbackURL, Object object)
+					Long objectDefinitionId,
+					ObjectRelationship[] objectRelationships,
+					String callbackURL, Object object)
 			throws Exception {
 
 			HttpInvoker httpInvoker = HttpInvoker.newHttpInvoker();
@@ -905,6 +922,7 @@ public interface ObjectLayoutResource {
 						"/o/object-admin/v1.0/object-definitions/{objectDefinitionId}/object-layouts/batch");
 
 			httpInvoker.path("objectDefinitionId", objectDefinitionId);
+			httpInvoker.path("objectRelationships", objectRelationships);
 
 			httpInvoker.userNameAndPassword(
 				_builder._login + ":" + _builder._password);

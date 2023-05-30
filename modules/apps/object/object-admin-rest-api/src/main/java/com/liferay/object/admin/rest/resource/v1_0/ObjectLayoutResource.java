@@ -15,6 +15,7 @@
 package com.liferay.object.admin.rest.resource.v1_0;
 
 import com.liferay.object.admin.rest.dto.v1_0.ObjectLayout;
+import com.liferay.object.admin.rest.dto.v1_0.ObjectRelationship;
 import com.liferay.portal.kernel.search.Sort;
 import com.liferay.portal.kernel.search.filter.Filter;
 import com.liferay.portal.kernel.service.GroupLocalService;
@@ -77,11 +78,13 @@ public interface ObjectLayoutResource {
 		throws Exception;
 
 	public ObjectLayout postObjectDefinitionObjectLayout(
-			Long objectDefinitionId, ObjectLayout objectLayout)
+			Long objectDefinitionId, ObjectRelationship[] objectRelationships,
+			ObjectLayout objectLayout)
 		throws Exception;
 
 	public Response postObjectDefinitionObjectLayoutBatch(
-			Long objectDefinitionId, String callbackURL, Object object)
+			Long objectDefinitionId, ObjectRelationship[] objectRelationships,
+			String callbackURL, Object object)
 		throws Exception;
 
 	public void deleteObjectLayout(Long objectLayoutId) throws Exception;

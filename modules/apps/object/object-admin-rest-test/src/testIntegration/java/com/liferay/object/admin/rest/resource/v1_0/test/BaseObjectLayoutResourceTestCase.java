@@ -506,8 +506,8 @@ public abstract class BaseObjectLayoutResourceTestCase {
 				Long objectDefinitionId, ObjectLayout objectLayout)
 		throws Exception {
 
-		return objectLayoutResource.postObjectDefinitionObjectLayout(
-			objectDefinitionId, objectLayout);
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	protected Long
@@ -541,9 +541,8 @@ public abstract class BaseObjectLayoutResourceTestCase {
 			ObjectLayout objectLayout)
 		throws Exception {
 
-		return objectLayoutResource.postObjectDefinitionObjectLayout(
-			testGetObjectDefinitionObjectLayoutsPage_getObjectDefinitionId(),
-			objectLayout);
+		throw new UnsupportedOperationException(
+			"This method needs to be implemented");
 	}
 
 	@Test

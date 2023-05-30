@@ -15,6 +15,7 @@
 package com.liferay.object.admin.rest.internal.resource.v1_0;
 
 import com.liferay.object.admin.rest.dto.v1_0.ObjectLayout;
+import com.liferay.object.admin.rest.dto.v1_0.ObjectRelationship;
 import com.liferay.object.admin.rest.resource.v1_0.ObjectLayoutResource;
 import com.liferay.petra.function.UnsafeBiConsumer;
 import com.liferay.petra.function.UnsafeConsumer;
@@ -296,6 +297,10 @@ public abstract class BaseObjectLayoutResourceImpl
 			@io.swagger.v3.oas.annotations.Parameter(
 				in = io.swagger.v3.oas.annotations.enums.ParameterIn.PATH,
 				name = "objectDefinitionId"
+			),
+			@io.swagger.v3.oas.annotations.Parameter(
+				in = io.swagger.v3.oas.annotations.enums.ParameterIn.PATH,
+				name = "objectRelationships"
 			)
 		}
 	)
@@ -312,6 +317,9 @@ public abstract class BaseObjectLayoutResourceImpl
 			@javax.validation.constraints.NotNull
 			@javax.ws.rs.PathParam("objectDefinitionId")
 			Long objectDefinitionId,
+			@io.swagger.v3.oas.annotations.Parameter(hidden = true)
+			@javax.ws.rs.PathParam("objectRelationships")
+			ObjectRelationship[] objectRelationships,
 			ObjectLayout objectLayout)
 		throws Exception {
 
@@ -328,6 +336,10 @@ public abstract class BaseObjectLayoutResourceImpl
 			@io.swagger.v3.oas.annotations.Parameter(
 				in = io.swagger.v3.oas.annotations.enums.ParameterIn.PATH,
 				name = "objectDefinitionId"
+			),
+			@io.swagger.v3.oas.annotations.Parameter(
+				in = io.swagger.v3.oas.annotations.enums.ParameterIn.PATH,
+				name = "objectRelationships"
 			),
 			@io.swagger.v3.oas.annotations.Parameter(
 				in = io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY,
@@ -350,6 +362,9 @@ public abstract class BaseObjectLayoutResourceImpl
 			@javax.validation.constraints.NotNull
 			@javax.ws.rs.PathParam("objectDefinitionId")
 			Long objectDefinitionId,
+			@io.swagger.v3.oas.annotations.Parameter(hidden = true)
+			@javax.ws.rs.PathParam("objectRelationships")
+			ObjectRelationship[] objectRelationships,
 			@io.swagger.v3.oas.annotations.Parameter(hidden = true)
 			@javax.ws.rs.QueryParam("callbackURL")
 			String callbackURL,
@@ -569,6 +584,7 @@ public abstract class BaseObjectLayoutResourceImpl
 					objectLayout -> postObjectDefinitionObjectLayout(
 						_parseLong(
 							(String)parameters.get("objectDefinitionId")),
+						(String[])parameters.get("objectRelationships"),
 						objectLayout);
 			}
 			else {
