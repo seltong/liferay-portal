@@ -3979,7 +3979,7 @@ public class ObjectEntryLocalServiceImpl
 	}
 
 	private void _validateTextMaxLength280(
-			String value, ObjectField objectField)
+			ObjectField objectField, String value)
 		throws PortalException {
 
 		_validateTextMaxLength(
@@ -4136,7 +4136,7 @@ public class ObjectEntryLocalServiceImpl
 					ObjectFieldConstants.BUSINESS_TYPE_ENCRYPTED)) {
 
 			_validateTextMaxLength280(
-				GetterUtil.getString(entry.getValue()), objectField);
+				objectField, GetterUtil.getString(entry.getValue()));
 		}
 		else if (StringUtil.equals(
 					objectField.getBusinessType(),
@@ -4232,7 +4232,7 @@ public class ObjectEntryLocalServiceImpl
 					ObjectFieldConstants.DB_TYPE_STRING)) {
 
 			_validateTextMaxLength280(
-				GetterUtil.getString(entry.getValue()), objectField);
+				objectField, GetterUtil.getString(entry.getValue()));
 		}
 
 		if (objectField.getListTypeDefinitionId() != 0) {
