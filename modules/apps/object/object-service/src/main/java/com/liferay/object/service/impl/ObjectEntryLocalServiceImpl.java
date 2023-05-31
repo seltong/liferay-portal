@@ -2035,7 +2035,7 @@ public class ObjectEntryLocalServiceImpl
 				(Map<String, String>)values.get(
 					objectField.getI18nObjectFieldName());
 
-			if ((localizedValues == null) || localizedValues.isEmpty()) {
+			if (MapUtil.isEmpty(localizedValues)) {
 				continue;
 			}
 
