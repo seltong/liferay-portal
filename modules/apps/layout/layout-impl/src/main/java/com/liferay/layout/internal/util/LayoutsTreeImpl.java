@@ -201,7 +201,6 @@ public class LayoutsTreeImpl implements LayoutsTree {
 		}
 
 		for (Layout layout : layouts) {
-			int childLayoutsCount = 0;
 			JSONArray childLayoutsJSONArray = null;
 
 			if (ancestorLayouts.contains(layout) ||
@@ -226,13 +225,8 @@ public class LayoutsTreeImpl implements LayoutsTree {
 						layout.getLayoutId(), layout.isPrivateLayout(),
 						themeDisplay);
 				}
-
-				childLayoutsCount = childLayoutsJSONArray.length();
 			}
 			else {
-				childLayoutsCount = _layoutService.getLayoutsCount(
-					groupId, privateLayout, layout.getLayoutId());
-
 				childLayoutsJSONArray = _jsonFactory.createJSONArray();
 			}
 
@@ -252,7 +246,9 @@ public class LayoutsTreeImpl implements LayoutsTree {
 
 			layoutsJSONArray.put(
 				_toJSONObject(
-					afterDeleteSelectedLayout, childLayoutsCount,
+					afterDeleteSelectedLayout,
+					_layoutService.getLayoutsCount(
+						groupId, privateLayout, layout.getLayoutId()),
 					childLayoutsJSONArray, httpServletRequest, includeActions,
 					layout, themeDisplay));
 
@@ -349,6 +345,17 @@ public class LayoutsTreeImpl implements LayoutsTree {
 
 		boolean finalHasUpdatePermission = hasUpdatePermission;
 
+		String layoutName = layout.getName(themeDisplay.getLocale());
+
+		if (includeActions && (_getDraftLayout(layout) != null) &&
+			(finalHasUpdatePermission || !layout.isPublished() ||
+			 _layoutContentModelResourcePermission.contains(
+				 themeDisplay.getPermissionChecker(), layout.getPlid(),
+				 ActionKeys.UPDATE))) {
+
+			layoutName += StringPool.STAR;
+		}
+
 		JSONObject jsonObject = JSONUtil.put(
 			"actions",
 			() -> {
@@ -393,20 +400,7 @@ public class LayoutsTreeImpl implements LayoutsTree {
 		).put(
 			"layoutId", layout.getLayoutId()
 		).put(
-			"name",
-			() -> {
-				if (includeActions && (_getDraftLayout(layout) != null) &&
-					(finalHasUpdatePermission || !layout.isPublished() ||
-					 _layoutContentModelResourcePermission.contains(
-						 themeDisplay.getPermissionChecker(), layout.getPlid(),
-						 ActionKeys.UPDATE))) {
-
-					return layout.getName(themeDisplay.getLocale()) +
-						StringPool.STAR;
-				}
-
-				return layout.getName(themeDisplay.getLocale());
-			}
+			"name", layoutName
 		).put(
 			"paginated",
 			() -> {
@@ -447,6 +441,8 @@ public class LayoutsTreeImpl implements LayoutsTree {
 
 				return StringPool.BLANK;
 			}
+		).put(
+			"title", HtmlUtil.escapeAttribute(layoutName)
 		).put(
 			"type", layout.getType()
 		);

@@ -12,11 +12,10 @@
  * details.
  */
 
-/// <reference types="react" />
-
 import {IFDSViewSectionInterface} from '../FDSView';
 declare const Sorting: ({
 	fdsView,
 	fdsViewsURL,
+	namespace,
 }: IFDSViewSectionInterface) => JSX.Element;
 export default Sorting;

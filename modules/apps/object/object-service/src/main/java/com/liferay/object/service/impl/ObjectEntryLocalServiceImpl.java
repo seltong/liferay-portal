@@ -154,6 +154,7 @@ import com.liferay.portal.kernel.util.DateUtil;
 import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
+import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.Localization;
 import com.liferay.portal.kernel.util.SetUtil;
@@ -193,6 +194,8 @@ import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.sql.Timestamp;
 import java.sql.Types;
+
+import java.time.LocalDateTime;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -261,6 +264,7 @@ public class ObjectEntryLocalServiceImpl
 		objectEntry.setCompanyId(user.getCompanyId());
 		objectEntry.setUserId(user.getUserId());
 		objectEntry.setUserName(user.getFullName());
+		objectEntry.setCreateDate(new Date());
 		objectEntry.setObjectDefinitionId(objectDefinitionId);
 		objectEntry.setStatus(WorkflowConstants.STATUS_DRAFT);
 		objectEntry.setStatusByUserId(user.getUserId());
@@ -501,9 +505,17 @@ public class ObjectEntryLocalServiceImpl
 				ObjectEntryThreadLocal.setSkipObjectEntryResourcePermission(
 					true);
 
+				String deletionType = objectRelationship.getDeletionType();
+
+				if (ObjectEntryThreadLocal.isDisassociateRelatedModels()) {
+					deletionType =
+						ObjectRelationshipConstants.DELETION_TYPE_DISASSOCIATE;
+				}
+
 				objectRelatedModelsProvider.deleteRelatedModel(
 					PrincipalThreadLocal.getUserId(), groupId,
-					objectRelationship.getObjectRelationshipId(), primaryKey);
+					objectRelationship.getObjectRelationshipId(), primaryKey,
+					deletionType);
 			}
 			catch (PrincipalException principalException) {
 				throw new ObjectRelationshipDeletionTypeException(
@@ -933,6 +945,10 @@ public class ObjectEntryLocalServiceImpl
 		Map<String, Serializable> values = _getValues(
 			objectEntry.getObjectDefinitionId(), rows.get(0),
 			selectExpressions);
+
+		_addLocalizedObjectFieldValues(
+			dynamicObjectDefinitionLocalizationTable,
+			objectEntry.getObjectEntryId(), values);
 
 		_addObjectRelationshipERCFieldValue(
 			objectEntry.getObjectDefinitionId(), values);
@@ -1397,6 +1413,68 @@ public class ObjectEntryLocalServiceImpl
 				TempFileEntryUtil.deleteTempFileEntry(
 					dlFileEntry.getFileEntryId());
 			}
+		}
+	}
+
+	private void _addLocalizedObjectFieldValues(
+		DynamicObjectDefinitionLocalizationTable
+			dynamicObjectDefinitionLocalizationTable,
+		long objectEntryId, Map<String, Serializable> values) {
+
+		if (!FeatureFlagManagerUtil.isEnabled("LPS-172017") ||
+			(dynamicObjectDefinitionLocalizationTable == null)) {
+
+			return;
+		}
+
+		List<Object[]> rows = objectEntryPersistence.dslQuery(
+			DSLQueryFactoryUtil.select(
+				ArrayUtil.append(
+					_getSelectExpressions(
+						dynamicObjectDefinitionLocalizationTable),
+					dynamicObjectDefinitionLocalizationTable.
+						getLanguageIdColumn())
+			).from(
+				dynamicObjectDefinitionLocalizationTable
+			).where(
+				dynamicObjectDefinitionLocalizationTable.getForeignKeyColumn(
+				).eq(
+					objectEntryId
+				)
+			));
+
+		if (ListUtil.isEmpty(rows)) {
+			return;
+		}
+
+		List<Column<DynamicObjectDefinitionLocalizationTable, ?>>
+			objectFieldColumns =
+				dynamicObjectDefinitionLocalizationTable.
+					getObjectFieldColumns();
+
+		int languageIdColumnPosition = objectFieldColumns.size();
+
+		for (int i = 0; i < objectFieldColumns.size(); i++) {
+			Map<String, String> localizedValues = new HashMap<>();
+
+			for (Object[] row : rows) {
+				Object localizedValue = row[i];
+
+				if (Validator.isNull(localizedValue)) {
+					continue;
+				}
+
+				localizedValues.put(
+					String.valueOf(row[languageIdColumnPosition]),
+					String.valueOf(localizedValue));
+			}
+
+			Column<DynamicObjectDefinitionLocalizationTable, ?>
+				objectFieldColumn = objectFieldColumns.get(i);
+
+			values.put(
+				objectFieldColumn.getName() + "i18n",
+				(Serializable)localizedValues);
 		}
 	}
 
@@ -2656,6 +2734,13 @@ public class ObjectEntryLocalServiceImpl
 						objects[i] = _encryptor.decrypt(
 							_getKey(), (String)objects[i]);
 					}
+					catch (IllegalArgumentException illegalArgumentException) {
+						throw new IllegalArgumentException(
+							"Please insert an encryption key or remove the " +
+								"object's encryption field to recover these " +
+									"entries.",
+							illegalArgumentException);
+					}
 					catch (Exception exception) {
 						throw new PortalException(exception);
 					}
@@ -2945,6 +3030,9 @@ public class ObjectEntryLocalServiceImpl
 		else if (javaTypeClass == String.class) {
 			values.put(name, (String)object);
 		}
+		else if (javaTypeClass == Timestamp.class) {
+			values.put(name, (Timestamp)object);
+		}
 		else {
 			throw new IllegalArgumentException(
 				"Unable to put value with class " + javaTypeClass.getName());
@@ -3039,7 +3127,7 @@ public class ObjectEntryLocalServiceImpl
 					index, new StringReader(String.valueOf(value)));
 			}
 		}
-		else if (sqlType == Types.DATE) {
+		else if ((sqlType == Types.DATE) || (sqlType == Types.TIMESTAMP)) {
 			String valueString = GetterUtil.getString(value);
 
 			if (value instanceof Date) {
@@ -3047,6 +3135,12 @@ public class ObjectEntryLocalServiceImpl
 
 				preparedStatement.setTimestamp(
 					index, new Timestamp(date.getTime()));
+			}
+			else if (value instanceof LocalDateTime) {
+				LocalDateTime localDateTime = (LocalDateTime)value;
+
+				preparedStatement.setTimestamp(
+					index, Timestamp.valueOf(localDateTime));
 			}
 			else if (valueString.isEmpty()) {
 				preparedStatement.setTimestamp(index, null);
