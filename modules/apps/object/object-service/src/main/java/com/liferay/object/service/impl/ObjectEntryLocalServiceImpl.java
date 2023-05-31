@@ -180,7 +180,6 @@ import com.liferay.portal.search.searcher.Searcher;
 import com.liferay.portal.search.sort.SortOrder;
 import com.liferay.portal.search.sort.Sorts;
 import com.liferay.portal.util.PropsValues;
-import com.liferay.portal.vulcan.util.ObjectMapperUtil;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -978,16 +977,12 @@ public class ObjectEntryLocalServiceImpl
 			objectEntry.getObjectDefinitionId(), rows.get(0),
 			selectExpressions);
 
+		_addLocalizedObjectFieldValues(
+			dynamicObjectDefinitionLocalizationTable,
+			objectEntry.getObjectEntryId(), values);
+
 		_addObjectRelationshipERCFieldValue(
 			objectEntry.getObjectDefinitionId(), values);
-
-		if (FeatureFlagManagerUtil.isEnabled("LPS-172017") &&
-			(dynamicObjectDefinitionLocalizationTable != null)) {
-
-			_addLocalizedObjectFieldValues(
-				dynamicObjectDefinitionLocalizationTable,
-				objectEntry.getObjectEntryId(), values);
-		}
 
 		return values;
 	}
@@ -1482,26 +1477,29 @@ public class ObjectEntryLocalServiceImpl
 			dynamicObjectDefinitionLocalizationTable,
 		long objectEntryId, Map<String, Serializable> values) {
 
-		Column<DynamicObjectDefinitionLocalizationTable, Long>
-			foreignKeyColumn =
-				dynamicObjectDefinitionLocalizationTable.getForeignKeyColumn();
+		if (!FeatureFlagManagerUtil.isEnabled("LPS-172017") ||
+			(dynamicObjectDefinitionLocalizationTable == null)) {
 
-		List<Object[]> localizedValues = ObjectMapperUtil.readValue(
-			List.class,
-			(Serializable)objectEntryPersistence.dslQuery(
-				DSLQueryFactoryUtil.select(
-					ArrayUtil.append(
-						_getSelectExpressions(
-							dynamicObjectDefinitionLocalizationTable),
-						dynamicObjectDefinitionLocalizationTable.
-							getLanguageIdColumn())
-				).from(
-					dynamicObjectDefinitionLocalizationTable
-				).where(
-					foreignKeyColumn.eq(objectEntryId)
-				)));
+			return;
+		}
 
-		if (ListUtil.isEmpty(localizedValues)) {
+		List<Object[]> rows = objectEntryPersistence.dslQuery(
+			DSLQueryFactoryUtil.select(
+				ArrayUtil.append(
+					_getSelectExpressions(
+						dynamicObjectDefinitionLocalizationTable),
+					dynamicObjectDefinitionLocalizationTable.
+						getLanguageIdColumn())
+			).from(
+				dynamicObjectDefinitionLocalizationTable
+			).where(
+				dynamicObjectDefinitionLocalizationTable.getForeignKeyColumn(
+				).eq(
+					objectEntryId
+				)
+			));
+
+		if (ListUtil.isEmpty(rows)) {
 			return;
 		}
 
@@ -1510,19 +1508,21 @@ public class ObjectEntryLocalServiceImpl
 				dynamicObjectDefinitionLocalizationTable.
 					getObjectFieldColumns();
 
+		int languageIdColumnPosition = objectFieldColumns.size();
+
 		for (int i = 0; i < objectFieldColumns.size(); i++) {
-			Map<String, String> localizedObjectFieldValue = new HashMap<>();
+			Map<String, String> localizedValues = new HashMap<>();
 
-			for (Object[] localizedValue : localizedValues) {
-				Object value = localizedValue[i];
+			for (Object[] row : rows) {
+				Object localizedValue = row[i];
 
-				if (Validator.isNull(value)) {
+				if (Validator.isNull(localizedValue)) {
 					continue;
 				}
 
-				localizedObjectFieldValue.put(
-					String.valueOf(localizedValue[objectFieldColumns.size()]),
-					String.valueOf(value));
+				localizedValues.put(
+					String.valueOf(row[languageIdColumnPosition]),
+					String.valueOf(localizedValue));
 			}
 
 			Column<DynamicObjectDefinitionLocalizationTable, ?>
@@ -1530,7 +1530,7 @@ public class ObjectEntryLocalServiceImpl
 
 			values.put(
 				objectFieldColumn.getName() + "i18n",
-				(Serializable)localizedObjectFieldValue);
+				(Serializable)localizedValues);
 		}
 	}
 
