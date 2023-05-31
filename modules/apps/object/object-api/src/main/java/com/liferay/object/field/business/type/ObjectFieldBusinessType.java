@@ -29,6 +29,7 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.security.auth.GuestOrUserUtil;
+import com.liferay.portal.kernel.util.LocaleThreadLocal;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
@@ -105,10 +106,20 @@ public interface ObjectFieldBusinessType {
 			return values.get(objectField.getName());
 		}
 
-		User user = GuestOrUserUtil.getGuestOrUser();
+		Locale locale = LocaleThreadLocal.getThemeDisplayLocale();
+
+		if (locale == null) {
+			locale = LocaleThreadLocal.getSiteDefaultLocale();
+		}
+
+		if (locale == null) {
+			User user = GuestOrUserUtil.getGuestOrUser();
+
+			locale = user.getLocale();
+		}
 
 		String localizedValue = localizedValues.get(
-			LocaleUtil.toLanguageId(user.getLocale()));
+			LocaleUtil.toLanguageId(locale));
 
 		if (localizedValue != null) {
 			return localizedValue;
