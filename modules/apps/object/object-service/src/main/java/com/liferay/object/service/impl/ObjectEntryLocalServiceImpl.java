@@ -3025,10 +3025,6 @@ public class ObjectEntryLocalServiceImpl
 			}
 		}
 
-		if (insertValues.isEmpty()) {
-			return;
-		}
-
 		_insertIntoLocalizationTable(
 			objectDefinition, objectEntryId, insertValues);
 		_updateLocalizationTable(
