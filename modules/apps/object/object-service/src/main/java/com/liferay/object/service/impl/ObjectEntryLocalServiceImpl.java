@@ -3025,7 +3025,7 @@ public class ObjectEntryLocalServiceImpl
 			}
 		}
 
-		if ((insertValues == null) || insertValues.isEmpty()) {
+		if (insertValues.isEmpty()) {
 			return;
 		}
 
