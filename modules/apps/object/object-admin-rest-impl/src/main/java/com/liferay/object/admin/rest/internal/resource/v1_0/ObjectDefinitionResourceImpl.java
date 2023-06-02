@@ -691,6 +691,17 @@ public class ObjectDefinitionResourceImpl
 				).build();
 
 			for (ObjectRelationship objectRelationship : objectRelationships) {
+				com.liferay.object.model.ObjectRelationship
+					serviceBuilderObjectRelationship =
+						_objectRelationshipLocalService.
+							getObjectRelationshipByExternalReferenceCode(
+								objectRelationship.getExternalReferenceCode(),
+								contextCompany.getCompanyId());
+
+				if (serviceBuilderObjectRelationship != null) {
+					continue;
+				}
+
 				objectRelationship =
 					objectRelationshipResource.
 						postObjectDefinitionObjectRelationship(
