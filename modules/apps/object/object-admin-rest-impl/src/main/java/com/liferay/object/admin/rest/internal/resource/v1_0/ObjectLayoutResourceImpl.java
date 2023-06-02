@@ -155,7 +155,7 @@ public class ObjectLayoutResourceImpl
 					externalReferenceCode, contextCompany.getCompanyId());
 
 		return postObjectDefinitionObjectLayout(
-			objectDefinition.getObjectDefinitionId(), objectLayout);
+			objectDefinition.getObjectDefinitionId(), null, objectLayout);
 	}
 
 	@Override

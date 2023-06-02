@@ -677,7 +677,7 @@ public class ObjectDefinitionResourceImpl
 
 			for (ObjectLayout objectLayout : objectLayouts) {
 				objectLayoutResource.postObjectDefinitionObjectLayout(
-					objectDefinitionId, objectLayout);
+					objectDefinitionId, objectRelationships, objectLayout);
 			}
 		}
 

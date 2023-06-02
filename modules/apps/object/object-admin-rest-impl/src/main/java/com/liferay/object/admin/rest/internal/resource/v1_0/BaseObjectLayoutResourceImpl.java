@@ -584,7 +584,7 @@ public abstract class BaseObjectLayoutResourceImpl
 					objectLayout -> postObjectDefinitionObjectLayout(
 						_parseLong(
 							(String)parameters.get("objectDefinitionId")),
-						(String[])parameters.get("objectRelationships"),
+						(ObjectRelationship[])parameters.get("objectRelationships"),
 						objectLayout);
 			}
 			else {
