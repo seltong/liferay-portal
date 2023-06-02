@@ -75,6 +75,7 @@ import com.liferay.portal.kernel.service.LayoutLocalService;
 import com.liferay.portal.kernel.service.ResourceLocalService;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.UserLocalService;
+import com.liferay.portal.kernel.service.WorkflowDefinitionLinkLocalServiceUtil;
 import com.liferay.portal.kernel.service.WorkflowInstanceLinkLocalService;
 import com.liferay.portal.kernel.service.permission.ModelPermissions;
 import com.liferay.portal.kernel.servlet.taglib.ui.ImageSelector;
@@ -2287,9 +2288,15 @@ public class BlogsEntryLocalServiceImpl extends BlogsEntryLocalServiceBaseImpl {
 				WorkflowConstants.CONTEXT_USER_URL, userURL
 			).build();
 
+
+		WorkflowDefinitionLinkLocalServiceUtil.addWorkflowDefinitionLink(
+			userId, 20096L,
+			0, "Testando", 0, entry.getEntryId(),
+			"Single Approver", 1);
+
 		return WorkflowHandlerRegistryUtil.startWorkflowInstance(
-			entry.getCompanyId(), entry.getGroupId(), userId,
-			BlogsEntry.class.getName(), entry.getEntryId(), entry,
+			20096L, 0, userId,
+			"Testando", entry.getEntryId(), entry,
 			serviceContext, workflowContext);
 	}
 
