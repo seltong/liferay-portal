@@ -1683,16 +1683,6 @@ public class DefaultObjectEntryManagerImplTest {
 			childObjectEntry2, childObjectEntry1);
 		_testGetObjectEntries(
 			HashMapBuilder.put(
-				"sort", "textObjectFieldName:asc"
-			).build(),
-			childObjectEntry1, childObjectEntry2);
-		_testGetObjectEntries(
-			HashMapBuilder.put(
-				"sort", "textObjectFieldName:desc"
-			).build(),
-			childObjectEntry2, childObjectEntry1);
-		_testGetObjectEntries(
-			HashMapBuilder.put(
 				"sort", "localizedTextObjectFieldName:asc"
 			).build(),
 			childObjectEntry2, childObjectEntry1);
@@ -1701,6 +1691,16 @@ public class DefaultObjectEntryManagerImplTest {
 				"sort", "localizedTextObjectFieldName:desc"
 			).build(),
 			childObjectEntry1, childObjectEntry2);
+		_testGetObjectEntries(
+			HashMapBuilder.put(
+				"sort", "textObjectFieldName:asc"
+			).build(),
+			childObjectEntry1, childObjectEntry2);
+		_testGetObjectEntries(
+			HashMapBuilder.put(
+				"sort", "textObjectFieldName:desc"
+			).build(),
+			childObjectEntry2, childObjectEntry1);
 	}
 
 	@Test
