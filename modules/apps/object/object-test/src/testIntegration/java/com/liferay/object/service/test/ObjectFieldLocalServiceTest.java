@@ -575,9 +575,9 @@ public class ObjectFieldLocalServiceTest {
 			ObjectFieldDBTypeException.class, "Blob type is not indexable",
 			() -> _addUnmodifiableSystemObjectDefinition(
 				ObjectFieldUtil.createObjectField(
-					0, ObjectFieldConstants.BUSINESS_TYPE_LARGE_FILE, null,
-					ObjectFieldConstants.DB_TYPE_BLOB, true, false, "", "",
-					"able", false, true)));
+					null, 0, ObjectFieldConstants.BUSINESS_TYPE_LARGE_FILE,
+					null, ObjectFieldConstants.DB_TYPE_BLOB, true, false, "",
+					"", "able", false, true)));
 
 		String errorMessage =
 			"Indexed language ID can only be applied with type \"Clob\" or " +
@@ -587,21 +587,21 @@ public class ObjectFieldLocalServiceTest {
 			ObjectFieldDBTypeException.class, errorMessage,
 			() -> _addUnmodifiableSystemObjectDefinition(
 				ObjectFieldUtil.createObjectField(
-					0, ObjectFieldConstants.BUSINESS_TYPE_LONG_INTEGER, null,
-					ObjectFieldConstants.DB_TYPE_LONG, true, false, "en_US", "",
-					"able", false, true)));
+					null, 0, ObjectFieldConstants.BUSINESS_TYPE_LONG_INTEGER,
+					null, ObjectFieldConstants.DB_TYPE_LONG, true, false,
+					"en_US", "", "able", false, true)));
 		AssertUtils.assertFailure(
 			ObjectFieldDBTypeException.class, errorMessage,
 			() -> _addUnmodifiableSystemObjectDefinition(
 				ObjectFieldUtil.createObjectField(
-					0, ObjectFieldConstants.BUSINESS_TYPE_LONG_INTEGER, null,
-					ObjectFieldConstants.DB_TYPE_LONG, true, true, "en_US", "",
-					"able", false, true)));
+					null, 0, ObjectFieldConstants.BUSINESS_TYPE_LONG_INTEGER,
+					null, ObjectFieldConstants.DB_TYPE_LONG, true, true,
+					"en_US", "", "able", false, true)));
 		AssertUtils.assertFailure(
 			ObjectFieldDBTypeException.class, errorMessage,
 			() -> _addUnmodifiableSystemObjectDefinition(
 				ObjectFieldUtil.createObjectField(
-					ObjectFieldConstants.BUSINESS_TYPE_TEXT, null,
+					null, ObjectFieldConstants.BUSINESS_TYPE_TEXT, null,
 					ObjectFieldConstants.DB_TYPE_STRING, true, true, "en_US",
 					"", 0, "able", Collections.emptyList(),
 					ObjectFieldConstants.READ_ONLY_FALSE, null, false, true)));
@@ -670,7 +670,7 @@ public class ObjectFieldLocalServiceTest {
 			ObjectFieldNameException.MustNotBeDuplicate.class,
 			"Duplicate name able",
 			() -> _objectFieldLocalService.addSystemObjectField(
-				TestPropsValues.getUserId(),
+				null, TestPropsValues.getUserId(),
 				objectDefinition.getObjectDefinitionId(),
 				ObjectFieldConstants.BUSINESS_TYPE_TEXT,
 				RandomTestUtil.randomString(), RandomTestUtil.randomString(),
