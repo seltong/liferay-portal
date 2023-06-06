@@ -290,7 +290,8 @@ public class ObjectDefinitionLocalServiceImpl
 
 			if (oldObjectField == null) {
 				_objectFieldLocalService.addSystemObjectField(
-					userId, objectDefinition.getObjectDefinitionId(),
+					newObjectField.getExternalReferenceCode(), userId,
+					objectDefinition.getObjectDefinitionId(),
 					newObjectField.getBusinessType(),
 					newObjectField.getDBColumnName(),
 					objectDefinition.getDBTableName(),
@@ -1030,7 +1031,7 @@ public class ObjectDefinitionLocalServiceImpl
 		throws PortalException {
 
 		_objectFieldLocalService.addSystemObjectField(
-			userId, objectDefinition.getObjectDefinitionId(),
+			"CREATOR", userId, objectDefinition.getObjectDefinitionId(),
 			ObjectFieldConstants.BUSINESS_TYPE_TEXT,
 			ObjectEntryTable.INSTANCE.userName.getName(), dbTableName,
 			ObjectFieldConstants.DB_TYPE_STRING, false, false, null,
@@ -1039,7 +1040,7 @@ public class ObjectDefinitionLocalServiceImpl
 			"creator", false, false);
 
 		_objectFieldLocalService.addSystemObjectField(
-			userId, objectDefinition.getObjectDefinitionId(),
+			"CREATE_DATE", userId, objectDefinition.getObjectDefinitionId(),
 			ObjectFieldConstants.BUSINESS_TYPE_DATE,
 			ObjectEntryTable.INSTANCE.createDate.getName(), dbTableName,
 			ObjectFieldConstants.DB_TYPE_DATE, false, false, null,
@@ -1048,7 +1049,8 @@ public class ObjectDefinitionLocalServiceImpl
 			"createDate", false, false);
 
 		_objectFieldLocalService.addSystemObjectField(
-			userId, objectDefinition.getObjectDefinitionId(),
+			"EXTERNAL_REFERENCE_CODE", userId,
+			objectDefinition.getObjectDefinitionId(),
 			ObjectFieldConstants.BUSINESS_TYPE_TEXT,
 			ObjectEntryTable.INSTANCE.externalReferenceCode.getName(),
 			dbTableName, ObjectFieldConstants.DB_TYPE_STRING, false, false,
@@ -1065,7 +1067,7 @@ public class ObjectDefinitionLocalServiceImpl
 		}
 
 		_objectFieldLocalService.addSystemObjectField(
-			userId, objectDefinition.getObjectDefinitionId(),
+			"ID", userId, objectDefinition.getObjectDefinitionId(),
 			ObjectFieldConstants.BUSINESS_TYPE_LONG_INTEGER, dbColumnName,
 			dbTableName, ObjectFieldConstants.DB_TYPE_LONG, true, true, null,
 			LocalizedMapUtil.getLocalizedMap(
@@ -1073,7 +1075,7 @@ public class ObjectDefinitionLocalServiceImpl
 			"id", false, false);
 
 		_objectFieldLocalService.addSystemObjectField(
-			userId, objectDefinition.getObjectDefinitionId(),
+			"MODIFIED_DATE", userId, objectDefinition.getObjectDefinitionId(),
 			ObjectFieldConstants.BUSINESS_TYPE_DATE,
 			ObjectEntryTable.INSTANCE.modifiedDate.getName(), dbTableName,
 			ObjectFieldConstants.DB_TYPE_DATE, false, false, null,
@@ -1082,7 +1084,7 @@ public class ObjectDefinitionLocalServiceImpl
 			"modifiedDate", false, false);
 
 		_objectFieldLocalService.addSystemObjectField(
-			userId, objectDefinition.getObjectDefinitionId(),
+			"STATUS", userId, objectDefinition.getObjectDefinitionId(),
 			ObjectFieldConstants.BUSINESS_TYPE_TEXT,
 			ObjectEntryTable.INSTANCE.status.getName(), dbTableName,
 			ObjectFieldConstants.DB_TYPE_INTEGER, false, false, null,
