@@ -339,6 +339,7 @@ public class ObjectFieldResourceTest extends BaseObjectFieldResourceTestCase {
 				LocaleUtil.US.toString(), "a" + objectField.getName()));
 		objectField.setName("a" + objectField.getName());
 		objectField.setReadOnly(ObjectField.ReadOnly.FALSE);
+		objectField.setRequired(!objectField.getLocalized());
 		objectField.setState(false);
 
 		return objectField;
