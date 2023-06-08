@@ -177,6 +177,7 @@ public class ObjectRelationshipResourceImpl
 
 		return _toObjectRelationship(
 			_objectRelationshipService.addObjectRelationship(
+				objectRelationship.getExternalReferenceCode(),
 				objectDefinition1.getObjectDefinitionId(),
 				objectDefinition2.getObjectDefinitionId(),
 				objectRelationship.getParameterObjectFieldId(),
@@ -206,6 +207,7 @@ public class ObjectRelationshipResourceImpl
 
 		return _toObjectRelationship(
 			_objectRelationshipService.addObjectRelationship(
+				objectRelationship.getExternalReferenceCode(),
 				objectDefinitionId, objectDefinitionId2,
 				GetterUtil.getLong(
 					objectRelationship.getParameterObjectFieldId()),
@@ -243,6 +245,7 @@ public class ObjectRelationshipResourceImpl
 
 		return _toObjectRelationship(
 			_objectRelationshipService.updateObjectRelationship(
+				objectRelationship.getExternalReferenceCode(),
 				objectRelationshipId,
 				GetterUtil.getLong(
 					objectRelationship.getParameterObjectFieldId()),
