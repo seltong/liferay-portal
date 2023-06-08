@@ -19,6 +19,7 @@ import com.liferay.object.constants.ObjectFieldConstants;
 import com.liferay.object.constants.ObjectFieldSettingConstants;
 import com.liferay.object.constants.ObjectRelationshipConstants;
 import com.liferay.object.exception.DuplicateObjectRelationshipException;
+import com.liferay.object.exception.DuplicateObjectRelationshipExternalReferenceCodeException;
 import com.liferay.object.exception.NoSuchObjectRelationshipException;
 import com.liferay.object.exception.ObjectRelationshipNameException;
 import com.liferay.object.exception.ObjectRelationshipParameterObjectFieldIdException;
@@ -854,17 +855,17 @@ public class ObjectRelationshipLocalServiceImpl
 			boolean reverse, String type)
 		throws PortalException {
 
+		User user = _userLocalService.getUser(userId);
+
 		_validate(
-			externalReferenceCode, objectDefinitionId1, objectDefinitionId2,
-			parameterObjectFieldId, name, type);
+			externalReferenceCode, user.getCompanyId(), objectDefinitionId1,
+			objectDefinitionId2, parameterObjectFieldId, name, type);
 
 		ObjectRelationship objectRelationship =
 			objectRelationshipPersistence.create(
 				counterLocalService.increment());
 
 		objectRelationship.setExternalReferenceCode(externalReferenceCode);
-
-		User user = _userLocalService.getUser(userId);
 
 		objectRelationship.setCompanyId(user.getCompanyId());
 		objectRelationship.setUserId(user.getUserId());
@@ -1013,10 +1014,20 @@ public class ObjectRelationshipLocalServiceImpl
 	}
 
 	private void _validate(
-			String externalReferenceCode, long objectDefinitionId1,
-			long objectDefinitionId2, long parameterObjectFieldId, String name,
-			String type)
+			String externalReferenceCode, long companyId,
+			long objectDefinitionId1, long objectDefinitionId2,
+			long parameterObjectFieldId, String name, String type)
 		throws PortalException {
+
+		if (Validator.isNotNull(externalReferenceCode)) {
+			ObjectRelationship objectRelationship =
+				objectRelationshipPersistence.fetchByERC_C(
+					externalReferenceCode, companyId);
+
+			if (objectRelationship != null) {
+				throw new DuplicateObjectRelationshipExternalReferenceCodeException();
+			}
+		}
 
 		if (Validator.isNull(name)) {
 			throw new ObjectRelationshipNameException("Name is null");
