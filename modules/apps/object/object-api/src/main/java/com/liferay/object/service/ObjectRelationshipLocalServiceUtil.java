@@ -45,16 +45,6 @@ public class ObjectRelationshipLocalServiceUtil {
 	 *
 	 * Never modify this class directly. Add custom service methods to <code>com.liferay.object.service.impl.ObjectRelationshipLocalServiceImpl</code> and rerun ServiceBuilder to regenerate this class.
 	 */
-	public static ObjectRelationship addObjectRelationship(
-			long userId, long objectDefinitionId1, long objectDefinitionId2,
-			long parameterObjectFieldId, String deletionType,
-			Map<java.util.Locale, String> labelMap, String name, String type)
-		throws PortalException {
-
-		return getService().addObjectRelationship(
-			userId, objectDefinitionId1, objectDefinitionId2,
-			parameterObjectFieldId, deletionType, labelMap, name, type);
-	}
 
 	/**
 	 * Adds the object relationship to the database. Also notifies the appropriate model listeners.
@@ -70,6 +60,19 @@ public class ObjectRelationshipLocalServiceUtil {
 		ObjectRelationship objectRelationship) {
 
 		return getService().addObjectRelationship(objectRelationship);
+	}
+
+	public static ObjectRelationship addObjectRelationship(
+			String externalReferenceCode, long userId, long objectDefinitionId1,
+			long objectDefinitionId2, long parameterObjectFieldId,
+			String deletionType, Map<java.util.Locale, String> labelMap,
+			String name, String type)
+		throws PortalException {
+
+		return getService().addObjectRelationship(
+			externalReferenceCode, userId, objectDefinitionId1,
+			objectDefinitionId2, parameterObjectFieldId, deletionType, labelMap,
+			name, type);
 	}
 
 	public static void addObjectRelationshipMappingTableValues(
