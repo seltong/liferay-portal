@@ -61,8 +61,9 @@ public class ObjectRelationshipServiceImpl
 			ActionKeys.UPDATE);
 
 		return objectRelationshipLocalService.addObjectRelationship(
-			getUserId(), objectDefinitionId1, objectDefinitionId2,
-			parameterObjectFieldId, deletionType, labelMap, name, type);
+			externalReferenceCode, getUserId(), objectDefinitionId1,
+			objectDefinitionId2, parameterObjectFieldId, deletionType, labelMap,
+			name, type);
 	}
 
 	@Override

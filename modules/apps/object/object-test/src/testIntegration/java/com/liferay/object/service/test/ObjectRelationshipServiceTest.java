@@ -236,7 +236,7 @@ public class ObjectRelationshipServiceTest {
 
 			objectRelationship =
 				_objectRelationshipService.addObjectRelationship(
-					_objectDefinition1.getObjectDefinitionId(),
+					null, _objectDefinition1.getObjectDefinitionId(),
 					_objectDefinition2.getObjectDefinitionId(), 0,
 					ObjectRelationshipConstants.DELETION_TYPE_PREVENT,
 					LocalizedMapUtil.getLocalizedMap(
