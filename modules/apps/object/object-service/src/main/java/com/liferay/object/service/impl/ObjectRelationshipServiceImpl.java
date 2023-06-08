@@ -47,9 +47,10 @@ public class ObjectRelationshipServiceImpl
 
 	@Override
 	public ObjectRelationship addObjectRelationship(
-			long objectDefinitionId1, long objectDefinitionId2,
-			long parameterObjectFieldId, String deletionType,
-			Map<Locale, String> labelMap, String name, String type)
+			String externalReferenceCode, long objectDefinitionId1,
+			long objectDefinitionId2, long parameterObjectFieldId,
+			String deletionType, Map<Locale, String> labelMap, String name,
+			String type)
 		throws PortalException {
 
 		ObjectDefinition objectDefinition =
