@@ -39,7 +39,14 @@ import java.util.Map;
 public class ObjectEntryValuesUtil {
 
 	public static Object getTitleFieldValue(
-		String businessType, User user, Object value) {
+		String businessType, Map<String, Object> modelAttributes,
+		String objectFieldName, User user, Map<String, Object> values) {
+
+		if (!values.containsKey(objectFieldName)) {
+			return modelAttributes.get(objectFieldName);
+		}
+
+		Object value = values.get(objectFieldName);
 
 		if (StringUtil.equals(
 				businessType, ObjectFieldConstants.BUSINESS_TYPE_BOOLEAN)) {

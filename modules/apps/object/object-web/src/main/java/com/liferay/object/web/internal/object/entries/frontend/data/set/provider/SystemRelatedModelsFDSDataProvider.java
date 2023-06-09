@@ -127,8 +127,9 @@ public class SystemRelatedModelsFDSDataProvider
 					GetterUtil.getLong(values.get("id")),
 					String.valueOf(
 						ObjectEntryValuesUtil.getTitleFieldValue(
-							titleObjectField.getBusinessType(), user,
-							values.get(titleObjectField.getName()))),
+							titleObjectField.getBusinessType(),
+							relatedModel.getModelAttributes(),
+							titleObjectField.getName(), user, values)),
 					true);
 			});
 	}

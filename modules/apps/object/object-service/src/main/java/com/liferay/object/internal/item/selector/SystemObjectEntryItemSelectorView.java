@@ -261,8 +261,9 @@ public class SystemObjectEntryItemSelectorView
 
 			return String.valueOf(
 				ObjectEntryValuesUtil.getTitleFieldValue(
-					objectField.getBusinessType(), user,
-					values.get(objectField.getName())));
+					objectField.getBusinessType(),
+					_baseModel.getModelAttributes(), objectField.getName(),
+					user, values));
 		}
 
 		@Override
