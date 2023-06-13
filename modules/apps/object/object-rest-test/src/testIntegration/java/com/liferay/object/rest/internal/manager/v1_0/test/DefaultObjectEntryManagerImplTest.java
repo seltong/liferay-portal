@@ -2079,7 +2079,8 @@ public class DefaultObjectEntryManagerImplTest {
 				"localizedLongTextObjectFieldName_i18n",
 				localizedLongTextObjectFieldI18nValue
 			).put(
-				"localizedRichTextObjectFieldName", ""
+				"localizedRichTextObjectFieldName",
+				"pt_BR <i>localizedRichTextObjectFieldValue</i>"
 			).put(
 				"localizedRichTextObjectFieldName_i18n",
 				localizedRichTextObjectFieldI18nValue
