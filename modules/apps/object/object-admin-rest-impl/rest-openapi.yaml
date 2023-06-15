@@ -1423,6 +1423,12 @@ paths:
                   schema:
                       format: int64
                       type: integer
+                - in: path
+                  name: objectRelationships
+                  schema:
+                      items:
+                          $ref: "#/components/schemas/ObjectRelationship"
+                      type: array
             requestBody:
                 content:
                     application/json:

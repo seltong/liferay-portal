@@ -19,6 +19,7 @@ import com.liferay.object.admin.rest.dto.v1_0.ObjectLayoutBox;
 import com.liferay.object.admin.rest.dto.v1_0.ObjectLayoutColumn;
 import com.liferay.object.admin.rest.dto.v1_0.ObjectLayoutRow;
 import com.liferay.object.admin.rest.dto.v1_0.ObjectLayoutTab;
+import com.liferay.object.admin.rest.dto.v1_0.ObjectRelationship;
 import com.liferay.object.admin.rest.internal.dto.v1_0.util.ObjectLayoutUtil;
 import com.liferay.object.admin.rest.resource.v1_0.ObjectLayoutResource;
 import com.liferay.object.model.ObjectDefinition;
@@ -155,7 +156,8 @@ public class ObjectLayoutResourceImpl
 
 	@Override
 	public ObjectLayout postObjectDefinitionObjectLayout(
-			Long objectDefinitionId, ObjectLayout objectLayout)
+			Long objectDefinitionId, ObjectRelationship[] objectRelationships,
+			ObjectLayout objectLayout)
 		throws Exception {
 
 		return _toObjectLayout(
