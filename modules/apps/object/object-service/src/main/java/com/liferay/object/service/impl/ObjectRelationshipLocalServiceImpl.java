@@ -105,14 +105,16 @@ public class ObjectRelationshipLocalServiceImpl
 	@Indexable(type = IndexableType.REINDEX)
 	@Override
 	public ObjectRelationship addObjectRelationship(
-			long userId, long objectDefinitionId1, long objectDefinitionId2,
-			long parameterObjectFieldId, String deletionType,
-			Map<Locale, String> labelMap, String name, String type)
+			String externalReferenceCode, long userId, long objectDefinitionId1,
+			long objectDefinitionId2, long parameterObjectFieldId,
+			String deletionType, Map<Locale, String> labelMap, String name,
+			String type)
 		throws PortalException {
 
 		return _addObjectRelationship(
-			userId, objectDefinitionId1, objectDefinitionId2,
-			parameterObjectFieldId, deletionType, labelMap, name, false, type);
+			externalReferenceCode, userId, objectDefinitionId1,
+			objectDefinitionId2, parameterObjectFieldId, deletionType, labelMap,
+			name, false, type);
 	}
 
 	@Override
@@ -846,19 +848,21 @@ public class ObjectRelationshipLocalServiceImpl
 	}
 
 	private ObjectRelationship _addObjectRelationship(
-			long userId, long objectDefinitionId1, long objectDefinitionId2,
-			long parameterObjectFieldId, String deletionType,
-			Map<Locale, String> labelMap, String name, boolean reverse,
-			String type)
+			String externalReferenceCode, long userId, long objectDefinitionId1,
+			long objectDefinitionId2, long parameterObjectFieldId,
+			String deletionType, Map<Locale, String> labelMap, String name,
+			boolean reverse, String type)
 		throws PortalException {
 
 		_validate(
-			objectDefinitionId1, objectDefinitionId2, parameterObjectFieldId,
-			name, type);
+			externalReferenceCode, objectDefinitionId1, objectDefinitionId2,
+			parameterObjectFieldId, name, type);
 
 		ObjectRelationship objectRelationship =
 			objectRelationshipPersistence.create(
 				counterLocalService.increment());
+
+		objectRelationship.setExternalReferenceCode(externalReferenceCode);
 
 		User user = _userLocalService.getUser(userId);
 
@@ -904,9 +908,9 @@ public class ObjectRelationshipLocalServiceImpl
 				objectDefinition1, objectDefinition2, objectRelationship);
 
 			_addObjectRelationship(
-				userId, objectDefinitionId2, objectDefinitionId1,
-				parameterObjectFieldId, deletionType, labelMap, name, true,
-				type);
+				externalReferenceCode, userId, objectDefinitionId2,
+				objectDefinitionId1, parameterObjectFieldId, deletionType,
+				labelMap, name, true, type);
 
 			return objectRelationshipLocalService.
 				createManyToManyObjectRelationshipTable(
@@ -1009,8 +1013,9 @@ public class ObjectRelationshipLocalServiceImpl
 	}
 
 	private void _validate(
-			long objectDefinitionId1, long objectDefinitionId2,
-			long parameterObjectFieldId, String name, String type)
+			String externalReferenceCode, long objectDefinitionId1,
+			long objectDefinitionId2, long parameterObjectFieldId, String name,
+			String type)
 		throws PortalException {
 
 		if (Validator.isNull(name)) {
