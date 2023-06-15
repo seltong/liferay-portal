@@ -22,6 +22,7 @@ import com.liferay.object.admin.rest.dto.v1_0.ObjectLayoutTab;
 import com.liferay.object.admin.rest.dto.v1_0.ObjectRelationship;
 import com.liferay.object.admin.rest.internal.dto.v1_0.util.ObjectLayoutUtil;
 import com.liferay.object.admin.rest.resource.v1_0.ObjectLayoutResource;
+import com.liferay.object.admin.rest.resource.v1_0.ObjectRelationshipResource;
 import com.liferay.object.model.ObjectDefinition;
 import com.liferay.object.model.ObjectField;
 import com.liferay.object.service.ObjectDefinitionLocalService;
@@ -35,8 +36,10 @@ import com.liferay.object.service.persistence.ObjectLayoutTabPersistence;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.search.Field;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
+import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.vulcan.fields.NestedField;
 import com.liferay.portal.vulcan.fields.NestedFieldSupport;
@@ -169,7 +172,8 @@ public class ObjectLayoutResourceImpl
 				transformToList(
 					objectLayout.getObjectLayoutTabs(),
 					objectLayoutTab -> _toObjectLayoutTab(
-						objectDefinitionId, objectLayoutTab))));
+						objectDefinitionId, objectLayoutTab,
+						objectRelationships))));
 	}
 
 	@Override
@@ -197,8 +201,8 @@ public class ObjectLayoutResourceImpl
 				transformToList(
 					objectLayout.getObjectLayoutTabs(),
 					objectLayoutTab -> _toObjectLayoutTab(
-						objectLayout.getObjectDefinitionId(),
-						objectLayoutTab))));
+						objectLayout.getObjectDefinitionId(), objectLayoutTab,
+						null))));
 	}
 
 	private ObjectLayout _toObjectLayout(
@@ -294,8 +298,60 @@ public class ObjectLayoutResourceImpl
 	}
 
 	private com.liferay.object.model.ObjectLayoutTab _toObjectLayoutTab(
-			long objectDefinitionId, ObjectLayoutTab objectLayoutTab)
-		throws PortalException {
+			long objectDefinitionId, ObjectLayoutTab objectLayoutTab,
+			ObjectRelationship[] objectRelationships)
+		throws Exception {
+
+		long objectRelationshipId = GetterUtil.getLong(
+			objectLayoutTab.getObjectRelationshipId());
+
+		if ((objectRelationshipId == 0) &&
+			(objectLayoutTab.getObjectRelationshipExternalReferenceCode() !=
+				null)) {
+
+			com.liferay.object.model.ObjectRelationship objectRelationship =
+				_objectRelationshipLocalService.
+					getObjectRelationshipByExternalReferenceCode(
+						objectLayoutTab.
+							getObjectRelationshipExternalReferenceCode(),
+						contextCompany.getCompanyId());
+
+			if (objectRelationship != null) {
+				objectRelationshipId =
+					objectRelationship.getObjectRelationshipId();
+			}
+			else {
+				for (ObjectRelationship objectRelationship1 :
+						objectRelationships) {
+
+					if (!StringUtil.equals(
+							objectRelationship1.getExternalReferenceCode(),
+							objectLayoutTab.
+								getObjectRelationshipExternalReferenceCode())) {
+
+						continue;
+					}
+
+					ObjectRelationshipResource.Builder
+						objectRelationshipResourceBuilder =
+							_objectRelationshipResourceFactory.create();
+
+					ObjectRelationshipResource objectRelationshipResource =
+						objectRelationshipResourceBuilder.user(
+							contextUser
+						).build();
+
+					ObjectRelationship objectRelationship2 =
+						objectRelationshipResource.
+							postObjectDefinitionObjectRelationship(
+								objectDefinitionId, objectRelationship1);
+
+					objectRelationshipId = objectRelationship2.getId();
+
+					break;
+				}
+			}
+		}
 
 		com.liferay.object.model.ObjectLayoutTab serviceBuilderObjectLayoutTab =
 			_objectLayoutTabPersistence.create(0L);
@@ -308,7 +364,7 @@ public class ObjectLayoutResourceImpl
 				objectLayoutBox -> _toObjectLayoutBox(
 					objectDefinitionId, objectLayoutBox)));
 		serviceBuilderObjectLayoutTab.setObjectRelationshipId(
-			GetterUtil.getLong(objectLayoutTab.getObjectRelationshipId()));
+			objectRelationshipId);
 		serviceBuilderObjectLayoutTab.setPriority(
 			objectLayoutTab.getPriority());
 
@@ -338,5 +394,12 @@ public class ObjectLayoutResourceImpl
 
 	@Reference
 	private ObjectRelationshipLocalService _objectRelationshipLocalService;
+
+	@Reference
+	private ObjectRelationshipResource.Factory
+		_objectRelationshipResourceFactory;
+
+	@Reference
+	private UserLocalService _userLocalService;
 
 }
