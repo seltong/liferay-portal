@@ -1017,8 +1017,9 @@ public class ObjectRelationshipLocalServiceImpl
 			long objectDefinitionId2, long parameterObjectFieldId, String name,
 			String type)
 		throws PortalException {
-// Todo Add validation for externalReferenceCode
-		
+
+		// TODO Add validation for externalReferenceCode
+
 		if (Validator.isNull(name)) {
 			throw new ObjectRelationshipNameException("Name is null");
 		}
