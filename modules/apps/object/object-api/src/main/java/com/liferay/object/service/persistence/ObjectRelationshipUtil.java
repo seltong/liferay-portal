@@ -887,6 +887,76 @@ public class ObjectRelationshipUtil {
 	}
 
 	/**
+	 * Returns the object relationship where externalReferenceCode = &#63; and companyId = &#63; or throws a <code>NoSuchObjectRelationshipException</code> if it could not be found.
+	 *
+	 * @param externalReferenceCode the external reference code
+	 * @param companyId the company ID
+	 * @return the matching object relationship
+	 * @throws NoSuchObjectRelationshipException if a matching object relationship could not be found
+	 */
+	public static ObjectRelationship findByERC_C(
+			String externalReferenceCode, long companyId)
+		throws com.liferay.object.exception.NoSuchObjectRelationshipException {
+
+		return getPersistence().findByERC_C(externalReferenceCode, companyId);
+	}
+
+	/**
+	 * Returns the object relationship where externalReferenceCode = &#63; and companyId = &#63; or returns <code>null</code> if it could not be found. Uses the finder cache.
+	 *
+	 * @param externalReferenceCode the external reference code
+	 * @param companyId the company ID
+	 * @return the matching object relationship, or <code>null</code> if a matching object relationship could not be found
+	 */
+	public static ObjectRelationship fetchByERC_C(
+		String externalReferenceCode, long companyId) {
+
+		return getPersistence().fetchByERC_C(externalReferenceCode, companyId);
+	}
+
+	/**
+	 * Returns the object relationship where externalReferenceCode = &#63; and companyId = &#63; or returns <code>null</code> if it could not be found, optionally using the finder cache.
+	 *
+	 * @param externalReferenceCode the external reference code
+	 * @param companyId the company ID
+	 * @param useFinderCache whether to use the finder cache
+	 * @return the matching object relationship, or <code>null</code> if a matching object relationship could not be found
+	 */
+	public static ObjectRelationship fetchByERC_C(
+		String externalReferenceCode, long companyId, boolean useFinderCache) {
+
+		return getPersistence().fetchByERC_C(
+			externalReferenceCode, companyId, useFinderCache);
+	}
+
+	/**
+	 * Removes the object relationship where externalReferenceCode = &#63; and companyId = &#63; from the database.
+	 *
+	 * @param externalReferenceCode the external reference code
+	 * @param companyId the company ID
+	 * @return the object relationship that was removed
+	 */
+	public static ObjectRelationship removeByERC_C(
+			String externalReferenceCode, long companyId)
+		throws com.liferay.object.exception.NoSuchObjectRelationshipException {
+
+		return getPersistence().removeByERC_C(externalReferenceCode, companyId);
+	}
+
+	/**
+	 * Returns the number of object relationships where externalReferenceCode = &#63; and companyId = &#63;.
+	 *
+	 * @param externalReferenceCode the external reference code
+	 * @param companyId the company ID
+	 * @return the number of matching object relationships
+	 */
+	public static int countByERC_C(
+		String externalReferenceCode, long companyId) {
+
+		return getPersistence().countByERC_C(externalReferenceCode, companyId);
+	}
+
+	/**
 	 * Returns all the object relationships where objectDefinitionId1 = &#63; and name = &#63;.
 	 *
 	 * @param objectDefinitionId1 the object definition id1

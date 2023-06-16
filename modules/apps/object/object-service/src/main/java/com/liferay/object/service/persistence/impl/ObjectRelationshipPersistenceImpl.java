@@ -2466,6 +2466,279 @@ public class ObjectRelationshipPersistenceImpl
 	private static final String _FINDER_COLUMN_OBJECTFIELDID2_OBJECTFIELDID2_2 =
 		"objectRelationship.objectFieldId2 = ?";
 
+	private FinderPath _finderPathFetchByERC_C;
+	private FinderPath _finderPathCountByERC_C;
+
+	/**
+	 * Returns the object relationship where externalReferenceCode = &#63; and companyId = &#63; or throws a <code>NoSuchObjectRelationshipException</code> if it could not be found.
+	 *
+	 * @param externalReferenceCode the external reference code
+	 * @param companyId the company ID
+	 * @return the matching object relationship
+	 * @throws NoSuchObjectRelationshipException if a matching object relationship could not be found
+	 */
+	@Override
+	public ObjectRelationship findByERC_C(
+			String externalReferenceCode, long companyId)
+		throws NoSuchObjectRelationshipException {
+
+		ObjectRelationship objectRelationship = fetchByERC_C(
+			externalReferenceCode, companyId);
+
+		if (objectRelationship == null) {
+			StringBundler sb = new StringBundler(6);
+
+			sb.append(_NO_SUCH_ENTITY_WITH_KEY);
+
+			sb.append("externalReferenceCode=");
+			sb.append(externalReferenceCode);
+
+			sb.append(", companyId=");
+			sb.append(companyId);
+
+			sb.append("}");
+
+			if (_log.isDebugEnabled()) {
+				_log.debug(sb.toString());
+			}
+
+			throw new NoSuchObjectRelationshipException(sb.toString());
+		}
+
+		return objectRelationship;
+	}
+
+	/**
+	 * Returns the object relationship where externalReferenceCode = &#63; and companyId = &#63; or returns <code>null</code> if it could not be found. Uses the finder cache.
+	 *
+	 * @param externalReferenceCode the external reference code
+	 * @param companyId the company ID
+	 * @return the matching object relationship, or <code>null</code> if a matching object relationship could not be found
+	 */
+	@Override
+	public ObjectRelationship fetchByERC_C(
+		String externalReferenceCode, long companyId) {
+
+		return fetchByERC_C(externalReferenceCode, companyId, true);
+	}
+
+	/**
+	 * Returns the object relationship where externalReferenceCode = &#63; and companyId = &#63; or returns <code>null</code> if it could not be found, optionally using the finder cache.
+	 *
+	 * @param externalReferenceCode the external reference code
+	 * @param companyId the company ID
+	 * @param useFinderCache whether to use the finder cache
+	 * @return the matching object relationship, or <code>null</code> if a matching object relationship could not be found
+	 */
+	@Override
+	public ObjectRelationship fetchByERC_C(
+		String externalReferenceCode, long companyId, boolean useFinderCache) {
+
+		externalReferenceCode = Objects.toString(externalReferenceCode, "");
+
+		Object[] finderArgs = null;
+
+		if (useFinderCache) {
+			finderArgs = new Object[] {externalReferenceCode, companyId};
+		}
+
+		Object result = null;
+
+		if (useFinderCache) {
+			result = finderCache.getResult(
+				_finderPathFetchByERC_C, finderArgs, this);
+		}
+
+		if (result instanceof ObjectRelationship) {
+			ObjectRelationship objectRelationship = (ObjectRelationship)result;
+
+			if (!Objects.equals(
+					externalReferenceCode,
+					objectRelationship.getExternalReferenceCode()) ||
+				(companyId != objectRelationship.getCompanyId())) {
+
+				result = null;
+			}
+		}
+
+		if (result == null) {
+			StringBundler sb = new StringBundler(4);
+
+			sb.append(_SQL_SELECT_OBJECTRELATIONSHIP_WHERE);
+
+			boolean bindExternalReferenceCode = false;
+
+			if (externalReferenceCode.isEmpty()) {
+				sb.append(_FINDER_COLUMN_ERC_C_EXTERNALREFERENCECODE_3);
+			}
+			else {
+				bindExternalReferenceCode = true;
+
+				sb.append(_FINDER_COLUMN_ERC_C_EXTERNALREFERENCECODE_2);
+			}
+
+			sb.append(_FINDER_COLUMN_ERC_C_COMPANYID_2);
+
+			String sql = sb.toString();
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				Query query = session.createQuery(sql);
+
+				QueryPos queryPos = QueryPos.getInstance(query);
+
+				if (bindExternalReferenceCode) {
+					queryPos.add(externalReferenceCode);
+				}
+
+				queryPos.add(companyId);
+
+				List<ObjectRelationship> list = query.list();
+
+				if (list.isEmpty()) {
+					if (useFinderCache) {
+						finderCache.putResult(
+							_finderPathFetchByERC_C, finderArgs, list);
+					}
+				}
+				else {
+					if (list.size() > 1) {
+						Collections.sort(list, Collections.reverseOrder());
+
+						if (_log.isWarnEnabled()) {
+							if (!useFinderCache) {
+								finderArgs = new Object[] {
+									externalReferenceCode, companyId
+								};
+							}
+
+							_log.warn(
+								"ObjectRelationshipPersistenceImpl.fetchByERC_C(String, long, boolean) with parameters (" +
+									StringUtil.merge(finderArgs) +
+										") yields a result set with more than 1 result. This violates the logical unique restriction. There is no order guarantee on which result is returned by this finder.");
+						}
+					}
+
+					ObjectRelationship objectRelationship = list.get(0);
+
+					result = objectRelationship;
+
+					cacheResult(objectRelationship);
+				}
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+		}
+
+		if (result instanceof List<?>) {
+			return null;
+		}
+		else {
+			return (ObjectRelationship)result;
+		}
+	}
+
+	/**
+	 * Removes the object relationship where externalReferenceCode = &#63; and companyId = &#63; from the database.
+	 *
+	 * @param externalReferenceCode the external reference code
+	 * @param companyId the company ID
+	 * @return the object relationship that was removed
+	 */
+	@Override
+	public ObjectRelationship removeByERC_C(
+			String externalReferenceCode, long companyId)
+		throws NoSuchObjectRelationshipException {
+
+		ObjectRelationship objectRelationship = findByERC_C(
+			externalReferenceCode, companyId);
+
+		return remove(objectRelationship);
+	}
+
+	/**
+	 * Returns the number of object relationships where externalReferenceCode = &#63; and companyId = &#63;.
+	 *
+	 * @param externalReferenceCode the external reference code
+	 * @param companyId the company ID
+	 * @return the number of matching object relationships
+	 */
+	@Override
+	public int countByERC_C(String externalReferenceCode, long companyId) {
+		externalReferenceCode = Objects.toString(externalReferenceCode, "");
+
+		FinderPath finderPath = _finderPathCountByERC_C;
+
+		Object[] finderArgs = new Object[] {externalReferenceCode, companyId};
+
+		Long count = (Long)finderCache.getResult(finderPath, finderArgs, this);
+
+		if (count == null) {
+			StringBundler sb = new StringBundler(3);
+
+			sb.append(_SQL_COUNT_OBJECTRELATIONSHIP_WHERE);
+
+			boolean bindExternalReferenceCode = false;
+
+			if (externalReferenceCode.isEmpty()) {
+				sb.append(_FINDER_COLUMN_ERC_C_EXTERNALREFERENCECODE_3);
+			}
+			else {
+				bindExternalReferenceCode = true;
+
+				sb.append(_FINDER_COLUMN_ERC_C_EXTERNALREFERENCECODE_2);
+			}
+
+			sb.append(_FINDER_COLUMN_ERC_C_COMPANYID_2);
+
+			String sql = sb.toString();
+
+			Session session = null;
+
+			try {
+				session = openSession();
+
+				Query query = session.createQuery(sql);
+
+				QueryPos queryPos = QueryPos.getInstance(query);
+
+				if (bindExternalReferenceCode) {
+					queryPos.add(externalReferenceCode);
+				}
+
+				queryPos.add(companyId);
+
+				count = (Long)query.uniqueResult();
+
+				finderCache.putResult(finderPath, finderArgs, count);
+			}
+			catch (Exception exception) {
+				throw processException(exception);
+			}
+			finally {
+				closeSession(session);
+			}
+		}
+
+		return count.intValue();
+	}
+
+	private static final String _FINDER_COLUMN_ERC_C_EXTERNALREFERENCECODE_2 =
+		"objectRelationship.externalReferenceCode = ? AND ";
+
+	private static final String _FINDER_COLUMN_ERC_C_EXTERNALREFERENCECODE_3 =
+		"(objectRelationship.externalReferenceCode IS NULL OR objectRelationship.externalReferenceCode = '') AND ";
+
+	private static final String _FINDER_COLUMN_ERC_C_COMPANYID_2 =
+		"objectRelationship.companyId = ?";
+
 	private FinderPath _finderPathWithPaginationFindByODI1_N;
 	private FinderPath _finderPathWithoutPaginationFindByODI1_N;
 	private FinderPath _finderPathCountByODI1_N;
@@ -7824,6 +8097,14 @@ public class ObjectRelationshipPersistenceImpl
 			objectRelationship);
 
 		finderCache.putResult(
+			_finderPathFetchByERC_C,
+			new Object[] {
+				objectRelationship.getExternalReferenceCode(),
+				objectRelationship.getCompanyId()
+			},
+			objectRelationship);
+
+		finderCache.putResult(
 			_finderPathFetchByODI1_ODI2_N_R_T,
 			new Object[] {
 				objectRelationship.getObjectDefinitionId1(),
@@ -7917,6 +8198,15 @@ public class ObjectRelationshipPersistenceImpl
 		finderCache.putResult(
 			_finderPathFetchByObjectFieldId2, args,
 			objectRelationshipModelImpl);
+
+		args = new Object[] {
+			objectRelationshipModelImpl.getExternalReferenceCode(),
+			objectRelationshipModelImpl.getCompanyId()
+		};
+
+		finderCache.putResult(_finderPathCountByERC_C, args, Long.valueOf(1));
+		finderCache.putResult(
+			_finderPathFetchByERC_C, args, objectRelationshipModelImpl);
 
 		args = new Object[] {
 			objectRelationshipModelImpl.getObjectDefinitionId1(),
@@ -8074,6 +8364,11 @@ public class ObjectRelationshipPersistenceImpl
 			String uuid = _portalUUID.generate();
 
 			objectRelationship.setUuid(uuid);
+		}
+
+		if (Validator.isNull(objectRelationship.getExternalReferenceCode())) {
+			objectRelationship.setExternalReferenceCode(
+				objectRelationship.getUuid());
 		}
 
 		ServiceContext serviceContext =
@@ -8495,6 +8790,16 @@ public class ObjectRelationshipPersistenceImpl
 			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByObjectFieldId2",
 			new String[] {Long.class.getName()},
 			new String[] {"objectFieldId2"}, false);
+
+		_finderPathFetchByERC_C = new FinderPath(
+			FINDER_CLASS_NAME_ENTITY, "fetchByERC_C",
+			new String[] {String.class.getName(), Long.class.getName()},
+			new String[] {"externalReferenceCode", "companyId"}, true);
+
+		_finderPathCountByERC_C = new FinderPath(
+			FINDER_CLASS_NAME_LIST_WITHOUT_PAGINATION, "countByERC_C",
+			new String[] {String.class.getName(), Long.class.getName()},
+			new String[] {"externalReferenceCode", "companyId"}, false);
 
 		_finderPathWithPaginationFindByODI1_N = new FinderPath(
 			FINDER_CLASS_NAME_LIST_WITH_PAGINATION, "findByODI1_N",
