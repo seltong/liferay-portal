@@ -3556,7 +3556,8 @@ public class ObjectEntryLocalServiceImpl
 		long companyId,
 		DynamicObjectDefinitionLocalizationTable
 			dynamicObjectDefinitionLocalizationTable,
-		long objectEntryId, Map<String, Serializable> values) {
+		long objectEntryId, Map<String, Serializable> values)
+	throws PortalException {
 
 		StringBundler sb = new StringBundler();
 
@@ -3607,6 +3608,8 @@ public class ObjectEntryLocalServiceImpl
 
 		Set<Locale> locales = _getLocales(companyId, objectFields, values);
 
+		Map<String, Serializable> oldValues = getValues(objectEntryId);
+
 		Connection connection = _currentConnection.getConnection(
 			objectEntryPersistence.getDataSource());
 
@@ -3634,6 +3637,14 @@ public class ObjectEntryLocalServiceImpl
 							objectField.getI18nObjectFieldName());
 
 					String localizedValue = localizedValues.get(languageId);
+
+					if (!localizedValues.containsKey(languageId)) {
+						Map<String, String> oldValue =
+							(Map<String, String>) oldValues.get(
+								objectField.getI18nObjectFieldName());
+
+						localizedValue = oldValue.get(languageId);
+					}
 
 					if (localizedValue == null) {
 						localizedValue = StringPool.BLANK;
