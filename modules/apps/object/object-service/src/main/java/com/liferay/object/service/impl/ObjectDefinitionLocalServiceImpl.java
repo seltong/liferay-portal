@@ -36,6 +36,7 @@ import com.liferay.object.exception.ObjectDefinitionActiveException;
 import com.liferay.object.exception.ObjectDefinitionEnableCategorizationException;
 import com.liferay.object.exception.ObjectDefinitionEnableCommentsException;
 import com.liferay.object.exception.ObjectDefinitionEnableObjectEntryHistoryException;
+import com.liferay.object.exception.ObjectDefinitionExternalReferenceCodeException;
 import com.liferay.object.exception.ObjectDefinitionLabelException;
 import com.liferay.object.exception.ObjectDefinitionNameException;
 import com.liferay.object.exception.ObjectDefinitionPluralLabelException;
@@ -912,6 +913,9 @@ public class ObjectDefinitionLocalServiceImpl
 		storageType = Validator.isNotNull(storageType) ? storageType :
 			ObjectDefinitionConstants.STORAGE_TYPE_DEFAULT;
 
+		_validateExternalReferenceCode(
+			externalReferenceCode, name, modifiable, system);
+
 		_validateEnableComments(
 			enableComments, modifiable, storageType, system);
 
@@ -1646,6 +1650,22 @@ public class ObjectDefinitionLocalServiceImpl
 			throw new ObjectDefinitionEnableObjectEntryHistoryException(
 				"Enable object entry history is only allowed for object " +
 					"definitions with the default storage type");
+		}
+	}
+
+	private void _validateExternalReferenceCode(
+			String externalReferenceCode, String objectDefinitionName,
+			boolean modifiable, boolean system)
+		throws PortalException {
+
+		if (!modifiable && system &&
+			!ObjectDefinitionUtil.
+				isAllowedUnmodifiableSystemObjectDefinitionExternalReferenceCode(
+					externalReferenceCode, objectDefinitionName)) {
+
+			throw new ObjectDefinitionExternalReferenceCodeException.
+				ForbiddenUnmodifiableSystemObjectDefinitionExternalReferenceCode(
+					externalReferenceCode);
 		}
 	}
 
