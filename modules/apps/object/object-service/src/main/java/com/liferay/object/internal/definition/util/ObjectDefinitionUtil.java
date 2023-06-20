@@ -16,6 +16,7 @@ package com.liferay.object.internal.definition.util;
 
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.PortalRunMode;
+import com.liferay.portal.kernel.util.StringUtil;
 
 import java.util.Map;
 import java.util.Objects;
@@ -45,6 +46,19 @@ public class ObjectDefinitionUtil {
 		return _allowedModifiableSystemObjectDefinitionNames.containsKey(name);
 	}
 
+	public static boolean
+		isAllowedUnmodifiableSystemObjectDefinitionExternalReferenceCode(
+			String externalReferenceCode, String name) {
+
+		if (PortalRunMode.isTestMode() && Objects.equals(name, "Test")) {
+			return true;
+		}
+
+		return StringUtil.equals(
+			_allowedUnmodifiableSystemObjectDefinitionNames.get(name),
+			externalReferenceCode);
+	}
+
 	private static final Map<String, String>
 		_allowedModifiableSystemObjectDefinitionNames = HashMapBuilder.put(
 			"APIApplication", "/headless-builder/applications"
@@ -60,6 +74,20 @@ public class ObjectDefinitionUtil {
 			"APISort", "/headless-builder/sorts"
 		).put(
 			"Bookmark", "/bookmarks"
+		).build();
+	private static final Map<String, String>
+		_allowedUnmodifiableSystemObjectDefinitionNames = HashMapBuilder.put(
+			"Account", "USOD_ACCOUNT"
+		).put(
+			"CommerceOrder", "USOD_COMMERCE_ORDER"
+		).put(
+			"CommerceProduct", "USOD_COMMERCE_PRODUCT_DEFINITION"
+		).put(
+			"CommerceProductGroup", "USOD_COMMERCE_PRODUCT_GROUP"
+		).put(
+			"PostalAddress", "USOD_POSTAL_ADDRESS"
+		).put(
+			"User", "USOD_USER"
 		).build();
 
 }
