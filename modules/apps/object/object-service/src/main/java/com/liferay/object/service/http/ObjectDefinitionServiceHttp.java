@@ -142,8 +142,8 @@ public class ObjectDefinitionServiceHttp {
 
 	public static com.liferay.object.model.ObjectDefinition
 			addSystemObjectDefinition(
-				HttpPrincipal httpPrincipal, long userId,
-				boolean enableComments,
+				HttpPrincipal httpPrincipal, String externalReferenceCode,
+				long userId, boolean enableComments,
 				java.util.Map<java.util.Locale, String> labelMap, String name,
 				String panelAppOrder, String panelCategoryKey,
 				java.util.Map<java.util.Locale, String> pluralLabelMap,
@@ -158,9 +158,9 @@ public class ObjectDefinitionServiceHttp {
 				_addSystemObjectDefinitionParameterTypes2);
 
 			MethodHandler methodHandler = new MethodHandler(
-				methodKey, userId, enableComments, labelMap, name,
-				panelAppOrder, panelCategoryKey, pluralLabelMap, scope,
-				objectFields);
+				methodKey, externalReferenceCode, userId, enableComments,
+				labelMap, name, panelAppOrder, panelCategoryKey, pluralLabelMap,
+				scope, objectFields);
 
 			Object returnObj = null;
 
@@ -785,9 +785,9 @@ public class ObjectDefinitionServiceHttp {
 		new Class[] {String.class};
 	private static final Class<?>[] _addSystemObjectDefinitionParameterTypes2 =
 		new Class[] {
-			long.class, boolean.class, java.util.Map.class, String.class,
-			String.class, String.class, java.util.Map.class, String.class,
-			java.util.List.class
+			String.class, long.class, boolean.class, java.util.Map.class,
+			String.class, String.class, String.class, java.util.Map.class,
+			String.class, java.util.List.class
 		};
 	private static final Class<?>[] _deleteObjectDefinitionParameterTypes3 =
 		new Class[] {long.class};
