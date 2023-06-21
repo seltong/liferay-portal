@@ -453,6 +453,11 @@ public class ObjectDefinitionLocalServiceTest {
 					}
 
 					@Override
+					public String getExternalReferenceCode() {
+						return null;
+					}
+
+					@Override
 					public String getExternalReferenceCode(long primaryKey)
 						throws PortalException {
 
@@ -598,6 +603,11 @@ public class ObjectDefinitionLocalServiceTest {
 							String externalReferenceCode, long companyId)
 						throws PortalException {
 
+						return null;
+					}
+
+					@Override
+					public String getExternalReferenceCode() {
 						return null;
 					}
 
