@@ -685,8 +685,8 @@ public class DefaultObjectEntryManagerImpl
 			return DTOConverterUtil.toDTO(
 				systemObjectDefinitionManager.
 					getBaseModelByExternalReferenceCode(
-						systemObjectDefinitionManager.getExternalReferenceCode(
-							primaryKey),
+						systemObjectDefinitionManager.
+							getEntryExternalReferenceCode(primaryKey),
 						objectDefinition.getCompanyId()),
 				_dtoConverterRegistry, systemObjectDefinitionManager,
 				dtoConverterContext.getUser());

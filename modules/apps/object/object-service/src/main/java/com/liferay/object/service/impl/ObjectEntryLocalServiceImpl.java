@@ -1577,8 +1577,8 @@ public class ObjectEntryLocalServiceImpl
 				try {
 					values.put(
 						objectRelationshipERCObjectFieldName,
-						systemObjectDefinitionManager.getExternalReferenceCode(
-							primaryKey));
+						systemObjectDefinitionManager.
+							getEntryExternalReferenceCode(primaryKey));
 				}
 				catch (PortalException portalException) {
 					if (_log.isDebugEnabled()) {

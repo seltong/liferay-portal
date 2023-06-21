@@ -73,14 +73,14 @@ public class TestSystemObjectDefinitionManager
 	}
 
 	@Override
-	public String getExternalReferenceCode() {
+	public String getEntryExternalReferenceCode(long primaryKey)
+		throws PortalException {
+
 		return null;
 	}
 
 	@Override
-	public String getExternalReferenceCode(long primaryKey)
-		throws PortalException {
-
+	public String getExternalReferenceCode() {
 		return null;
 	}
 
