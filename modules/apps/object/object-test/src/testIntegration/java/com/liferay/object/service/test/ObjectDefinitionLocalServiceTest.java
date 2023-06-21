@@ -22,6 +22,7 @@ import com.liferay.object.exception.NoSuchObjectFieldException;
 import com.liferay.object.exception.ObjectDefinitionAccountEntryRestrictedException;
 import com.liferay.object.exception.ObjectDefinitionActiveException;
 import com.liferay.object.exception.ObjectDefinitionEnableObjectEntryHistoryException;
+import com.liferay.object.exception.ObjectDefinitionExternalReferenceCodeException;
 import com.liferay.object.exception.ObjectDefinitionLabelException;
 import com.liferay.object.exception.ObjectDefinitionNameException;
 import com.liferay.object.exception.ObjectDefinitionPluralLabelException;
@@ -721,6 +722,25 @@ public class ObjectDefinitionLocalServiceTest {
 	@Test
 	public void testAddSystemObjectDefinition() throws Exception {
 
+		// External reference code
+
+		AssertUtils.assertFailure(
+			ObjectDefinitionExternalReferenceCodeException.
+				ForbiddenUnmodifiableSystemObjectDefinitionExternalReferenceCode.class,
+			"Forbidden unmodifiable system object definition external " +
+				"reference code INVALID_TEST",
+			() ->
+				ObjectDefinitionTestUtil.addUnmodifiableSystemObjectDefinition(
+					"INVALID_TEST", TestPropsValues.getUserId(), "Test", null,
+					LocalizedMapUtil.getLocalizedMap(
+						RandomTestUtil.randomString()),
+					"Test", null, null,
+					LocalizedMapUtil.getLocalizedMap(
+						RandomTestUtil.randomString()),
+					ObjectDefinitionConstants.SCOPE_COMPANY, null, 1,
+					_objectDefinitionLocalService,
+					Collections.<ObjectField>emptyList()));
+
 		// Label is null
 
 		AssertUtils.assertFailure(
@@ -808,7 +828,7 @@ public class ObjectDefinitionLocalServiceTest {
 			ObjectDefinitionScopeException.class, "Scope is null",
 			() ->
 				ObjectDefinitionTestUtil.addUnmodifiableSystemObjectDefinition(
-					TestPropsValues.getUserId(), "Test", null,
+					"Test", TestPropsValues.getUserId(), "Test", null,
 					LocalizedMapUtil.getLocalizedMap(
 						RandomTestUtil.randomString()),
 					"Test", null, null,
@@ -826,7 +846,7 @@ public class ObjectDefinitionLocalServiceTest {
 			"No object scope provider found with key " + scope,
 			() ->
 				ObjectDefinitionTestUtil.addUnmodifiableSystemObjectDefinition(
-					TestPropsValues.getUserId(), "Test", null,
+					"Test", TestPropsValues.getUserId(), "Test", null,
 					LocalizedMapUtil.getLocalizedMap(
 						RandomTestUtil.randomString()),
 					"Test", null, null,
@@ -842,7 +862,7 @@ public class ObjectDefinitionLocalServiceTest {
 			"System object definition versions must greater than 0",
 			() ->
 				ObjectDefinitionTestUtil.addUnmodifiableSystemObjectDefinition(
-					TestPropsValues.getUserId(), "Test", null,
+					"Test", TestPropsValues.getUserId(), "Test", null,
 					LocalizedMapUtil.getLocalizedMap(
 						RandomTestUtil.randomString()),
 					"Test", null, null,
@@ -857,7 +877,7 @@ public class ObjectDefinitionLocalServiceTest {
 			"System object definition versions must greater than 0",
 			() ->
 				ObjectDefinitionTestUtil.addUnmodifiableSystemObjectDefinition(
-					TestPropsValues.getUserId(), "Test", null,
+					"Test", TestPropsValues.getUserId(), "Test", null,
 					LocalizedMapUtil.getLocalizedMap(
 						RandomTestUtil.randomString()),
 					"Test", null, null,
@@ -871,7 +891,7 @@ public class ObjectDefinitionLocalServiceTest {
 
 		objectDefinition =
 			ObjectDefinitionTestUtil.addUnmodifiableSystemObjectDefinition(
-				TestPropsValues.getUserId(), "Test", null,
+				"Test", TestPropsValues.getUserId(), "Test", null,
 				LocalizedMapUtil.getLocalizedMap(RandomTestUtil.randomString()),
 				"Test", null, null,
 				LocalizedMapUtil.getLocalizedMap(RandomTestUtil.randomString()),
@@ -985,7 +1005,7 @@ public class ObjectDefinitionLocalServiceTest {
 
 		objectDefinition =
 			ObjectDefinitionTestUtil.addUnmodifiableSystemObjectDefinition(
-				TestPropsValues.getUserId(), "Test", null,
+				"Test", TestPropsValues.getUserId(), "Test", null,
 				LocalizedMapUtil.getLocalizedMap(RandomTestUtil.randomString()),
 				"Test", null, null,
 				LocalizedMapUtil.getLocalizedMap(RandomTestUtil.randomString()),
@@ -1154,7 +1174,7 @@ public class ObjectDefinitionLocalServiceTest {
 
 		objectDefinition =
 			ObjectDefinitionTestUtil.addUnmodifiableSystemObjectDefinition(
-				TestPropsValues.getUserId(), "Test", null,
+				"Test", TestPropsValues.getUserId(), "Test", null,
 				LocalizedMapUtil.getLocalizedMap(RandomTestUtil.randomString()),
 				"Test", null, null,
 				LocalizedMapUtil.getLocalizedMap(RandomTestUtil.randomString()),
@@ -1429,7 +1449,7 @@ public class ObjectDefinitionLocalServiceTest {
 
 		objectDefinition =
 			ObjectDefinitionTestUtil.addUnmodifiableSystemObjectDefinition(
-				TestPropsValues.getUserId(), "Test", null,
+				"Test", TestPropsValues.getUserId(), "Test", null,
 				LocalizedMapUtil.getLocalizedMap(RandomTestUtil.randomString()),
 				"Test", null, null,
 				LocalizedMapUtil.getLocalizedMap(RandomTestUtil.randomString()),
@@ -1547,7 +1567,7 @@ public class ObjectDefinitionLocalServiceTest {
 		throws Exception {
 
 		return ObjectDefinitionTestUtil.addUnmodifiableSystemObjectDefinition(
-			TestPropsValues.getUserId(), name, null,
+			"Test", TestPropsValues.getUserId(), name, null,
 			LocalizedMapUtil.getLocalizedMap(label), name, null, null,
 			LocalizedMapUtil.getLocalizedMap(pluralLabel),
 			ObjectDefinitionConstants.SCOPE_COMPANY, null, 1,
