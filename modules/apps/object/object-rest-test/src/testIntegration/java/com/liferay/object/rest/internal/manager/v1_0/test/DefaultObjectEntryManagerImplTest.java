@@ -1931,85 +1931,76 @@ public class DefaultObjectEntryManagerImplTest {
 			_objectDefinition2.getObjectDefinitionId(), objectEntry.getId(),
 			Arrays.asList("en_US", "fr_FR", "pt_BR"));
 
-		Map<String, String> localizedLongTextObjectFieldI18nValue =
+		_localizedObjectFieldI18nValues = HashMapBuilder.<String, Object>put(
+			"localizedLongTextObjectFieldName_i18n",
 			HashMapBuilder.put(
 				"en_US", "en_US localizedLongTextObjectFieldValue"
 			).put(
 				"invalid_languageId", ""
-			).build();
-
-		Map<String, String> localizedRichTextObjectFieldI18nValue =
+			).build()
+		).put(
+			"localizedRichTextObjectFieldName_i18n",
 			HashMapBuilder.put(
 				"ar_SA", "ar_SA localizedRichTextObjectFieldValue"
-			).build();
+			).build()
+		).build();
 
 		_updateObjectEntry(
 			_simpleDTOConverterContext, _objectDefinition2, objectEntry.getId(),
+			_localizedObjectFieldI18nValues);
+
+		_localizedObjectFieldI18nValues.putAll(
 			HashMapBuilder.<String, Object>put(
 				"localizedLongTextObjectFieldName_i18n",
-				localizedLongTextObjectFieldI18nValue
-			).put(
-				"localizedRichTextObjectFieldName_i18n",
-				localizedRichTextObjectFieldI18nValue
-			).build());
-
-		localizedLongTextObjectFieldI18nValue.remove("invalid_languageId");
-
-		_assertLocalizedValues(
-			HashMapBuilder.<String, Object>put(
-				"localizedLongTextObjectFieldName_i18n",
-				localizedLongTextObjectFieldI18nValue
-			).put(
-				"localizedRichTextObjectFieldName_i18n",
-				localizedRichTextObjectFieldI18nValue
+				HashMapBuilder.put(
+					"en_US", "en_US localizedLongTextObjectFieldValue"
+				).build()
 			).put(
 				"localizedTextObjectFieldName_i18n", new HashMap<>()
-			).build(),
+			).build());
+
+		_assertLocalizedValues(
+			_localizedObjectFieldI18nValues,
 			_objectDefinition2.getObjectDefinitionId(), objectEntry.getId(),
 			Arrays.asList("ar_SA", "en_US", "fr_FR", "pt_BR"));
 
-		localizedLongTextObjectFieldI18nValue = HashMapBuilder.put(
-			"en_US", "en_US localizedLongTextObjectFieldValue"
+		_localizedObjectFieldI18nValues = HashMapBuilder.<String, Object>put(
+			"localizedLongTextObjectFieldName_i18n",
+			HashMapBuilder.put(
+				"en_US", "en_US localizedLongTextObjectFieldValue"
+			).put(
+				"pt_BR", ""
+			).build()
 		).put(
-			"pt_BR", ""
-		).build();
-
-		localizedRichTextObjectFieldI18nValue = HashMapBuilder.put(
-			"ar_SA", "ar_SA localizedRichTextObjectFieldValue"
+			"localizedRichTextObjectFieldName_i18n",
+			HashMapBuilder.put(
+				"ar_SA", "ar_SA localizedRichTextObjectFieldValue"
+			).put(
+				"ca_ES", "ca_ES localizedRichTextObjectFieldValue"
+			).put(
+				"en_US", "en_US <i>localizedRichTextObjectFieldValue</i>"
+			).build()
 		).put(
-			"ca_ES", "ca_ES localizedRichTextObjectFieldValue"
-		).put(
-			"en_US", "en_US <i>localizedRichTextObjectFieldValue</i>"
+			"localizedTextObjectFieldName_i18n",
+			HashMapBuilder.put(
+				"en_US", "en_US localizedTextObjectFieldValue"
+			).put(
+				"pt_BR", "pt_BR localizedTextObjectFieldValue"
+			).build()
 		).build();
 
 		_updateObjectEntry(
 			_simpleDTOConverterContext, _objectDefinition2, objectEntry.getId(),
-			HashMapBuilder.<String, Object>put(
-				"localizedLongTextObjectFieldName_i18n",
-				localizedLongTextObjectFieldI18nValue
-			).put(
-				"localizedRichTextObjectFieldName_i18n",
-				localizedRichTextObjectFieldI18nValue
-			).put(
-				"localizedTextObjectFieldName_i18n",
-				_localizedObjectFieldI18nValues.get(
-					"localizedTextObjectFieldName_i18n")
+			_localizedObjectFieldI18nValues);
+
+		_localizedObjectFieldI18nValues.put(
+			"localizedLongTextObjectFieldName_i18n",
+			HashMapBuilder.put(
+				"en_US", "en_US localizedLongTextObjectFieldValue"
 			).build());
 
-		localizedLongTextObjectFieldI18nValue.remove("pt_BR");
-
 		_assertLocalizedValues(
-			HashMapBuilder.<String, Object>put(
-				"localizedLongTextObjectFieldName_i18n",
-				localizedLongTextObjectFieldI18nValue
-			).put(
-				"localizedRichTextObjectFieldName_i18n",
-				localizedRichTextObjectFieldI18nValue
-			).put(
-				"localizedTextObjectFieldName_i18n",
-				_localizedObjectFieldI18nValues.get(
-					"localizedTextObjectFieldName_i18n")
-			).build(),
+			_localizedObjectFieldI18nValues,
 			_objectDefinition2.getObjectDefinitionId(), objectEntry.getId(),
 			Arrays.asList("ar_SA", "ca_ES", "en_US", "fr_FR", "pt_BR"));
 	}
