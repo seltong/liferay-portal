@@ -14,6 +14,8 @@
 
 package com.liferay.object.web.internal.info.item.provider;
 
+import com.liferay.dynamic.data.mapping.model.DDMFormFieldOptions;
+import com.liferay.dynamic.data.mapping.model.LocalizedValue;
 import com.liferay.info.exception.NoSuchFormVariationException;
 import com.liferay.info.field.InfoField;
 import com.liferay.info.field.InfoFieldSet;
@@ -41,6 +43,9 @@ import com.liferay.object.constants.ObjectFieldConstants;
 import com.liferay.object.constants.ObjectFieldValidationConstants;
 import com.liferay.object.constants.ObjectRelationshipConstants;
 import com.liferay.object.exception.NoSuchObjectDefinitionException;
+import com.liferay.object.field.business.type.ObjectFieldBusinessType;
+import com.liferay.object.field.business.type.ObjectFieldBusinessTypeRegistry;
+import com.liferay.object.field.render.ObjectFieldRenderingContext;
 import com.liferay.object.field.setting.util.ObjectFieldSettingUtil;
 import com.liferay.object.model.ObjectAction;
 import com.liferay.object.model.ObjectDefinition;
@@ -58,6 +63,7 @@ import com.liferay.object.service.ObjectFieldLocalService;
 import com.liferay.object.service.ObjectFieldSettingLocalService;
 import com.liferay.object.service.ObjectRelationshipLocalService;
 import com.liferay.object.web.internal.configuration.util.ObjectConfigurationUtil;
+import com.liferay.object.web.internal.display.context.helper.ObjectRequestHelper;
 import com.liferay.object.web.internal.info.item.ObjectEntryInfoItemFields;
 import com.liferay.object.web.internal.util.ObjectFieldDBTypeUtil;
 import com.liferay.petra.function.transform.TransformUtil;
@@ -103,6 +109,7 @@ public class ObjectEntryInfoItemFormProvider
 		ListTypeEntryLocalService listTypeEntryLocalService,
 		ObjectActionLocalService objectActionLocalService,
 		ObjectDefinitionLocalService objectDefinitionLocalService,
+		ObjectFieldBusinessTypeRegistry objectFieldBusinessTypeRegistry,
 		ObjectFieldLocalService objectFieldLocalService,
 		ObjectFieldSettingLocalService objectFieldSettingLocalService,
 		ObjectRelationshipLocalService objectRelationshipLocalService,
@@ -119,6 +126,7 @@ public class ObjectEntryInfoItemFormProvider
 		_listTypeEntryLocalService = listTypeEntryLocalService;
 		_objectActionLocalService = objectActionLocalService;
 		_objectDefinitionLocalService = objectDefinitionLocalService;
+		_objectFieldBusinessTypeRegistry = objectFieldBusinessTypeRegistry;
 		_objectFieldLocalService = objectFieldLocalService;
 		_objectFieldSettingLocalService = objectFieldSettingLocalService;
 		_objectRelationshipLocalService = objectRelationshipLocalService;
@@ -179,7 +187,8 @@ public class ObjectEntryInfoItemFormProvider
 	}
 
 	private InfoField<?> _addAttributes(
-		InfoField.FinalStep finalStep, ObjectField objectField) {
+			InfoField.FinalStep finalStep, ObjectField objectField)
+		throws PortalException {
 
 		if (Objects.equals(
 				objectField.getBusinessType(),
@@ -689,30 +698,35 @@ public class ObjectEntryInfoItemFormProvider
 						}
 					}
 
-					unsafeConsumer.accept(
-						_addAttributes(
-							InfoField.builder(
-							).infoFieldType(
-								ObjectFieldDBTypeUtil.getInfoFieldType(
-									objectField)
-							).namespace(
-								namespace
-							).name(
-								objectField.getName()
-							).editable(
-								editable
-							).labelInfoLocalizedValue(
-								InfoLocalizedValue.<String>builder(
-								).defaultLocale(
-									LocaleUtil.fromLanguageId(
-										objectField.getDefaultLanguageId())
-								).values(
-									objectField.getLabelMap()
-								).build()
-							).required(
-								objectField.isRequired()
-							),
-							objectField));
+					try {
+						unsafeConsumer.accept(
+							_addAttributes(
+								InfoField.builder(
+								).infoFieldType(
+									ObjectFieldDBTypeUtil.getInfoFieldType(
+										objectField)
+								).namespace(
+									namespace
+								).name(
+									objectField.getName()
+								).editable(
+									editable
+								).labelInfoLocalizedValue(
+									InfoLocalizedValue.<String>builder(
+									).defaultLocale(
+										LocaleUtil.fromLanguageId(
+											objectField.getDefaultLanguageId())
+									).values(
+										objectField.getLabelMap()
+									).build()
+								).required(
+									objectField.isRequired()
+								),
+								objectField));
+					}
+					catch (PortalException portalException) {
+						_log.error(portalException);
+					}
 				}
 			}
 		).labelInfoLocalizedValue(
@@ -729,19 +743,44 @@ public class ObjectEntryInfoItemFormProvider
 	}
 
 	private List<OptionInfoFieldType> _getOptionInfoFieldTypes(
-		ObjectField objectField) {
+			ObjectField objectField)
+		throws PortalException {
+
+		ObjectFieldBusinessType objectFieldBusinessType =
+			_objectFieldBusinessTypeRegistry.getObjectFieldBusinessType(
+				objectField.getBusinessType());
+
+		ObjectFieldRenderingContext objectFieldRenderingContext =
+			new ObjectFieldRenderingContext();
+
+		Map<String, Object> properties = objectFieldBusinessType.getProperties(
+			objectField, objectFieldRenderingContext);
+
+		DDMFormFieldOptions ddmFormFieldOptions =
+			(DDMFormFieldOptions)properties.get("options");
+
+		Map<String, LocalizedValue> options = ddmFormFieldOptions.getOptions();
+
+		Collection<String> a = options.get("review").getValues().values();
+		a.toArray()[0];
+
+		// TODO: create a method in a Util class to get the picklist entries states
 
 		return TransformUtil.transform(
-			_listTypeEntryLocalService.getListTypeEntries(
-				objectField.getListTypeDefinitionId()),
-			listTypeEntry -> new OptionInfoFieldType(
-				Objects.equals(
-					ObjectFieldSettingUtil.getDefaultValueAsString(
-						null, objectField.getObjectFieldId(),
-						_objectFieldSettingLocalService, null),
-					listTypeEntry.getKey()),
-				new FunctionInfoLocalizedValue<>(listTypeEntry::getName),
-				listTypeEntry.getKey()));
+			options.entrySet(),
+			entry -> {
+				LocalizedValue localizedValue = entry.getValue();
+				Map<Locale, String> values = localizedValue.getValues();
+
+				return new OptionInfoFieldType(
+					Objects.equals(
+						ObjectFieldSettingUtil.getDefaultValueAsString(
+							null, objectField.getObjectFieldId(),
+							_objectFieldSettingLocalService, null),
+						entry.getKey()),
+					new FunctionInfoLocalizedValue<>(localizedValue::getValues),
+					entry.getKey());
+			});
 	}
 
 	private List<InfoFieldSetEntry> _getParentsInfoFieldSets(
@@ -897,6 +936,8 @@ public class ObjectEntryInfoItemFormProvider
 	private final ObjectActionLocalService _objectActionLocalService;
 	private final ObjectDefinition _objectDefinition;
 	private final ObjectDefinitionLocalService _objectDefinitionLocalService;
+	private final ObjectFieldBusinessTypeRegistry
+		_objectFieldBusinessTypeRegistry;
 	private final ObjectFieldLocalService _objectFieldLocalService;
 	private final ObjectFieldSettingLocalService
 		_objectFieldSettingLocalService;

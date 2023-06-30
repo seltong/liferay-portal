@@ -16,6 +16,8 @@ package com.liferay.object.entry.util;
 
 import com.liferay.document.library.kernel.model.DLFileEntry;
 import com.liferay.document.library.kernel.service.DLFileEntryLocalServiceUtil;
+import com.liferay.list.type.model.ListTypeEntry;
+import com.liferay.list.type.service.ListTypeEntryLocalService;
 import com.liferay.object.constants.ObjectFieldConstants;
 import com.liferay.object.model.ObjectField;
 import com.liferay.petra.string.StringPool;
@@ -31,12 +33,24 @@ import com.liferay.portal.kernel.util.Validator;
 
 import java.io.Serializable;
 
+import java.util.List;
 import java.util.Map;
 
 /**
  * @author Feliphe Marinho
  */
 public class ObjectEntryValuesUtil {
+
+	public static List<ListTypeEntry> getNextObjectStates(
+		ObjectField objectField,
+		ListTypeEntryLocalService listTypeEntryLocalService) {
+
+		if (!objectField.isState()) {
+			return listTypeEntryLocalService.getListTypeEntries(
+				objectField.getListTypeDefinitionId());
+		}
+
+	}
 
 	public static Object getTitleFieldValue(
 		String businessType, Map<String, Object> modelAttributes,
