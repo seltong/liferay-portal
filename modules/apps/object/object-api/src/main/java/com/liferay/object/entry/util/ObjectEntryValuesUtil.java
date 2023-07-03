@@ -16,9 +16,17 @@ package com.liferay.object.entry.util;
 
 import com.liferay.document.library.kernel.model.DLFileEntry;
 import com.liferay.document.library.kernel.service.DLFileEntryLocalServiceUtil;
+import com.liferay.list.type.model.ListTypeEntry;
+import com.liferay.list.type.service.ListTypeEntryLocalService;
 import com.liferay.object.constants.ObjectFieldConstants;
 import com.liferay.object.model.ObjectField;
+import com.liferay.object.model.ObjectState;
+import com.liferay.object.model.ObjectStateFlow;
+import com.liferay.object.service.ObjectStateFlowLocalService;
+import com.liferay.object.service.ObjectStateLocalService;
+import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.petra.string.StringPool;
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -31,12 +39,57 @@ import com.liferay.portal.kernel.util.Validator;
 
 import java.io.Serializable;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 /**
  * @author Feliphe Marinho
  */
 public class ObjectEntryValuesUtil {
+
+	public static List<ListTypeEntry> getNextListTypeEntries(
+			String listEntryKey,
+			ListTypeEntryLocalService listTypeEntryLocalService,
+			ObjectField objectField,
+			ObjectStateFlowLocalService objectStateFlowLocalService,
+			ObjectStateLocalService objectStateLocalService)
+		throws PortalException {
+
+		if (!objectField.isState()) {
+			return listTypeEntryLocalService.getListTypeEntries(
+				objectField.getListTypeDefinitionId());
+		}
+
+		ListTypeEntry listTypeEntry =
+			listTypeEntryLocalService.fetchListTypeEntry(
+				objectField.getListTypeDefinitionId(), listEntryKey);
+
+		if (listTypeEntry == null) {
+			return Collections.emptyList();
+		}
+
+		ObjectStateFlow objectStateFlow =
+			objectStateFlowLocalService.fetchObjectFieldObjectStateFlow(
+				objectField.getObjectFieldId());
+
+		ObjectState objectState =
+			objectStateLocalService.getObjectStateFlowObjectState(
+				listTypeEntry.getListTypeEntryId(),
+				objectStateFlow.getObjectStateFlowId());
+
+		List<ListTypeEntry> listTypeEntries = TransformUtil.transform(
+			objectStateLocalService.getNextObjectStates(
+				objectState.getObjectStateId()),
+			nextObjectState -> listTypeEntryLocalService.getListTypeEntry(
+				nextObjectState.getListTypeEntryId()));
+
+		listTypeEntries.add(
+			listTypeEntryLocalService.getListTypeEntry(
+				objectState.getListTypeEntryId()));
+
+		return listTypeEntries;
+	}
 
 	public static Object getTitleFieldValue(
 		String businessType, Map<String, Object> modelAttributes,
