@@ -21,6 +21,7 @@ import com.liferay.list.type.model.ListTypeEntry;
 import com.liferay.list.type.service.ListTypeEntryLocalService;
 import com.liferay.object.constants.ObjectFieldConstants;
 import com.liferay.object.constants.ObjectFieldSettingConstants;
+import com.liferay.object.entry.util.ObjectEntryValuesUtil;
 import com.liferay.object.exception.ObjectFieldDefaultValueException;
 import com.liferay.object.exception.ObjectFieldSettingValueException;
 import com.liferay.object.exception.ObjectFieldStateException;
@@ -29,13 +30,11 @@ import com.liferay.object.field.render.ObjectFieldRenderingContext;
 import com.liferay.object.field.setting.util.ObjectFieldSettingUtil;
 import com.liferay.object.model.ObjectField;
 import com.liferay.object.model.ObjectFieldSetting;
-import com.liferay.object.model.ObjectState;
 import com.liferay.object.model.ObjectStateFlow;
 import com.liferay.object.rest.dto.v1_0.ListEntry;
 import com.liferay.object.service.ObjectFieldSettingLocalService;
 import com.liferay.object.service.ObjectStateFlowLocalService;
 import com.liferay.object.service.ObjectStateLocalService;
-import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
@@ -296,34 +295,9 @@ public class PicklistObjectFieldBusinessType
 			listEntryKey = listEntry.getKey();
 		}
 
-		ListTypeEntry listTypeEntry =
-			_listTypeEntryLocalService.fetchListTypeEntry(
-				objectField.getListTypeDefinitionId(), listEntryKey);
-
-		if (listTypeEntry == null) {
-			return Collections.emptyList();
-		}
-
-		ObjectStateFlow objectStateFlow =
-			_objectStateFlowLocalService.fetchObjectFieldObjectStateFlow(
-				objectField.getObjectFieldId());
-
-		ObjectState objectState =
-			_objectStateLocalService.getObjectStateFlowObjectState(
-				listTypeEntry.getListTypeEntryId(),
-				objectStateFlow.getObjectStateFlowId());
-
-		List<ListTypeEntry> listTypeEntries = TransformUtil.transform(
-			_objectStateLocalService.getNextObjectStates(
-				objectState.getObjectStateId()),
-			nextObjectState -> _listTypeEntryLocalService.getListTypeEntry(
-				nextObjectState.getListTypeEntryId()));
-
-		listTypeEntries.add(
-			_listTypeEntryLocalService.getListTypeEntry(
-				objectState.getListTypeEntryId()));
-
-		return listTypeEntries;
+		return ObjectEntryValuesUtil.getNextListTypeEntries(
+			listEntryKey, _listTypeEntryLocalService, objectField,
+			_objectStateFlowLocalService, _objectStateLocalService);
 	}
 
 	@Reference

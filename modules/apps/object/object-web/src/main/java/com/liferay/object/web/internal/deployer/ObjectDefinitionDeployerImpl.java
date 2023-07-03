@@ -64,6 +64,8 @@ import com.liferay.object.service.ObjectFieldLocalService;
 import com.liferay.object.service.ObjectFieldSettingLocalService;
 import com.liferay.object.service.ObjectLayoutLocalService;
 import com.liferay.object.service.ObjectRelationshipLocalService;
+import com.liferay.object.service.ObjectStateFlowLocalService;
+import com.liferay.object.service.ObjectStateLocalService;
 import com.liferay.object.service.ObjectViewLocalService;
 import com.liferay.object.web.internal.asset.model.ObjectEntryAssetRendererFactory;
 import com.liferay.object.web.internal.info.collection.provider.ObjectEntrySingleFormVariationInfoCollectionProvider;
@@ -150,6 +152,7 @@ public class ObjectDefinitionDeployerImpl implements ObjectDefinitionDeployer {
 				_objectDefinitionLocalService, _objectFieldLocalService,
 				_objectFieldSettingLocalService,
 				_objectRelationshipLocalService, _objectScopeProviderRegistry,
+				_objectStateFlowLocalService, _objectStateLocalService,
 				_restContextPathResolverRegistry,
 				_templateInfoItemFieldSetProvider, _userLocalService);
 
@@ -593,6 +596,12 @@ public class ObjectDefinitionDeployerImpl implements ObjectDefinitionDeployer {
 
 	@Reference
 	private ObjectScopeProviderRegistry _objectScopeProviderRegistry;
+
+	@Reference
+	private ObjectStateFlowLocalService _objectStateFlowLocalService;
+
+	@Reference
+	private ObjectStateLocalService _objectStateLocalService;
 
 	@Reference
 	private ObjectViewLocalService _objectViewLocalService;

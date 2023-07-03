@@ -40,6 +40,7 @@ import com.liferay.object.constants.ObjectActionTriggerConstants;
 import com.liferay.object.constants.ObjectFieldConstants;
 import com.liferay.object.constants.ObjectFieldValidationConstants;
 import com.liferay.object.constants.ObjectRelationshipConstants;
+import com.liferay.object.entry.util.ObjectEntryValuesUtil;
 import com.liferay.object.exception.NoSuchObjectDefinitionException;
 import com.liferay.object.field.setting.util.ObjectFieldSettingUtil;
 import com.liferay.object.model.ObjectAction;
@@ -57,6 +58,8 @@ import com.liferay.object.service.ObjectDefinitionLocalService;
 import com.liferay.object.service.ObjectFieldLocalService;
 import com.liferay.object.service.ObjectFieldSettingLocalService;
 import com.liferay.object.service.ObjectRelationshipLocalService;
+import com.liferay.object.service.ObjectStateFlowLocalService;
+import com.liferay.object.service.ObjectStateLocalService;
 import com.liferay.object.web.internal.configuration.util.ObjectConfigurationUtil;
 import com.liferay.object.web.internal.info.item.ObjectEntryInfoItemFields;
 import com.liferay.object.web.internal.util.ObjectFieldDBTypeUtil;
@@ -107,6 +110,8 @@ public class ObjectEntryInfoItemFormProvider
 		ObjectFieldSettingLocalService objectFieldSettingLocalService,
 		ObjectRelationshipLocalService objectRelationshipLocalService,
 		ObjectScopeProviderRegistry objectScopeProviderRegistry,
+		ObjectStateFlowLocalService objectStateFlowLocalService,
+		ObjectStateLocalService objectStateLocalService,
 		RESTContextPathResolverRegistry restContextPathResolverRegistry,
 		TemplateInfoItemFieldSetProvider templateInfoItemFieldSetProvider,
 		UserLocalService userLocalService) {
@@ -123,6 +128,8 @@ public class ObjectEntryInfoItemFormProvider
 		_objectFieldSettingLocalService = objectFieldSettingLocalService;
 		_objectRelationshipLocalService = objectRelationshipLocalService;
 		_objectScopeProviderRegistry = objectScopeProviderRegistry;
+		_objectStateFlowLocalService = objectStateFlowLocalService;
+		_objectStateLocalService = objectStateLocalService;
 		_restContextPathResolverRegistry = restContextPathResolverRegistry;
 		_templateInfoItemFieldSetProvider = templateInfoItemFieldSetProvider;
 		_userLocalService = userLocalService;
@@ -179,7 +186,8 @@ public class ObjectEntryInfoItemFormProvider
 	}
 
 	private InfoField<?> _addAttributes(
-		InfoField.FinalStep finalStep, ObjectField objectField) {
+			InfoField.FinalStep finalStep, ObjectField objectField)
+		throws PortalException {
 
 		if (Objects.equals(
 				objectField.getBusinessType(),
@@ -689,30 +697,35 @@ public class ObjectEntryInfoItemFormProvider
 						}
 					}
 
-					unsafeConsumer.accept(
-						_addAttributes(
-							InfoField.builder(
-							).infoFieldType(
-								ObjectFieldDBTypeUtil.getInfoFieldType(
-									objectField)
-							).namespace(
-								namespace
-							).name(
-								objectField.getName()
-							).editable(
-								editable
-							).labelInfoLocalizedValue(
-								InfoLocalizedValue.<String>builder(
-								).defaultLocale(
-									LocaleUtil.fromLanguageId(
-										objectField.getDefaultLanguageId())
-								).values(
-									objectField.getLabelMap()
-								).build()
-							).required(
-								objectField.isRequired()
-							),
-							objectField));
+					try {
+						unsafeConsumer.accept(
+							_addAttributes(
+								InfoField.builder(
+								).infoFieldType(
+									ObjectFieldDBTypeUtil.getInfoFieldType(
+										objectField)
+								).namespace(
+									namespace
+								).name(
+									objectField.getName()
+								).editable(
+									editable
+								).labelInfoLocalizedValue(
+									InfoLocalizedValue.<String>builder(
+									).defaultLocale(
+										LocaleUtil.fromLanguageId(
+											objectField.getDefaultLanguageId())
+									).values(
+										objectField.getLabelMap()
+									).build()
+								).required(
+									objectField.isRequired()
+								),
+								objectField));
+					}
+					catch (PortalException portalException) {
+						_log.error(portalException);
+					}
 				}
 			}
 		).labelInfoLocalizedValue(
@@ -729,17 +742,19 @@ public class ObjectEntryInfoItemFormProvider
 	}
 
 	private List<OptionInfoFieldType> _getOptionInfoFieldTypes(
-		ObjectField objectField) {
+			ObjectField objectField)
+		throws PortalException {
+
+		String listEntryKey = ObjectFieldSettingUtil.getDefaultValueAsString(
+			null, objectField.getObjectFieldId(),
+			_objectFieldSettingLocalService, null);
 
 		return TransformUtil.transform(
-			_listTypeEntryLocalService.getListTypeEntries(
-				objectField.getListTypeDefinitionId()),
+			ObjectEntryValuesUtil.getNextListTypeEntries(
+				listEntryKey, _listTypeEntryLocalService, objectField,
+				_objectStateFlowLocalService, _objectStateLocalService),
 			listTypeEntry -> new OptionInfoFieldType(
-				Objects.equals(
-					ObjectFieldSettingUtil.getDefaultValueAsString(
-						null, objectField.getObjectFieldId(),
-						_objectFieldSettingLocalService, null),
-					listTypeEntry.getKey()),
+				Objects.equals(listEntryKey, listTypeEntry.getKey()),
 				new FunctionInfoLocalizedValue<>(listTypeEntry::getName),
 				listTypeEntry.getKey()));
 	}
@@ -903,6 +918,8 @@ public class ObjectEntryInfoItemFormProvider
 	private final ObjectRelationshipLocalService
 		_objectRelationshipLocalService;
 	private final ObjectScopeProviderRegistry _objectScopeProviderRegistry;
+	private final ObjectStateFlowLocalService _objectStateFlowLocalService;
+	private final ObjectStateLocalService _objectStateLocalService;
 	private final RESTContextPathResolverRegistry
 		_restContextPathResolverRegistry;
 	private final TemplateInfoItemFieldSetProvider
