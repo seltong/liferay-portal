@@ -9,6 +9,7 @@ sourceCompatibility = "1.6"
 targetCompatibility = "1.6"
 
 dependencies {
+	compile group: "com.lowagie", name: "itext", optional, version: "2.1.7.js10"
 	compile group: "net.sf.jasperreports", name: "jasperreports", version: "6.20.0"
 }
 
@@ -22,6 +23,7 @@ patch {
 	fileNames "jasperreports/demo/samples/webapp/ivy-lib.xml"
 	fileNames "jasperreports/ivy.xml"
 	fileNames "jasperreports/pom.xml"
+	fileNames "src/net/sf/jasperreports/data/bean/BeanDataAdapter.java"
 
 	originalLibModuleName = "jasperreports"
 }
