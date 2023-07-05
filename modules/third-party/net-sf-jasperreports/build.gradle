@@ -1,6 +1,7 @@
 import com.liferay.gradle.plugins.patcher.PatchTask
 
 apply plugin: "com.liferay.patcher"
+apply plugin: "nebula.optional-base"
 
 task patch(type: PatchTask)
 
@@ -16,5 +17,18 @@ patch {
 		autoClean = false
 	}
 
+	fileNames "jasperreports/demo/samples/paragraphs/build.xml"
+	fileNames "jasperreports/demo/samples/webapp-repo/ivy-lib.xml"
+	fileNames "jasperreports/demo/samples/webapp/ivy-lib.xml"
+	fileNames "jasperreports/ivy.xml"
+	fileNames "jasperreports/pom.xml"
+
 	originalLibModuleName = "jasperreports"
+}
+
+repositories {
+	maven {
+		url "https://jaspersoft.jfrog.io/jaspersoft/third-party-ce-artifacts"
+
+	}
 }
