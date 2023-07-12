@@ -38,19 +38,6 @@ public class ObjectRelationshipLocalServiceWrapper
 		_objectRelationshipLocalService = objectRelationshipLocalService;
 	}
 
-	@Override
-	public com.liferay.object.model.ObjectRelationship addObjectRelationship(
-			long userId, long objectDefinitionId1, long objectDefinitionId2,
-			long parameterObjectFieldId, String deletionType,
-			java.util.Map<java.util.Locale, String> labelMap, String name,
-			String type)
-		throws com.liferay.portal.kernel.exception.PortalException {
-
-		return _objectRelationshipLocalService.addObjectRelationship(
-			userId, objectDefinitionId1, objectDefinitionId2,
-			parameterObjectFieldId, deletionType, labelMap, name, type);
-	}
-
 	/**
 	 * Adds the object relationship to the database. Also notifies the appropriate model listeners.
 	 *
@@ -67,6 +54,21 @@ public class ObjectRelationshipLocalServiceWrapper
 
 		return _objectRelationshipLocalService.addObjectRelationship(
 			objectRelationship);
+	}
+
+	@Override
+	public com.liferay.object.model.ObjectRelationship addObjectRelationship(
+			String externalReferenceCode, long userId, long objectDefinitionId1,
+			long objectDefinitionId2, long parameterObjectFieldId,
+			String deletionType,
+			java.util.Map<java.util.Locale, String> labelMap, String name,
+			String type)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		return _objectRelationshipLocalService.addObjectRelationship(
+			externalReferenceCode, userId, objectDefinitionId1,
+			objectDefinitionId2, parameterObjectFieldId, deletionType, labelMap,
+			name, type);
 	}
 
 	@Override
@@ -320,6 +322,17 @@ public class ObjectRelationshipLocalServiceWrapper
 
 	@Override
 	public com.liferay.object.model.ObjectRelationship
+		fetchObjectRelationshipByExternalReferenceCode(
+			String externalReferenceCode, long companyId,
+			long objectDefinitionId1) {
+
+		return _objectRelationshipLocalService.
+			fetchObjectRelationshipByExternalReferenceCode(
+				externalReferenceCode, companyId, objectDefinitionId1);
+	}
+
+	@Override
+	public com.liferay.object.model.ObjectRelationship
 		fetchObjectRelationshipByObjectDefinitionId(
 			long objectDefinitionId, String name) {
 
@@ -566,18 +579,6 @@ public class ObjectRelationshipLocalServiceWrapper
 				objectDefinition1, objectDefinitionLocalService);
 	}
 
-	@Override
-	public com.liferay.object.model.ObjectRelationship updateObjectRelationship(
-			long objectRelationshipId, long parameterObjectFieldId,
-			String deletionType,
-			java.util.Map<java.util.Locale, String> labelMap)
-		throws com.liferay.portal.kernel.exception.PortalException {
-
-		return _objectRelationshipLocalService.updateObjectRelationship(
-			objectRelationshipId, parameterObjectFieldId, deletionType,
-			labelMap);
-	}
-
 	/**
 	 * Updates the object relationship in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.
 	 *
@@ -594,6 +595,18 @@ public class ObjectRelationshipLocalServiceWrapper
 
 		return _objectRelationshipLocalService.updateObjectRelationship(
 			objectRelationship);
+	}
+
+	@Override
+	public com.liferay.object.model.ObjectRelationship updateObjectRelationship(
+			String externalReferenceCode, long objectRelationshipId,
+			long parameterObjectFieldId, String deletionType,
+			java.util.Map<java.util.Locale, String> labelMap)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		return _objectRelationshipLocalService.updateObjectRelationship(
+			externalReferenceCode, objectRelationshipId, parameterObjectFieldId,
+			deletionType, labelMap);
 	}
 
 	@Override

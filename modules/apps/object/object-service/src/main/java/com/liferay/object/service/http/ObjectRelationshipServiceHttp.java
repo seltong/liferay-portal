@@ -52,9 +52,9 @@ public class ObjectRelationshipServiceHttp {
 
 	public static com.liferay.object.model.ObjectRelationship
 			addObjectRelationship(
-				HttpPrincipal httpPrincipal, long objectDefinitionId1,
-				long objectDefinitionId2, long parameterObjectFieldId,
-				String deletionType,
+				HttpPrincipal httpPrincipal, String externalReferenceCode,
+				long objectDefinitionId1, long objectDefinitionId2,
+				long parameterObjectFieldId, String deletionType,
 				java.util.Map<java.util.Locale, String> labelMap, String name,
 				String type)
 		throws com.liferay.portal.kernel.exception.PortalException {
@@ -65,8 +65,9 @@ public class ObjectRelationshipServiceHttp {
 				_addObjectRelationshipParameterTypes0);
 
 			MethodHandler methodHandler = new MethodHandler(
-				methodKey, objectDefinitionId1, objectDefinitionId2,
-				parameterObjectFieldId, deletionType, labelMap, name, type);
+				methodKey, externalReferenceCode, objectDefinitionId1,
+				objectDefinitionId2, parameterObjectFieldId, deletionType,
+				labelMap, name, type);
 
 			Object returnObj = null;
 
@@ -305,8 +306,9 @@ public class ObjectRelationshipServiceHttp {
 
 	public static com.liferay.object.model.ObjectRelationship
 			updateObjectRelationship(
-				HttpPrincipal httpPrincipal, long objectRelationshipId,
-				long parameterObjectFieldId, String deletionType,
+				HttpPrincipal httpPrincipal, String externalReferenceCode,
+				long objectRelationshipId, long parameterObjectFieldId,
+				String deletionType,
 				java.util.Map<java.util.Locale, String> labelMap)
 		throws com.liferay.portal.kernel.exception.PortalException {
 
@@ -316,8 +318,8 @@ public class ObjectRelationshipServiceHttp {
 				_updateObjectRelationshipParameterTypes6);
 
 			MethodHandler methodHandler = new MethodHandler(
-				methodKey, objectRelationshipId, parameterObjectFieldId,
-				deletionType, labelMap);
+				methodKey, externalReferenceCode, objectRelationshipId,
+				parameterObjectFieldId, deletionType, labelMap);
 
 			Object returnObj = null;
 
@@ -352,7 +354,7 @@ public class ObjectRelationshipServiceHttp {
 
 	private static final Class<?>[] _addObjectRelationshipParameterTypes0 =
 		new Class[] {
-			long.class, long.class, long.class, String.class,
+			String.class, long.class, long.class, long.class, String.class,
 			java.util.Map.class, String.class, String.class
 		};
 	private static final Class<?>[]
@@ -369,6 +371,9 @@ public class ObjectRelationshipServiceHttp {
 	private static final Class<?>[] _getObjectRelationshipsParameterTypes5 =
 		new Class[] {long.class, int.class, int.class};
 	private static final Class<?>[] _updateObjectRelationshipParameterTypes6 =
-		new Class[] {long.class, long.class, String.class, java.util.Map.class};
+		new Class[] {
+			String.class, long.class, long.class, String.class,
+			java.util.Map.class
+		};
 
 }
