@@ -1,0 +1,150 @@
+/**
+ * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
+ *
+ * This library is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 2.1 of the License, or (at your option)
+ * any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ */
+
+package com.liferay.notification.internal.upgrade.v3_8_0;
+
+import com.liferay.notification.model.NotificationQueueEntry;
+import com.liferay.petra.string.StringBundler;
+import com.liferay.portal.kernel.dao.jdbc.AutoBatchPreparedStatementUtil;
+import com.liferay.portal.kernel.model.ClassName;
+import com.liferay.portal.kernel.service.ClassNameLocalService;
+import com.liferay.portal.kernel.service.ResourceLocalService;
+import com.liferay.portal.kernel.upgrade.UpgradeProcess;
+
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
+/**
+ * @author Selton Guedes
+ */
+public class NotificationQueueEntryUpgradeProcess extends UpgradeProcess {
+
+	public NotificationQueueEntryUpgradeProcess(
+		ClassNameLocalService classNameLocalService,
+		ResourceLocalService resourceLocalService) {
+
+		_classNameLocalService = classNameLocalService;
+		_resourceLocalService = resourceLocalService;
+	}
+
+	@Override
+	protected void doUpgrade() throws Exception {
+		try (PreparedStatement preparedStatement1 = connection.prepareStatement(
+				StringBundler.concat(
+					"select notificationQueueEntryId, companyId, userId, ",
+					"notificationTemplateId, classNameId, classPK from ",
+					"NotificationQueueEntry where notificationQueueEntryId ",
+					"not in (select primKeyId from ResourcePermission where ",
+					"name = ?)"));
+			PreparedStatement preparedStatement2 = connection.prepareStatement(
+				"select companyId from NotificationTemplate where " +
+					"notificationTemplateId = ?");
+			PreparedStatement preparedStatement3 = connection.prepareStatement(
+				"select objectDefinitionId from ObjectEntry where " +
+					"objectEntryId = ?");
+			PreparedStatement preparedStatement4 =
+				AutoBatchPreparedStatementUtil.concurrentAutoBatch(
+					connection,
+					"update NotificationQueueEntry set classNameId = ? where " +
+						"notificationQueueEntryId = ?");
+			PreparedStatement preparedStatement5 =
+				AutoBatchPreparedStatementUtil.concurrentAutoBatch(
+					connection,
+					"update NotificationTemplate set companyId = ? where " +
+						"notificationTemplateId = ?")) {
+
+			preparedStatement1.setString(
+				1, NotificationQueueEntry.class.getName());
+
+			try (ResultSet resultSet1 = preparedStatement1.executeQuery()) {
+				while (resultSet1.next()) {
+					long companyId = resultSet1.getLong("companyId");
+
+					if (companyId == 0) {
+						long notificationTemplateId = resultSet1.getLong(
+							"notificationTemplateId");
+
+						preparedStatement2.setLong(1, notificationTemplateId);
+
+						try (ResultSet resultSet2 =
+								preparedStatement2.executeQuery()) {
+
+							if (resultSet2.next()) {
+								companyId = resultSet2.getLong("companyId");
+							}
+						}
+
+						preparedStatement5.setLong(1, companyId);
+						preparedStatement5.setLong(2, notificationTemplateId);
+
+						preparedStatement5.addBatch();
+					}
+
+					_resourceLocalService.addResources(
+						companyId, 0, resultSet1.getLong("userId"),
+						NotificationQueueEntry.class.getName(),
+						resultSet1.getLong("notificationQueueEntryId"), false,
+						true, true);
+
+					long objectDefinitionId = 0;
+
+					preparedStatement3.setLong(
+						1, resultSet1.getLong("classPK"));
+
+					try (ResultSet resultSet3 =
+							preparedStatement3.executeQuery()) {
+
+						if (resultSet3.next()) {
+							objectDefinitionId = resultSet3.getLong(
+								"objectDefinitionId");
+						}
+					}
+
+					if (objectDefinitionId == 0) {
+						continue;
+					}
+
+					ClassName className = _classNameLocalService.fetchClassName(
+						"com.liferay.object.model.ObjectDefinition#" +
+							objectDefinitionId);
+
+					if (className == null) {
+						continue;
+					}
+
+					long classNameId = className.getClassNameId();
+
+					if ((classNameId == 0) ||
+						(classNameId == resultSet1.getLong("classNameId"))) {
+
+						continue;
+					}
+
+					preparedStatement4.setLong(1, classNameId);
+					preparedStatement4.setLong(
+						2, resultSet1.getLong("notificationQueueEntryId"));
+
+					preparedStatement4.addBatch();
+				}
+			}
+
+			preparedStatement5.executeBatch();
+			preparedStatement4.executeBatch();
+		}
+	}
+
+	private final ClassNameLocalService _classNameLocalService;
+	private final ResourceLocalService _resourceLocalService;
+
+}
