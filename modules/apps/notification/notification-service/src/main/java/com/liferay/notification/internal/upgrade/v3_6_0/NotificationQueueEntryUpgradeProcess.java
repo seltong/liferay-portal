@@ -57,12 +57,7 @@ public class NotificationQueueEntryUpgradeProcess extends UpgradeProcess {
 				AutoBatchPreparedStatementUtil.concurrentAutoBatch(
 					connection,
 					"update NotificationQueueEntry set classNameId = ? where " +
-						"notificationQueueEntryId = ?");
-			PreparedStatement preparedStatement5 =
-				AutoBatchPreparedStatementUtil.concurrentAutoBatch(
-					connection,
-					"update NotificationTemplate set companyId = ? where " +
-						"notificationTemplateId = ?")) {
+						"notificationQueueEntryId = ?")) {
 
 			preparedStatement1.setString(
 				1, NotificationQueueEntry.class.getName());
@@ -84,11 +79,6 @@ public class NotificationQueueEntryUpgradeProcess extends UpgradeProcess {
 								companyId = resultSet2.getLong("companyId");
 							}
 						}
-
-						preparedStatement5.setLong(1, companyId);
-						preparedStatement5.setLong(2, notificationTemplateId);
-
-						preparedStatement5.addBatch();
 					}
 
 					_resourceLocalService.addResources(
@@ -139,7 +129,6 @@ public class NotificationQueueEntryUpgradeProcess extends UpgradeProcess {
 				}
 			}
 
-			preparedStatement5.executeBatch();
 			preparedStatement4.executeBatch();
 		}
 	}
