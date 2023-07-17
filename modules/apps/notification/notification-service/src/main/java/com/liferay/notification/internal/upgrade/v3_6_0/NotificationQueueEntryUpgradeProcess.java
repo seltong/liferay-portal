@@ -43,13 +43,17 @@ public class NotificationQueueEntryUpgradeProcess extends UpgradeProcess {
 		try (PreparedStatement preparedStatement1 = connection.prepareStatement(
 				StringBundler.concat(
 					"select notificationQueueEntryId, companyId, userId, ",
-					"classNameId, classPK from NotificationQueueEntry where ",
-					"notificationQueueEntryId not in (select primKeyId from ",
-					"ResourcePermission where name = ?)"));
+					"notificationTemplateId, classNameId, classPK from ",
+					"NotificationQueueEntry where notificationQueueEntryId ",
+					"not in (select primKeyId from ResourcePermission where ",
+					"name = ?)"));
 			PreparedStatement preparedStatement2 = connection.prepareStatement(
+				"select companyId from NotificationTemplate where " +
+					"notificationTemplateId = ?");
+			PreparedStatement preparedStatement3 = connection.prepareStatement(
 				"select objectDefinitionId from ObjectEntry where " +
 					"objectEntryId = ?");
-			PreparedStatement preparedStatement3 =
+			PreparedStatement preparedStatement4 =
 				AutoBatchPreparedStatementUtil.concurrentAutoBatch(
 					connection,
 					"update NotificationQueueEntry set classNameId = ? where " +
@@ -60,23 +64,39 @@ public class NotificationQueueEntryUpgradeProcess extends UpgradeProcess {
 
 			try (ResultSet resultSet1 = preparedStatement1.executeQuery()) {
 				while (resultSet1.next()) {
+					long companyId = resultSet1.getLong("companyId");
+
+					if (companyId == 0) {
+						long notificationTemplateId = resultSet1.getLong(
+							"notificationTemplateId");
+
+						preparedStatement2.setLong(1, notificationTemplateId);
+
+						try (ResultSet resultSet2 =
+								preparedStatement2.executeQuery()) {
+
+							if (resultSet2.next()) {
+								companyId = resultSet2.getLong("companyId");
+							}
+						}
+					}
+
 					_resourceLocalService.addResources(
-						resultSet1.getLong("companyId"), 0,
-						resultSet1.getLong("userId"),
+						companyId, 0, resultSet1.getLong("userId"),
 						NotificationQueueEntry.class.getName(),
 						resultSet1.getLong("notificationQueueEntryId"), false,
 						true, true);
 
 					long objectDefinitionId = 0;
 
-					preparedStatement2.setLong(
+					preparedStatement3.setLong(
 						1, resultSet1.getLong("classPK"));
 
-					try (ResultSet resultSet2 =
-							preparedStatement2.executeQuery()) {
+					try (ResultSet resultSet3 =
+							preparedStatement3.executeQuery()) {
 
-						if (resultSet2.next()) {
-							objectDefinitionId = resultSet2.getLong(
+						if (resultSet3.next()) {
+							objectDefinitionId = resultSet3.getLong(
 								"objectDefinitionId");
 						}
 					}
@@ -101,15 +121,15 @@ public class NotificationQueueEntryUpgradeProcess extends UpgradeProcess {
 						continue;
 					}
 
-					preparedStatement3.setLong(1, classNameId);
-					preparedStatement3.setLong(
+					preparedStatement4.setLong(1, classNameId);
+					preparedStatement4.setLong(
 						2, resultSet1.getLong("notificationQueueEntryId"));
 
-					preparedStatement3.addBatch();
+					preparedStatement4.addBatch();
 				}
 			}
 
-			preparedStatement3.executeBatch();
+			preparedStatement4.executeBatch();
 		}
 	}
 
