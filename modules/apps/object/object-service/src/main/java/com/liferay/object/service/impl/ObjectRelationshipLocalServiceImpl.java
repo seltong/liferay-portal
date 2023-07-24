@@ -28,6 +28,8 @@ import com.liferay.object.internal.dao.db.ObjectDBManagerUtil;
 import com.liferay.object.internal.info.collection.provider.RelatedInfoCollectionProviderFactory;
 import com.liferay.object.model.ObjectDefinition;
 import com.liferay.object.model.ObjectField;
+import com.liferay.object.model.ObjectFieldSettingTable;
+import com.liferay.object.model.ObjectFieldTable;
 import com.liferay.object.model.ObjectRelationship;
 import com.liferay.object.model.ObjectRelationshipTable;
 import com.liferay.object.petra.sql.dsl.DynamicObjectDefinitionTableUtil;
@@ -47,6 +49,7 @@ import com.liferay.object.system.SystemObjectDefinitionManagerRegistry;
 import com.liferay.petra.sql.dsl.Column;
 import com.liferay.petra.sql.dsl.DSLQueryFactoryUtil;
 import com.liferay.petra.sql.dsl.expression.Predicate;
+import com.liferay.petra.sql.dsl.query.DSLQuery;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.aop.AopService;
@@ -291,6 +294,13 @@ public class ObjectRelationshipLocalServiceImpl
 		if (objectRelationship.isReverse()) {
 			throw new ObjectRelationshipReverseException(
 				"Reverse object relationships cannot be deleted");
+		}
+
+		List<Long> aggregationFieldIds = _findAggregationFieldsIds(objectRelationship.getObjectRelationshipId());
+		if(!aggregationFieldIds.isEmpty()){
+			for (long id: aggregationFieldIds){
+				_objectFieldLocalService.deleteObjectField(id);
+			}
 		}
 
 		objectRelationship = objectRelationshipPersistence.remove(
@@ -1185,6 +1195,32 @@ public class ObjectRelationshipLocalServiceImpl
 						" does not belong to a relationship object field");
 			}
 		}
+	}
+
+	private List<Long> _findAggregationFieldsIds(long objectRelationshipId){
+		DSLQuery query =  DSLQueryFactoryUtil.selectDistinct(
+				ObjectFieldSettingTable.INSTANCE.objectFieldId
+			).from(
+				ObjectRelationshipTable.INSTANCE
+			).innerJoinON(
+				ObjectFieldTable.INSTANCE,
+				ObjectFieldTable.INSTANCE.objectDefinitionId.eq(
+					ObjectRelationshipTable.INSTANCE.objectDefinitionId1
+				)
+			).innerJoinON(
+				ObjectFieldSettingTable.INSTANCE,
+				ObjectFieldSettingTable.INSTANCE.objectFieldId.eq(
+					ObjectFieldTable.INSTANCE.objectFieldId
+				)
+			).where(
+				ObjectRelationshipTable.INSTANCE.objectRelationshipId.eq(objectRelationshipId
+				).and(
+					ObjectRelationshipTable.INSTANCE.name.eq(
+						ObjectFieldSettingTable.INSTANCE.value
+					)
+				)
+			);
+		return  objectRelationshipPersistence.dslQuery(query);
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
