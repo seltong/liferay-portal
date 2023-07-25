@@ -12,6 +12,7 @@
  * details.
  */
 
+import ClayForm, {ClayCheckbox} from '@clayui/form';
 import {
 	FormError,
 	Input,
@@ -56,6 +57,28 @@ export function EmailNotificationSettings({
 				selectedLocale={selectedLocale}
 				translations={(values.recipients[0] as EmailRecipients).to}
 			/>
+
+			<ClayForm.Group className="mb-0">
+				<ClayCheckbox
+					checked={
+						(values.recipients[0] as EmailRecipients)
+							.singleRecipient === 'true'
+					}
+					disabled={false}
+					label={Liferay.Language.get('send-email-separately')}
+					onChange={({target: {checked}}) => {
+						setValues({
+							...values,
+							recipients: [
+								{
+									...values.recipients[0],
+									singleRecipient: String(checked),
+								},
+							],
+						});
+					}}
+				/>
+			</ClayForm.Group>
 
 			<div className="row">
 				<div className="col-lg-6">

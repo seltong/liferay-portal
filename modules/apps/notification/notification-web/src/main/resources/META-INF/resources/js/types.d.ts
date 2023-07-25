@@ -27,6 +27,7 @@ type EmailRecipients = {
 	cc: string;
 	from: string;
 	fromName: LocalizedValue<string>;
+	singleRecipient: string;
 	to: LocalizedValue<string>;
 };
 
