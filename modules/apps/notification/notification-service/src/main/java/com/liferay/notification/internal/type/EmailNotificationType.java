@@ -67,6 +67,7 @@ import com.liferay.portal.kernel.templateparser.TemplateNode;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.transaction.TransactionCommitCallbackUtil;
 import com.liferay.portal.kernel.util.FileUtil;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.util.StringUtil;
@@ -226,6 +227,18 @@ public class EmailNotificationType extends BaseNotificationType {
 						notificationContext);
 				}
 			).put(
+				"singleRecipient",
+				() -> {
+					NotificationRecipientSetting notificationRecipientSetting =
+						notificationRecipientSettingLocalService.
+							getNotificationRecipientSetting(
+								notificationRecipient.
+									getNotificationRecipientId(),
+								"singleRecipient");
+
+					return notificationRecipientSetting.getValue();
+				}
+			).put(
 				"to",
 				() -> {
 					NotificationRecipientSetting notificationRecipientSetting =
@@ -250,51 +263,54 @@ public class EmailNotificationType extends BaseNotificationType {
 				}
 			).build();
 
-		for (String emailAddress :
-				StringUtil.split(
-					evaluatedNotificationRecipientSettings.get("to"))) {
+		String validEmailAddresses = _getValidEmailAddresses(
+			user.getCompanyId(),
+			evaluatedNotificationRecipientSettings.get("to"));
 
-			EmailAddressValidator emailAddressValidator =
-				EmailAddressValidatorFactory.getInstance();
+		if (GetterUtil.getBoolean(
+				evaluatedNotificationRecipientSettings.get(
+					"singleRecipient"))) {
 
-			if (!emailAddressValidator.validate(
-					user.getCompanyId(), emailAddress)) {
+			for (String emailAddress : StringUtil.split(validEmailAddresses)) {
+				User creatorUser = user;
 
-				if (_log.isInfoEnabled()) {
-					_log.info("Invalid email address " + emailAddress);
+				User toUser = userLocalService.fetchUserByEmailAddress(
+					user.getCompanyId(), emailAddress);
+
+				if (toUser == null) {
+					creatorUser = userLocalService.getGuestUser(
+						CompanyThreadLocal.getCompanyId());
 				}
 
-				continue;
+				prepareNotificationContext(
+					creatorUser, body, notificationContext,
+					HashMapBuilder.putAll(
+						evaluatedNotificationRecipientSettings
+					).put(
+						"to", emailAddress
+					).build(),
+					subject);
+
+				_sendEmail(
+					notificationQueueEntryLocalService.
+						addNotificationQueueEntry(notificationContext));
 			}
 
-			User creatorUser = user;
-
-			User toUser = userLocalService.fetchUserByEmailAddress(
-				user.getCompanyId(), emailAddress);
-
-			if (toUser == null) {
-				if (_log.isInfoEnabled()) {
-					_log.info(
-						"No user exists with email address " + emailAddress);
-				}
-
-				creatorUser = userLocalService.getGuestUser(
-					CompanyThreadLocal.getCompanyId());
-			}
-
-			prepareNotificationContext(
-				creatorUser, body, notificationContext,
-				HashMapBuilder.putAll(
-					evaluatedNotificationRecipientSettings
-				).put(
-					"to", emailAddress
-				).build(),
-				subject);
-
-			_sendEmail(
-				notificationQueueEntryLocalService.addNotificationQueueEntry(
-					notificationContext));
+			return;
 		}
+
+		prepareNotificationContext(
+			user, body, notificationContext,
+			HashMapBuilder.putAll(
+				evaluatedNotificationRecipientSettings
+			).put(
+				"to", validEmailAddresses
+			).build(),
+			subject);
+
+		_sendEmail(
+			notificationQueueEntryLocalService.addNotificationQueueEntry(
+				notificationContext));
 	}
 
 	@Override
@@ -520,6 +536,41 @@ public class EmailNotificationType extends BaseNotificationType {
 		}
 	}
 
+	private String _getValidEmailAddresses(
+		long companyId, String emailAddresses) {
+
+		StringBuilder validEmailAddresses = new StringBuilder();
+
+		for (String emailAddress : StringUtil.split(emailAddresses)) {
+			EmailAddressValidator emailAddressValidator =
+				EmailAddressValidatorFactory.getInstance();
+
+			if (!emailAddressValidator.validate(companyId, emailAddress)) {
+				if (_log.isInfoEnabled()) {
+					_log.info("Invalid email address " + emailAddress);
+				}
+
+				continue;
+			}
+
+			User toUser = userLocalService.fetchUserByEmailAddress(
+				companyId, emailAddress);
+
+			if (toUser == null) {
+				if (_log.isInfoEnabled()) {
+					_log.info(
+						"No user exists with email address " + emailAddress);
+				}
+			}
+
+			validEmailAddresses.append(emailAddress);
+			validEmailAddresses.append(StringPool.COMMA);
+		}
+
+		return StringUtil.removeLast(
+			validEmailAddresses.toString(), StringPool.COMMA);
+	}
+
 	private void _sendEmail(NotificationQueueEntry notificationQueueEntry) {
 		TransactionCommitCallbackUtil.registerCallback(
 			() -> {
@@ -539,11 +590,22 @@ public class EmailNotificationType extends BaseNotificationType {
 							String.valueOf(
 								notificationRecipientSettingsMap.get(
 									"fromName"))),
-						new InternetAddress(
-							String.valueOf(
-								notificationRecipientSettingsMap.get("to"))),
 						notificationQueueEntry.getSubject(),
 						notificationQueueEntry.getBody(), true);
+
+					List<InternetAddress> toEmailAddresses = new ArrayList<>();
+
+					for (String emailAddress :
+							StringUtil.split(
+								String.valueOf(
+									notificationRecipientSettingsMap.get(
+										"to")))) {
+
+						toEmailAddresses.add(new InternetAddress(emailAddress));
+					}
+
+					mailMessage.setTo(
+						toEmailAddresses.toArray(new InternetAddress[0]));
 
 					_addFileAttachments(
 						mailMessage,
