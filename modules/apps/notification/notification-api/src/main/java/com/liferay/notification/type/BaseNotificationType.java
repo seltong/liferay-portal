@@ -39,6 +39,7 @@ import com.liferay.object.service.ObjectDefinitionLocalServiceUtil;
 import com.liferay.object.service.ObjectFieldLocalServiceUtil;
 import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.feature.flag.FeatureFlagManagerUtil;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.util.HashMapBuilder;
@@ -120,8 +121,9 @@ public abstract class BaseNotificationType implements NotificationType {
 					notificationRecipientId);
 				notificationRecipientSetting.setName(entry.getKey());
 
-				if (entry.getValue() instanceof Boolean ||
-					entry.getValue() instanceof String) {
+				if ((entry.getValue() instanceof String) ||
+					((entry.getValue() instanceof Boolean) &&
+					 FeatureFlagManagerUtil.isEnabled("LPS-187854"))) {
 
 					notificationRecipientSetting.setValue(
 						String.valueOf(entry.getValue()));
