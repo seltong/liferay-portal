@@ -538,7 +538,11 @@ public class EmailNotificationType extends BaseNotificationType {
 
 		StringBuilder validEmailAddresses = new StringBuilder();
 
-		for (String emailAddress : StringUtil.split(emailAddresses)) {
+		for (String emailAddress :
+				StringUtil.split(
+					StringUtil.removeSubstring(
+						emailAddresses, StringPool.SPACE))) {
+
 			EmailAddressValidator emailAddressValidator =
 				EmailAddressValidatorFactory.getInstance();
 
