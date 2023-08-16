@@ -670,12 +670,12 @@ public class ObjectEntryDisplayContextImpl
 		}
 
 		List<ObjectField> objectFields =
-			_objectFieldLocalService.getCustomObjectFields(
+			_objectFieldLocalService.getObjectFields(
 				objectDefinition.getObjectDefinitionId());
 
 		if (objectLayoutTab == null) {
 			for (ObjectField objectField : objectFields) {
-				if (!_isActive(objectField)) {
+				if (!_isActive(objectField) || objectField.isMetadata()) {
 					continue;
 				}
 
