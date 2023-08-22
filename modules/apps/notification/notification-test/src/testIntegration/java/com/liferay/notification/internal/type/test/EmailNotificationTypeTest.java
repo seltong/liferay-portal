@@ -85,15 +85,24 @@ public class EmailNotificationTypeTest extends BaseNotificationTypeTest {
 
 		_addObjectEntry();
 
-		_assetNotificationQueueEntry(
-			false,
-			Collections.singletonList(
-				StringBundler.concat(
-					user1.getEmailAddress(), StringPool.COMMA,
-					user2.getEmailAddress())),
+		List<NotificationQueueEntry> notificationQueueEntries =
 			notificationQueueEntryLocalService.getNotificationEntries(
 				NotificationConstants.TYPE_EMAIL,
-				NotificationQueueEntryConstants.STATUS_SENT));
+				NotificationQueueEntryConstants.STATUS_SENT);
+
+		Assert.assertEquals(
+			notificationQueueEntries.toString(), 1,
+			notificationQueueEntries.size());
+
+		_assetNotificationQueueEntry(
+			false,
+			StringBundler.concat(
+				user1.getEmailAddress(), StringPool.COMMA,
+				user2.getEmailAddress()),
+			notificationQueueEntries.get(0));
+
+		notificationQueueEntryLocalService.deleteNotificationQueueEntry(
+			notificationQueueEntries.get(0));
 
 		notificationTemplate = _addNotificationTemplate(StringPool.TRUE);
 
@@ -112,28 +121,39 @@ public class EmailNotificationTypeTest extends BaseNotificationTypeTest {
 
 		_addObjectEntry();
 
+		List<String> expectedToRecipients = ListUtil.sort(
+			Arrays.asList(user1.getEmailAddress(), user2.getEmailAddress()));
+
+		notificationQueueEntries = ListUtil.sort(
+			notificationQueueEntryLocalService.getNotificationEntries(
+				NotificationConstants.TYPE_EMAIL,
+				NotificationQueueEntryConstants.STATUS_SENT),
+			Comparator.comparing(
+				notification -> {
+					NotificationRecipient notificationRecipient =
+						notification.getNotificationRecipient();
+
+					Map<String, Object> notificationRecipientSettingsMap =
+						NotificationRecipientSettingUtil.toMap(
+							notificationRecipient.
+								getNotificationRecipientSettings());
+
+					return String.valueOf(
+						notificationRecipientSettingsMap.get("to"));
+				}));
+
 		_assetNotificationQueueEntry(
-			true,
-			ListUtil.sort(
-				Arrays.asList(
-					user1.getEmailAddress(), user2.getEmailAddress())),
-			ListUtil.sort(
-				notificationQueueEntryLocalService.getNotificationEntries(
-					NotificationConstants.TYPE_EMAIL,
-					NotificationQueueEntryConstants.STATUS_SENT),
-				Comparator.comparing(
-					notification -> {
-						NotificationRecipient notificationRecipient =
-							notification.getNotificationRecipient();
+			true, expectedToRecipients.get(0), notificationQueueEntries.get(0));
 
-						Map<String, Object> notificationRecipientSettingsMap =
-							NotificationRecipientSettingUtil.toMap(
-								notificationRecipient.
-									getNotificationRecipientSettings());
+		_assetNotificationQueueEntry(
+			true, expectedToRecipients.get(1), notificationQueueEntries.get(1));
 
-						return String.valueOf(
-							notificationRecipientSettingsMap.get("to"));
-					})));
+		for (NotificationQueueEntry notificationQueueEntry :
+				notificationQueueEntries) {
+
+			notificationQueueEntryLocalService.deleteNotificationQueueEntry(
+				notificationQueueEntry);
+		}
 	}
 
 	private NotificationTemplate _addNotificationTemplate(
@@ -197,71 +217,54 @@ public class EmailNotificationTypeTest extends BaseNotificationTypeTest {
 	}
 
 	private void _assetNotificationQueueEntry(
-			boolean expectedSingleRecipient, List<String> expectedToRecipients,
-			List<NotificationQueueEntry> notificationQueueEntries)
-		throws Exception {
+		boolean expectedSingleRecipient, String expectedToRecipient,
+		NotificationQueueEntry notificationQueueEntry) {
+
+		Assert.assertNotNull(
+			MailServiceTestUtil.getMailMessages("To", expectedToRecipient));
+
+		assertTermValues(
+			getTermValues(),
+			ListUtil.fromString(
+				notificationQueueEntry.getBody(), StringPool.COMMA));
+		assertTermValues(
+			getTermValues(),
+			ListUtil.fromString(
+				notificationQueueEntry.getSubject(), StringPool.COMMA));
+
+		NotificationRecipient notificationRecipient =
+			notificationQueueEntry.getNotificationRecipient();
+
+		Map<String, Object> notificationRecipientSettingsMap =
+			NotificationRecipientSettingUtil.toMap(
+				notificationRecipient.getNotificationRecipientSettings());
 
 		Assert.assertEquals(
-			notificationQueueEntries.toString(), expectedToRecipients.size(),
-			notificationQueueEntries.size());
+			user2.getEmailAddress() + ",bcc@liferay.com",
+			notificationRecipientSettingsMap.get("bcc"));
+		Assert.assertEquals(
+			user2.getEmailAddress() + ",cc@liferay.com",
+			notificationRecipientSettingsMap.get("cc"));
+		Assert.assertEquals(
+			user2.getEmailAddress(),
+			notificationRecipientSettingsMap.get("from"));
+		Assert.assertEquals(
+			user2.getFirstName(),
+			notificationRecipientSettingsMap.get("fromName"));
+		Assert.assertEquals(
+			expectedSingleRecipient,
+			notificationRecipientSettingsMap.get("singleRecipient"));
 
-		for (int i = 0; i < notificationQueueEntries.size(); i++) {
-			String expectedToRecipient = expectedToRecipients.get(i);
+		String[] actualEmailAddresses = StringUtil.split(
+			String.valueOf(notificationRecipientSettingsMap.get("to")));
 
-			Assert.assertNotNull(
-				MailServiceTestUtil.getMailMessages("To", expectedToRecipient));
+		String[] expectedEmailAddresses = StringUtil.split(expectedToRecipient);
 
-			NotificationQueueEntry notificationQueueEntry =
-				notificationQueueEntries.get(i);
+		Arrays.sort(actualEmailAddresses);
 
-			assertTermValues(
-				getTermValues(),
-				ListUtil.fromString(
-					notificationQueueEntry.getBody(), StringPool.COMMA));
-			assertTermValues(
-				getTermValues(),
-				ListUtil.fromString(
-					notificationQueueEntry.getSubject(), StringPool.COMMA));
+		Arrays.sort(expectedEmailAddresses);
 
-			NotificationRecipient notificationRecipient =
-				notificationQueueEntry.getNotificationRecipient();
-
-			Map<String, Object> notificationRecipientSettingsMap =
-				NotificationRecipientSettingUtil.toMap(
-					notificationRecipient.getNotificationRecipientSettings());
-
-			Assert.assertEquals(
-				user2.getEmailAddress() + ",bcc@liferay.com",
-				notificationRecipientSettingsMap.get("bcc"));
-			Assert.assertEquals(
-				user2.getEmailAddress() + ",cc@liferay.com",
-				notificationRecipientSettingsMap.get("cc"));
-			Assert.assertEquals(
-				user2.getEmailAddress(),
-				notificationRecipientSettingsMap.get("from"));
-			Assert.assertEquals(
-				user2.getFirstName(),
-				notificationRecipientSettingsMap.get("fromName"));
-			Assert.assertEquals(
-				expectedSingleRecipient,
-				notificationRecipientSettingsMap.get("singleRecipient"));
-
-			String[] actualEmailAddresses = StringUtil.split(
-				String.valueOf(notificationRecipientSettingsMap.get("to")));
-
-			String[] expectedEmailAddresses = StringUtil.split(
-				expectedToRecipient);
-
-			Arrays.sort(actualEmailAddresses);
-
-			Arrays.sort(expectedEmailAddresses);
-
-			Assert.assertArrayEquals(
-				expectedEmailAddresses, actualEmailAddresses);
-
-			notificationQueueEntryLocalService.deleteNotificationQueueEntry(
-				notificationQueueEntry);
-		}
+		Assert.assertArrayEquals(expectedEmailAddresses, actualEmailAddresses);
 	}
 
 }
