@@ -535,15 +535,15 @@ public class ObjectDefinitionResourceImpl
 
 		List<ObjectField> objectFields = ListUtil.fromArray(
 			objectDefinition.getObjectFields());
+
 		List<com.liferay.object.model.ObjectField> serviceBuilderObjectFields =
 			ListUtil.copy(
 				_objectFieldLocalService.getObjectFields(objectDefinitionId));
 
 		if (SystemUtil.allowManageSystemEntities()) {
 			objectFields.removeIf(
-				objectField ->
-					(objectField.getSystem() == null) ||
-					!objectField.getSystem());
+				objectField -> !GetterUtil.getBoolean(objectField.getSystem()));
+
 			serviceBuilderObjectFields.removeIf(
 				serviceBuilderObjectField ->
 					!serviceBuilderObjectField.isSystem() ||
@@ -551,9 +551,8 @@ public class ObjectDefinitionResourceImpl
 		}
 		else {
 			objectFields.removeIf(
-				objectField ->
-					(objectField.getSystem() != null) &&
-					objectField.getSystem());
+				objectField -> GetterUtil.getBoolean(objectField.getSystem()));
+
 			serviceBuilderObjectFields.removeIf(ObjectFieldModel::isSystem);
 		}
 
