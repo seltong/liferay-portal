@@ -900,7 +900,7 @@ public class ObjectEntryDisplayContextImpl
 	private DDMFormValues _getDDMFormValues(
 		DDMForm ddmForm, ObjectEntry objectEntry) {
 
-		Map<String, Object> values = _getObjectFieldValues(objectEntry);
+		Map<String, Object> values = _getObjectEntryFieldValues(objectEntry);
 
 		if (values.isEmpty()) {
 			return null;
@@ -1097,7 +1097,9 @@ public class ObjectEntryDisplayContextImpl
 		return _objectEntry;
 	}
 
-	private Map<String, Object> _getObjectFieldValues(ObjectEntry objectEntry) {
+	private Map<String, Object> _getObjectEntryFieldValues(
+		ObjectEntry objectEntry) {
+
 		Map<String, Object> values = objectEntry.getProperties();
 
 		Date dateCreated = objectEntry.getDateCreated();
