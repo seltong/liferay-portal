@@ -866,6 +866,18 @@ public class ObjectFieldLocalServiceImpl
 		objectField.setState(state);
 		objectField.setSystem(system);
 
+<<<<<<< HEAD
+=======
+		if (system && !objectField.isMetadata() &&
+			objectDefinition.isModifiable() &&
+			!SystemObjectDefinitionsUtil.
+				isAllowedManageSystemObjectDefinitions()) {
+
+			throw new ObjectFieldSystemException(
+				"Only allowed bundles can create system fields");
+		}
+
+>>>>>>> d5fe0e7 (LPS-193573 Rename)
 		return objectFieldPersistence.update(objectField);
 	}
 
@@ -1009,9 +1021,15 @@ public class ObjectFieldLocalServiceImpl
 			throw new RequiredObjectFieldException();
 		}
 
+<<<<<<< HEAD
 		if (FeatureFlagManagerUtil.isEnabled("LPS-190890") &&
 			objectDefinition.isApproved() && objectDefinition.isModifiable() &&
 			objectDefinition.isSystem()) {
+=======
+		if (objectField.isSystem() && objectDefinition.isModifiable() &&
+			!SystemObjectDefinitionsUtil.
+				isAllowedManageSystemObjectDefinitions()) {
+>>>>>>> d5fe0e7 (LPS-193573 Rename)
 
 			throw new UnsupportedOperationException();
 		}

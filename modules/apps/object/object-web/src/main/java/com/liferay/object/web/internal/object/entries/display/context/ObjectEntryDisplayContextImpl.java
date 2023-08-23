@@ -1092,6 +1092,45 @@ public class ObjectEntryDisplayContextImpl
 		return _objectEntry;
 	}
 
+<<<<<<< HEAD
+=======
+	private Map<String, Object> _getObjectEntryFieldValues(
+		ObjectEntry objectEntry) {
+
+		Map<String, Object> values = objectEntry.getProperties();
+
+		Date dateCreated = objectEntry.getDateCreated();
+
+		if (dateCreated != null) {
+			values.put("createDate", new Timestamp(dateCreated.getTime()));
+		}
+
+		Creator creator = objectEntry.getCreator();
+
+		if (creator != null) {
+			values.put("creator", creator.getName());
+		}
+
+		values.put(
+			"externalReferenceCode", objectEntry.getExternalReferenceCode());
+		values.put("id", objectEntry.getId());
+
+		Date dateModified = objectEntry.getDateModified();
+
+		if (dateModified != null) {
+			values.put("modifiedDate", new Timestamp(dateModified.getTime()));
+		}
+
+		Status status = objectEntry.getStatus();
+
+		if (status != null) {
+			values.put("status", status.getLabel());
+		}
+
+		return values;
+	}
+
+>>>>>>> d5fe0e7 (LPS-193573 Rename)
 	private String _getRows(ObjectLayoutBox objectLayoutBox) {
 		JSONArray rowsJSONArray = JSONFactoryUtil.createJSONArray();
 
