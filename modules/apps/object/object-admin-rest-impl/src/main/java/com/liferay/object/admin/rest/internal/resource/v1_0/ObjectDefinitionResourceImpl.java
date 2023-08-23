@@ -53,7 +53,7 @@ import com.liferay.object.service.ObjectViewService;
 import com.liferay.object.system.JaxRsApplicationDescriptor;
 import com.liferay.object.system.SystemObjectDefinitionManager;
 import com.liferay.object.system.SystemObjectDefinitionManagerRegistry;
-import com.liferay.object.system.util.SystemUtil;
+import com.liferay.object.system.util.SystemObjectDefinitionsUtil;
 import com.liferay.object.util.comparator.ObjectFieldCreateDateComparator;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
@@ -540,7 +540,9 @@ public class ObjectDefinitionResourceImpl
 			ListUtil.copy(
 				_objectFieldLocalService.getObjectFields(objectDefinitionId));
 
-		if (SystemUtil.allowManageSystemEntities()) {
+		if (SystemObjectDefinitionsUtil.
+				isAllowedManageSystemObjectDefinitions()) {
+
 			objectFields.removeIf(
 				objectField -> !GetterUtil.getBoolean(objectField.getSystem()));
 
