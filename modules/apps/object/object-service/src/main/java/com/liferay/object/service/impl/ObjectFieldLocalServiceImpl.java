@@ -54,7 +54,7 @@ import com.liferay.object.service.persistence.ObjectLayoutColumnPersistence;
 import com.liferay.object.service.persistence.ObjectRelationshipPersistence;
 import com.liferay.object.system.SystemObjectDefinitionManager;
 import com.liferay.object.system.SystemObjectDefinitionManagerRegistry;
-import com.liferay.object.system.util.SystemUtil;
+import com.liferay.object.system.util.SystemObjectDefinitionsUtil;
 import com.liferay.petra.reflect.ReflectionUtil;
 import com.liferay.petra.sql.dsl.Column;
 import com.liferay.petra.sql.dsl.Table;
@@ -854,7 +854,8 @@ public class ObjectFieldLocalServiceImpl
 
 		if (system && !objectField.isMetadata() &&
 			objectDefinition.isModifiable() &&
-			!SystemUtil.allowManageSystemEntities()) {
+			!SystemObjectDefinitionsUtil.
+				isAllowedManageSystemObjectDefinitions()) {
 
 			throw new ObjectFieldSystemException(
 				"Only allowed bundles can create system fields");
@@ -1004,7 +1005,8 @@ public class ObjectFieldLocalServiceImpl
 		}
 
 		if (objectField.isSystem() && objectDefinition.isModifiable() &&
-			!SystemUtil.allowManageSystemEntities()) {
+			!SystemObjectDefinitionsUtil.
+				isAllowedManageSystemObjectDefinitions()) {
 
 			throw new UnsupportedOperationException();
 		}
