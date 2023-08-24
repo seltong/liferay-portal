@@ -868,8 +868,8 @@ public class ObjectFieldLocalServiceImpl
 		objectField.setState(state);
 		objectField.setSystem(system);
 
-		if (system && !objectField.isMetadata() &&
-			objectDefinition.isModifiable() &&
+		if (system && objectDefinition.isModifiable() &&
+			!objectField.isMetadata() &&
 			!SystemObjectDefinitionsUtil.
 				isAllowedManageSystemObjectDefinitions()) {
 
@@ -1019,7 +1019,7 @@ public class ObjectFieldLocalServiceImpl
 			throw new RequiredObjectFieldException();
 		}
 
-		if (objectField.isSystem() && objectDefinition.isModifiable() &&
+		if (objectDefinition.isModifiable() && objectField.isSystem() &&
 			!SystemObjectDefinitionsUtil.
 				isAllowedManageSystemObjectDefinitions()) {
 
