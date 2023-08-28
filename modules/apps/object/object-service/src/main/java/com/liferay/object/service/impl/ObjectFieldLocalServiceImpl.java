@@ -30,6 +30,7 @@ import com.liferay.object.exception.RequiredObjectFieldException;
 import com.liferay.object.field.business.type.ObjectFieldBusinessType;
 import com.liferay.object.field.business.type.ObjectFieldBusinessTypeRegistry;
 import com.liferay.object.field.setting.util.ObjectFieldSettingUtil;
+import com.liferay.object.field.util.ObjectFieldUtil;
 import com.liferay.object.internal.dao.db.ObjectDBManagerUtil;
 import com.liferay.object.internal.field.setting.contributor.ObjectFieldSettingContributor;
 import com.liferay.object.internal.petra.sql.dsl.DynamicObjectDefinitionLocalizationTableFactory;
@@ -818,6 +819,8 @@ public class ObjectFieldLocalServiceImpl
 		ObjectDefinition objectDefinition =
 			_objectDefinitionPersistence.findByPrimaryKey(objectDefinitionId);
 
+		_validateBundleNamespace(objectDefinition.isModifiable(), name, system);
+
 		_validateExternalReferenceCode(
 			externalReferenceCode, 0, objectDefinition.getCompanyId(),
 			objectDefinitionId);
@@ -867,15 +870,6 @@ public class ObjectFieldLocalServiceImpl
 		objectField.setRequired(required);
 		objectField.setState(state);
 		objectField.setSystem(system);
-
-		if (system && objectDefinition.isModifiable() &&
-			!objectField.isMetadata() &&
-			!SystemObjectDefinitionsUtil.
-				isAllowedManageSystemObjectDefinitions()) {
-
-			throw new ObjectFieldSystemException(
-				"Only allowed bundles can create system fields");
-		}
 
 		return objectFieldPersistence.update(objectField);
 	}
@@ -1203,6 +1197,19 @@ public class ObjectFieldLocalServiceImpl
 			}
 
 			throw new ObjectFieldDBTypeException("Invalid DB type " + dbType);
+		}
+	}
+
+	private void _validateBundleNamespace(
+			boolean modifiable, String name, boolean system)
+		throws PortalException {
+
+		if (modifiable && system && !ObjectFieldUtil.isMetadata(name) &&
+			!SystemObjectDefinitionsUtil.
+				isAllowedManageSystemObjectDefinitions()) {
+
+			throw new ObjectFieldSystemException(
+				"Only allowed bundles can create system object fields");
 		}
 	}
 
