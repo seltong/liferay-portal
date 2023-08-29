@@ -910,7 +910,7 @@ public class ObjectDefinitionResourceImpl
 				actions = HashMapBuilder.put(
 					"delete",
 					() -> {
-						if (objectDefinition.isUnmodifiableSystemObject()) {
+						if (objectDefinition.isSystem()) {
 							return null;
 						}
 
