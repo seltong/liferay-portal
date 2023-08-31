@@ -33,6 +33,7 @@ import com.liferay.object.service.persistence.ObjectLayoutRowPersistence;
 import com.liferay.object.service.persistence.ObjectLayoutTabPersistence;
 import com.liferay.object.service.test.util.ObjectDefinitionTestUtil;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.test.AssertUtils;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
@@ -350,18 +351,6 @@ public class ObjectLayoutLocalServiceTest {
 
 		_objectLayoutLocalService.deleteObjectLayout(
 			objectLayout.getObjectLayoutId());
-
-		objectLayout = _addObjectLayout(
-			false,
-			Collections.singletonList(
-				_addObjectLayoutTab(
-					Collections.singletonList(
-						_addObjectLayoutBoxWithSystemObjectFields()))));
-
-		_assertObjectLayout(objectLayout);
-
-		_objectLayoutLocalService.deleteObjectLayout(
-			objectLayout.getObjectLayoutId());
 	}
 
 	@Test
@@ -598,7 +587,7 @@ public class ObjectLayoutLocalServiceTest {
 
 	private ObjectLayoutTab _addObjectLayoutTab() throws Exception {
 		return _addObjectLayoutTab(
-			Arrays.asList(_addObjectLayoutBox(), _addObjectLayoutBox()));
+			Arrays.asList(_addObjectLayoutBox(), _addObjectLayoutBoxWithSystemObjectFields()));
 	}
 
 	private ObjectLayoutTab _addObjectLayoutTab(
@@ -613,7 +602,8 @@ public class ObjectLayoutLocalServiceTest {
 		return objectLayoutTab;
 	}
 
-	private void _assertObjectLayout(ObjectLayout objectLayout) {
+	private void _assertObjectLayout(ObjectLayout objectLayout)
+		throws PortalException {
 		List<ObjectLayoutTab> objectLayoutTabs =
 			objectLayout.getObjectLayoutTabs();
 
@@ -643,6 +633,35 @@ public class ObjectLayoutLocalServiceTest {
 
 		Assert.assertEquals(
 			objectLayoutColumns.toString(), 4, objectLayoutColumns.size());
+
+		objectLayoutBox = objectLayoutBoxes.get(1);
+
+		objectLayoutRows = objectLayoutBox.getObjectLayoutRows();
+
+		Assert.assertEquals(
+			objectLayoutRows.toString(), 1, objectLayoutRows.size());
+
+		objectLayoutRow = objectLayoutRows.get(1);
+
+		objectLayoutColumns = objectLayoutRow.getObjectLayoutColumns();
+
+		Assert.assertEquals(
+			objectLayoutColumns.toString(), 2, objectLayoutColumns.size());
+
+		_assertObjectLayoutColumnObjectFieldId(
+			"creator", objectLayoutColumns.get(0));
+		_assertObjectLayoutColumnObjectFieldId(
+			"systemObjectField", objectLayoutColumns.get(1));
+	}
+
+	private void _assertObjectLayoutColumnObjectFieldId(
+		String name, ObjectLayoutColumn objectLayoutColumn) throws PortalException {
+
+		ObjectField objectField = _objectFieldLocalService.getObjectField(
+			_objectDefinition.getObjectDefinitionId(), name);
+
+		Assert.assertEquals(
+			objectField.getObjectFieldId(), objectLayoutColumn.getObjectFieldId());
 	}
 
 	private void _deleteObjectFields() throws Exception {
