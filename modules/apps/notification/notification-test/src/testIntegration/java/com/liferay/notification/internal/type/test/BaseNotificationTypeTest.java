@@ -129,6 +129,8 @@ public class BaseNotificationTypeTest {
 
 		parentObjectEntryValues = LinkedHashMapBuilder.<String, Object>put(
 			"textObjectField", RandomTestUtil.randomString()
+		).put(
+			"systemObjectField", RandomTestUtil.randomString()
 		).build();
 
 		user1 = TestPropsValues.getUser();
@@ -233,6 +235,17 @@ public class BaseNotificationTypeTest {
 						"textObjectField"
 					).objectFieldSettings(
 						Collections.emptyList()
+					).build(),
+					new TextObjectFieldBuilder(
+					).labelMap(
+						LocalizedMapUtil.getLocalizedMap(
+							RandomTestUtil.randomString())
+					).name(
+						"systemObjectField"
+					).objectFieldSettings(
+						Collections.emptyList()
+					).system(
+						true
 					).build()));
 
 		parentObjectDefinition =
@@ -392,7 +405,8 @@ public class BaseNotificationTypeTest {
 				getTermName("integerObjectField"),
 				getTermName("picklistObjectField"),
 				getTermName("textObjectField"),
-				getTermName(true, "textObjectField")));
+				getTermName(true, "textObjectField"),
+				getTermName(true, "systemObjectField")));
 	}
 
 	protected List<Object> getTermValues() {
