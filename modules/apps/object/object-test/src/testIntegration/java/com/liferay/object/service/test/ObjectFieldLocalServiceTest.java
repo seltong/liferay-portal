@@ -702,7 +702,7 @@ public class ObjectFieldLocalServiceTest {
 					ObjectFieldConstants.DB_TYPE_STRING, "Able", "")));
 		AssertUtils.assertFailure(
 			ObjectFieldSystemException.class,
-			"Only allowed bundles can create system fields",
+			"Only allowed bundles can create system object fields",
 			() -> _objectFieldLocalService.addSystemObjectField(
 				TestPropsValues.getUserId(),
 				objectDefinition.getObjectDefinitionId(),

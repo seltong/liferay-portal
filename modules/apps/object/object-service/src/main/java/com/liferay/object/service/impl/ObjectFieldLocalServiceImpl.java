@@ -1002,7 +1002,8 @@ public class ObjectFieldLocalServiceImpl
 			!SystemObjectDefinitionsUtil.
 				isAllowedManageSystemObjectDefinitions()) {
 
-			throw new UnsupportedOperationException();
+			throw new ObjectFieldSystemException(
+				"Only allowed bundles can delete system object fields");
 		}
 
 		if (Objects.equals(
@@ -1180,7 +1181,7 @@ public class ObjectFieldLocalServiceImpl
 				isAllowedManageSystemObjectDefinitions()) {
 
 			throw new ObjectFieldSystemException(
-				"Only allowed bundles can create system fields");
+				"Only allowed bundles can create system object fields");
 		}
 	}
 
