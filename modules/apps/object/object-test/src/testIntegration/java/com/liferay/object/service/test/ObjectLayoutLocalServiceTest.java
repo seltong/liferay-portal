@@ -545,8 +545,7 @@ public class ObjectLayoutLocalServiceTest {
 			Collections.singletonList(
 				_addObjectLayoutRow(
 					Arrays.asList(
-						_addObjectLayoutColumn(
-							creator.getObjectFieldId()),
+						_addObjectLayoutColumn(creator.getObjectFieldId()),
 						_addObjectLayoutColumn(
 							systemObjectField.getObjectFieldId())))));
 
@@ -587,7 +586,9 @@ public class ObjectLayoutLocalServiceTest {
 
 	private ObjectLayoutTab _addObjectLayoutTab() throws Exception {
 		return _addObjectLayoutTab(
-			Arrays.asList(_addObjectLayoutBox(), _addObjectLayoutBoxWithSystemObjectFields()));
+			Arrays.asList(
+				_addObjectLayoutBox(),
+				_addObjectLayoutBoxWithSystemObjectFields()));
 	}
 
 	private ObjectLayoutTab _addObjectLayoutTab(
@@ -604,6 +605,7 @@ public class ObjectLayoutLocalServiceTest {
 
 	private void _assertObjectLayout(ObjectLayout objectLayout)
 		throws PortalException {
+
 		List<ObjectLayoutTab> objectLayoutTabs =
 			objectLayout.getObjectLayoutTabs();
 
@@ -655,13 +657,15 @@ public class ObjectLayoutLocalServiceTest {
 	}
 
 	private void _assertObjectLayoutColumnObjectFieldId(
-		String name, ObjectLayoutColumn objectLayoutColumn) throws PortalException {
+			String name, ObjectLayoutColumn objectLayoutColumn)
+		throws PortalException {
 
 		ObjectField objectField = _objectFieldLocalService.getObjectField(
 			_objectDefinition.getObjectDefinitionId(), name);
 
 		Assert.assertEquals(
-			objectField.getObjectFieldId(), objectLayoutColumn.getObjectFieldId());
+			objectField.getObjectFieldId(),
+			objectLayoutColumn.getObjectFieldId());
 	}
 
 	private void _deleteObjectFields() throws Exception {
