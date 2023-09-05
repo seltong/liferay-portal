@@ -85,25 +85,21 @@ import com.liferay.portal.kernel.util.SetUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.util.PropsValues;
+import org.osgi.framework.BundleContext;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 
+import javax.crypto.spec.SecretKeySpec;
 import java.io.Serializable;
-
 import java.sql.Connection;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-
-import javax.crypto.spec.SecretKeySpec;
-
-import org.osgi.framework.BundleContext;
-import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
-import org.osgi.service.component.annotations.Reference;
 
 /**
  * @author Marco Leo
@@ -134,11 +130,7 @@ public class ObjectFieldLocalServiceImpl
 		ObjectDefinition objectDefinition =
 			_objectDefinitionPersistence.findByPrimaryKey(objectDefinitionId);
 
-		String dbTableName = objectDefinition.getDBTableName();
-
-		if (objectDefinition.isApproved()) {
-			dbTableName = objectDefinition.getExtensionDBTableName();
-		}
+		String dbTableName = _getDBTableName(objectDefinition);
 
 		ObjectField objectField = _addObjectField(
 			externalReferenceCode, userId, listTypeDefinitionId,
@@ -154,14 +146,24 @@ public class ObjectFieldLocalServiceImpl
 			return objectField;
 		}
 
+		_createObjectFieldColumn(
+			objectDefinition.getLocalizationDBTableName(), localized, dbTableName, dbType, objectField);
+
+		return objectField;
+	}
+
+	private void _createObjectFieldColumn(
+		String localizationDBTableName, boolean localized,
+		String dbTableName, String dbType, ObjectField objectField) throws PortalException {
+
 		if (localized) {
 			runSQL(
 				DynamicObjectDefinitionTableUtil.getAlterTableAddColumnSQL(
-					objectDefinition.getLocalizationDBTableName(),
+					localizationDBTableName,
 					objectField.getDBColumnName(), dbType));
 		}
 		else if (!objectField.compareBusinessType(
-					ObjectFieldConstants.BUSINESS_TYPE_AGGREGATION) &&
+			ObjectFieldConstants.BUSINESS_TYPE_AGGREGATION) &&
 				 !objectField.compareBusinessType(
 					 ObjectFieldConstants.BUSINESS_TYPE_FORMULA)) {
 
@@ -170,9 +172,9 @@ public class ObjectFieldLocalServiceImpl
 					dbTableName, objectField.getDBColumnName(), dbType));
 
 			if (GetterUtil.getBoolean(
-					ObjectFieldSettingUtil.getValue(
-						ObjectFieldSettingConstants.NAME_UNIQUE_VALUES,
-						objectField))) {
+				ObjectFieldSettingUtil.getValue(
+					ObjectFieldSettingConstants.NAME_UNIQUE_VALUES,
+					objectField))) {
 
 				ObjectDBManagerUtil.createIndexMetadata(
 					objectField.getDBColumnName(),
@@ -181,8 +183,6 @@ public class ObjectFieldLocalServiceImpl
 					dbTableName, true);
 			}
 		}
-
-		return objectField;
 	}
 
 	@Indexable(type = IndexableType.REINDEX)
@@ -271,17 +271,44 @@ public class ObjectFieldLocalServiceImpl
 			boolean state)
 		throws PortalException {
 
+		ObjectDefinition objectDefinition =
+			_objectDefinitionPersistence.findByPrimaryKey(objectDefinitionId);
+
+		if (Validator.isNull(dbTableName)) {
+			dbTableName = _getDBTableName(objectDefinition);
+		}
+
 		name = StringUtil.trim(name);
 
 		if (Validator.isNull(dbColumnName)) {
 			dbColumnName = name;
 		}
 
-		return _addObjectField(
+		ObjectField objectField = _addObjectField(
 			null, userId, 0, objectDefinitionId, businessType, dbColumnName,
 			dbTableName, dbType, indexed, indexedAsKeyword, indexedLanguageId,
 			labelMap, false, name, ObjectFieldConstants.READ_ONLY_FALSE, null,
 			required, state, true);
+
+		if (!objectDefinition.isApproved() ||
+			objectDefinition.isUnmodifiableSystemObject() ||
+			ObjectFieldUtil.isMetadata(name)) {
+
+			return objectField;
+		}
+
+		_createObjectFieldColumn(
+			objectDefinition.getLocalizationDBTableName(), false, dbTableName, dbType, objectField);
+
+		return objectField;
+	}
+
+	private String _getDBTableName(ObjectDefinition objectDefinition) {
+		if (objectDefinition.isApproved()) {
+			return objectDefinition.getExtensionDBTableName();
+		}
+
+		return objectDefinition.getDBTableName();
 	}
 
 	@Indexable(type = IndexableType.DELETE)

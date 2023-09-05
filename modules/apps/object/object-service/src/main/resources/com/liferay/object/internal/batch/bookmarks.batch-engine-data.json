@@ -100,6 +100,30 @@
 					"state": false,
 					"system": true,
 					"type": "String"
+				},
+				{
+					"DBType": "String",
+					"businessType": "Text",
+					"defaultValue": "",
+					"externalReferenceCode": "TEXT_FIELD",
+					"indexed": true,
+					"indexedAsKeyword": false,
+					"indexedLanguageId": "en_US",
+					"label": {
+						"en_US": "TEXT_FIELD"
+					},
+					"listTypeDefinitionExternalReferenceCode": "",
+					"name": "textField",
+					"objectFieldSettings": [
+						{
+							"name": "showCounter",
+							"value": "false"
+						}
+					],
+					"required": false,
+					"state": false,
+					"system": true,
+					"type": "String"
 				}
 			],
 			"objectLayouts": [
