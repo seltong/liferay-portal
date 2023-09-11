@@ -13,9 +13,10 @@ import com.liferay.portal.kernel.exception.PortalException;
 public class RequiredObjectFieldException extends PortalException {
 
 	public RequiredObjectFieldException() {
-		super("At least one custom field must be added");
+		super("At least one custom or system object field must be added");
 
-		_messageKey = "at-least-one-custom-field-must-be-added";
+		_messageKey =
+			"at-least-one-custom-or-system-object-field-must-be-added";
 	}
 
 	public String getMessageKey() {
