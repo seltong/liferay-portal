@@ -543,9 +543,6 @@ public class ObjectDefinitionResourceImpl
 				_objectFieldLocalService.getObjectFields(objectDefinitionId));
 
 		if (SystemObjectDefinitionManagementChecker.isInvokerBundleAllowed()) {
-			objectFields.removeIf(
-				objectField -> !GetterUtil.getBoolean(objectField.getSystem()));
-
 			serviceBuilderObjectFields.removeIf(
 				serviceBuilderObjectField ->
 					serviceBuilderObjectField.isMetadata() ||
