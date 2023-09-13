@@ -88,32 +88,42 @@ public class ObjectFieldLocalServiceWrapper
 
 	@Override
 	public com.liferay.object.model.ObjectField addOrUpdateSystemObjectField(
-			long userId, long objectDefinitionId, String businessType,
-			String dbColumnName, String dbTableName, String dbType,
-			boolean indexed, boolean indexedAsKeyword, String indexedLanguageId,
+			String externalReferenceCode, long userId, long objectDefinitionId,
+			String businessType, String dbColumnName, String dbTableName,
+			String dbType, boolean indexed, boolean indexedAsKeyword,
+			String indexedLanguageId,
 			java.util.Map<java.util.Locale, String> labelMap, String name,
-			boolean required, boolean state)
+			String readOnly, String readOnlyConditionExpression,
+			boolean required, boolean state,
+			java.util.List<com.liferay.object.model.ObjectFieldSetting>
+				objectFieldSettings)
 		throws com.liferay.portal.kernel.exception.PortalException {
 
 		return _objectFieldLocalService.addOrUpdateSystemObjectField(
-			userId, objectDefinitionId, businessType, dbColumnName, dbTableName,
-			dbType, indexed, indexedAsKeyword, indexedLanguageId, labelMap,
-			name, required, state);
+			externalReferenceCode, userId, objectDefinitionId, businessType,
+			dbColumnName, dbTableName, dbType, indexed, indexedAsKeyword,
+			indexedLanguageId, labelMap, name, readOnly,
+			readOnlyConditionExpression, required, state, objectFieldSettings);
 	}
 
 	@Override
 	public com.liferay.object.model.ObjectField addSystemObjectField(
-			long userId, long objectDefinitionId, String businessType,
-			String dbColumnName, String dbTableName, String dbType,
-			boolean indexed, boolean indexedAsKeyword, String indexedLanguageId,
+			String externalReferenceCode, long userId, long objectDefinitionId,
+			String businessType, String dbColumnName, String dbTableName,
+			String dbType, boolean indexed, boolean indexedAsKeyword,
+			String indexedLanguageId,
 			java.util.Map<java.util.Locale, String> labelMap, String name,
-			boolean required, boolean state)
+			String readOnly, String readOnlyConditionExpression,
+			boolean required, boolean state,
+			java.util.List<com.liferay.object.model.ObjectFieldSetting>
+				objectFieldSettings)
 		throws com.liferay.portal.kernel.exception.PortalException {
 
 		return _objectFieldLocalService.addSystemObjectField(
-			userId, objectDefinitionId, businessType, dbColumnName, dbTableName,
-			dbType, indexed, indexedAsKeyword, indexedLanguageId, labelMap,
-			name, required, state);
+			externalReferenceCode, userId, objectDefinitionId, businessType,
+			dbColumnName, dbTableName, dbType, indexed, indexedAsKeyword,
+			indexedLanguageId, labelMap, name, readOnly,
+			readOnlyConditionExpression, required, state, objectFieldSettings);
 	}
 
 	/**
