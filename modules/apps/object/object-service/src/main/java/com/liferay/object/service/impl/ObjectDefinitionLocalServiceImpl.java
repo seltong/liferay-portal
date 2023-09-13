@@ -1425,7 +1425,8 @@ public class ObjectDefinitionLocalServiceImpl
 				objectAction.getName(),
 				objectAction.getObjectActionExecutorKey(),
 				objectAction.getObjectActionTriggerKey(),
-				objectAction.getParametersUnicodeProperties());
+				objectAction.getParametersUnicodeProperties(),
+				objectAction.getSystem());
 		}
 	}
 
