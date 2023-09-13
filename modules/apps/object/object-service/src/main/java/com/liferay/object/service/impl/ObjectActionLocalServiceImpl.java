@@ -89,7 +89,7 @@ public class ObjectActionLocalServiceImpl
 			Map<Locale, String> errorMessageMap, Map<Locale, String> labelMap,
 			String name, String objectActionExecutorKey,
 			String objectActionTriggerKey,
-			UnicodeProperties parametersUnicodeProperties)
+			UnicodeProperties parametersUnicodeProperties, boolean system)
 		throws PortalException {
 
 		ObjectDefinition objectDefinition =
@@ -137,6 +137,7 @@ public class ObjectActionLocalServiceImpl
 		objectAction.setObjectActionTriggerKey(objectActionTriggerKey);
 		objectAction.setParameters(parametersUnicodeProperties.toString());
 		objectAction.setStatus(ObjectActionConstants.STATUS_NEVER_RAN);
+		objectAction.setSystem(system);
 
 		objectAction = objectActionPersistence.update(objectAction);
 
@@ -166,7 +167,7 @@ public class ObjectActionLocalServiceImpl
 			String description, Map<Locale, String> errorMessageMap,
 			Map<Locale, String> labelMap, String name,
 			String objectActionExecutorKey, String objectActionTriggerKey,
-			UnicodeProperties parametersUnicodeProperties)
+			UnicodeProperties parametersUnicodeProperties, boolean system)
 		throws PortalException {
 
 		ObjectAction existingObjectAction = null;
@@ -200,7 +201,7 @@ public class ObjectActionLocalServiceImpl
 			externalReferenceCode, userId, objectDefinitionId, active,
 			conditionExpression, description, errorMessageMap, labelMap, name,
 			objectActionExecutorKey, objectActionTriggerKey,
-			parametersUnicodeProperties);
+			parametersUnicodeProperties, system);
 	}
 
 	@Indexable(type = IndexableType.DELETE)
