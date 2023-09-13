@@ -80,7 +80,7 @@ public interface ObjectActionLocalService
 			Map<Locale, String> errorMessageMap, Map<Locale, String> labelMap,
 			String name, String objectActionExecutorKey,
 			String objectActionTriggerKey,
-			UnicodeProperties parametersUnicodeProperties)
+			UnicodeProperties parametersUnicodeProperties, boolean system)
 		throws PortalException;
 
 	@Indexable(type = IndexableType.REINDEX)
@@ -90,7 +90,7 @@ public interface ObjectActionLocalService
 			String description, Map<Locale, String> errorMessageMap,
 			Map<Locale, String> labelMap, String name,
 			String objectActionExecutorKey, String objectActionTriggerKey,
-			UnicodeProperties parametersUnicodeProperties)
+			UnicodeProperties parametersUnicodeProperties, boolean system)
 		throws PortalException;
 
 	/**

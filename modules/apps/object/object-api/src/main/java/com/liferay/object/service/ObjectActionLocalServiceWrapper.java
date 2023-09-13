@@ -54,14 +54,15 @@ public class ObjectActionLocalServiceWrapper
 			java.util.Map<java.util.Locale, String> labelMap, String name,
 			String objectActionExecutorKey, String objectActionTriggerKey,
 			com.liferay.portal.kernel.util.UnicodeProperties
-				parametersUnicodeProperties)
+				parametersUnicodeProperties,
+			boolean system)
 		throws com.liferay.portal.kernel.exception.PortalException {
 
 		return _objectActionLocalService.addObjectAction(
 			externalReferenceCode, userId, objectDefinitionId, active,
 			conditionExpression, description, errorMessageMap, labelMap, name,
 			objectActionExecutorKey, objectActionTriggerKey,
-			parametersUnicodeProperties);
+			parametersUnicodeProperties, system);
 	}
 
 	@Override
@@ -73,14 +74,15 @@ public class ObjectActionLocalServiceWrapper
 			java.util.Map<java.util.Locale, String> labelMap, String name,
 			String objectActionExecutorKey, String objectActionTriggerKey,
 			com.liferay.portal.kernel.util.UnicodeProperties
-				parametersUnicodeProperties)
+				parametersUnicodeProperties,
+			boolean system)
 		throws com.liferay.portal.kernel.exception.PortalException {
 
 		return _objectActionLocalService.addOrUpdateObjectAction(
 			externalReferenceCode, objectActionId, userId, objectDefinitionId,
 			active, conditionExpression, description, errorMessageMap, labelMap,
 			name, objectActionExecutorKey, objectActionTriggerKey,
-			parametersUnicodeProperties);
+			parametersUnicodeProperties, system);
 	}
 
 	/**
