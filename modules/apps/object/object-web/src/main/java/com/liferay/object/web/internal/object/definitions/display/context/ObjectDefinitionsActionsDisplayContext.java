@@ -206,6 +206,8 @@ public class ObjectDefinitionsActionsDisplayContext
 				_notificationTemplateLocalService,
 				_objectDefinitionLocalService,
 				objectAction.getParametersUnicodeProperties())
+		).put(
+			"system", objectAction.isSystem()
 		);
 	}
 

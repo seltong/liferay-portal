@@ -99,6 +99,7 @@ interface ObjectAction {
 	objectDefinitionsRelationshipsURL: string;
 	parameters: ObjectActionParameters;
 	script?: string;
+	system?: boolean;
 }
 
 type ObjectFieldSettingName =

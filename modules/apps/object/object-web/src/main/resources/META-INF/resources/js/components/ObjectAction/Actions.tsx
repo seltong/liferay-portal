@@ -31,6 +31,7 @@ interface ItemData {
 	id: number;
 	label: LocalizedValue<string>;
 	status: Status;
+	system?: boolean;
 }
 
 export default function Actions({
@@ -113,6 +114,21 @@ export default function Actions({
 		);
 	}
 
+	function objectActionSourceDataRenderer({itemData}: {itemData: ItemData}) {
+		return (
+			<strong
+				className={classNames(
+					itemData.system ? 'label-info' : 'label-warning',
+					'label'
+				)}
+			>
+				{itemData.system
+					? Liferay.Language.get('system')
+					: Liferay.Language.get('custom')}
+			</strong>
+		);
+	}
+
 	const dataSetProps = {
 		...defaultDataSetProps,
 		apiURL,
@@ -121,6 +137,7 @@ export default function Actions({
 			objectActionActiveDataRenderer,
 			objectActionLabelDataRenderer,
 			objectActionLastExecutionDataRenderer,
+			objectActionSourceDataRenderer,
 		},
 		formName,
 		id,
@@ -157,6 +174,14 @@ export default function Actions({
 							expand: false,
 							fieldName: 'active',
 							label: Liferay.Language.get('active'),
+							localizeLabel: true,
+							sortable: false,
+						},
+						{
+							contentRenderer: 'objectActionSourceDataRenderer',
+							expand: false,
+							fieldName: 'source',
+							label: Liferay.Language.get('source'),
 							localizeLabel: true,
 							sortable: false,
 						},

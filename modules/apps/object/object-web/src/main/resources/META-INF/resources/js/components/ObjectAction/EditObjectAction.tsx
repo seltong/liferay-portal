@@ -35,6 +35,8 @@ export default function EditObjectAction({
 	systemObject,
 	validateExpressionURL,
 }: EditObjectActionProps) {
+	readOnly = readOnly || values.system;
+
 	return (
 		<ObjectAction
 			isApproved={isApproved}
