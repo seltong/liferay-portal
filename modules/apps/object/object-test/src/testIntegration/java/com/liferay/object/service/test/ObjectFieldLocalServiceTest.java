@@ -773,6 +773,18 @@ public class ObjectFieldLocalServiceTest {
 				ObjectFieldUtil.createObjectField(
 					ObjectFieldConstants.BUSINESS_TYPE_TEXT,
 					ObjectFieldConstants.DB_TYPE_STRING, "abl-e")));
+		AssertUtils.assertFailure(
+			ObjectFieldSystemException.class, false,
+			"Only allowed bundles can create system object fields",
+			() -> _objectFieldLocalService.addSystemObjectField(
+				null, TestPropsValues.getUserId(),
+				objectDefinition.getObjectDefinitionId(),
+				ObjectFieldConstants.BUSINESS_TYPE_TEXT,
+				RandomTestUtil.randomString(), RandomTestUtil.randomString(),
+				ObjectFieldConstants.DB_TYPE_STRING, false, true, "",
+				LocalizedMapUtil.getLocalizedMap("Able"), "able",
+				ObjectFieldConstants.READ_ONLY_FALSE, null, false, false,
+				null));
 
 		String objectDefinitionName = "A" + RandomTestUtil.randomString();
 
