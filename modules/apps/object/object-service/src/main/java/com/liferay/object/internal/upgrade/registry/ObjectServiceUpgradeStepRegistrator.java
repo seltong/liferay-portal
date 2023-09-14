@@ -335,6 +335,11 @@ public class ObjectServiceUpgradeStepRegistrator
 			"8.0.0", "8.1.0",
 			UpgradeProcessFactory.addColumns(
 				"ObjectDefinition", "enableObjectEntryDraft BOOLEAN"));
+
+		registry.register(
+			"8.1.0", "8.1.1",
+			UpgradeProcessFactory.addColumns(
+				"ObjectAction", "system BOOLEAN"));
 	}
 
 	@Reference
