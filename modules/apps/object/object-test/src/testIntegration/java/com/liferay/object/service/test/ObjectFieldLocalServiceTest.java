@@ -744,15 +744,8 @@ public class ObjectFieldLocalServiceTest {
 		AssertUtils.assertFailure(
 			ObjectFieldNameException.MustNotBeDuplicate.class,
 			"Duplicate name able",
-			() -> _objectFieldLocalService.addSystemObjectField(
-				null, TestPropsValues.getUserId(),
-				objectDefinition.getObjectDefinitionId(),
-				ObjectFieldConstants.BUSINESS_TYPE_TEXT,
-				RandomTestUtil.randomString(), RandomTestUtil.randomString(),
-				ObjectFieldConstants.DB_TYPE_STRING, false, true, "",
-				LocalizedMapUtil.getLocalizedMap("Able"), "able",
-				ObjectFieldConstants.READ_ONLY_FALSE, null, false, false,
-				null));
+			() -> _addSystemObjectField(
+				objectDefinition.getObjectDefinitionId(), "able", null));
 		AssertUtils.assertFailure(
 			ObjectFieldNameException.MustNotBeNull.class, "Name is null",
 			() -> _addUnmodifiableSystemObjectDefinition(
@@ -776,15 +769,8 @@ public class ObjectFieldLocalServiceTest {
 		AssertUtils.assertFailure(
 			ObjectFieldSystemException.class, false,
 			"Only allowed bundles can create system object fields",
-			() -> _objectFieldLocalService.addSystemObjectField(
-				null, TestPropsValues.getUserId(),
-				objectDefinition.getObjectDefinitionId(),
-				ObjectFieldConstants.BUSINESS_TYPE_TEXT,
-				RandomTestUtil.randomString(), RandomTestUtil.randomString(),
-				ObjectFieldConstants.DB_TYPE_STRING, false, true, "",
-				LocalizedMapUtil.getLocalizedMap("Able"), "able",
-				ObjectFieldConstants.READ_ONLY_FALSE, null, false, false,
-				null));
+			() -> _addSystemObjectField(
+				objectDefinition.getObjectDefinitionId(), "able", null));
 
 		String objectDefinitionName = "A" + RandomTestUtil.randomString();
 
@@ -974,6 +960,38 @@ public class ObjectFieldLocalServiceTest {
 			customObjectDefinition);
 		_objectDefinitionLocalService.deleteObjectDefinition(
 			systemObjectDefinition);
+
+		// Delete system object field from modifiable system object definition
+
+		ObjectDefinition modifiableSystemObjectDefinition =
+			ObjectDefinitionTestUtil.addModifiableSystemObjectDefinition(
+				TestPropsValues.getUserId(), null,
+				LocalizedMapUtil.getLocalizedMap(RandomTestUtil.randomString()),
+				"Test", null, null,
+				LocalizedMapUtil.getLocalizedMap(RandomTestUtil.randomString()),
+				ObjectDefinitionConstants.SCOPE_SITE, null, 1,
+				_objectDefinitionLocalService,
+				Collections.singletonList(
+					ObjectFieldUtil.createObjectField(
+						ObjectFieldConstants.BUSINESS_TYPE_TEXT,
+						ObjectFieldConstants.DB_TYPE_STRING, "baker",
+						Collections.emptyList())));
+
+		ObjectField charlieObjectField = _addSystemObjectField(
+			modifiableSystemObjectDefinition.getObjectDefinitionId(), "charlie",
+			Collections.emptyList());
+
+		AssertUtils.assertFailure(
+			ObjectFieldSystemException.class, false,
+			"Only allowed bundles can delete system object fields",
+			() -> _objectFieldLocalService.deleteObjectField(
+				charlieObjectField));
+
+		_objectFieldLocalService.deleteObjectField(
+			charlieObjectField.getObjectFieldId());
+
+		_objectDefinitionLocalService.deleteObjectDefinition(
+			modifiableSystemObjectDefinition);
 	}
 
 	@Test
@@ -1744,6 +1762,21 @@ public class ObjectFieldLocalServiceTest {
 			).readOnlyConditionExpression(
 				readOnlyConditionExpression
 			).build());
+	}
+
+	private ObjectField _addSystemObjectField(
+			long objectDefinitionId, String name,
+			List<ObjectFieldSetting> objectFieldSettings)
+		throws Exception {
+
+		return _objectFieldLocalService.addSystemObjectField(
+			null, TestPropsValues.getUserId(), objectDefinitionId,
+			ObjectFieldConstants.BUSINESS_TYPE_TEXT,
+			RandomTestUtil.randomString(), RandomTestUtil.randomString(),
+			ObjectFieldConstants.DB_TYPE_STRING, false, true, "",
+			LocalizedMapUtil.getLocalizedMap(name), name,
+			ObjectFieldConstants.READ_ONLY_FALSE, null, false, false,
+			objectFieldSettings);
 	}
 
 	private ObjectDefinition _addUnmodifiableSystemObjectDefinition(
