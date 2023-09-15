@@ -144,6 +144,31 @@ public class ObjectDefinitionResourceImpl
 	}
 
 	@Override
+	public void delete(
+			Collection<ObjectDefinition> objectDefinitions,
+			Map<String, Serializable> parameters)
+		throws Exception {
+
+		for (ObjectDefinition objectDefinition : objectDefinitions) {
+			com.liferay.object.model.ObjectDefinition
+				serviceBuilderObjectDefinition =
+					_objectDefinitionLocalService.
+						fetchObjectDefinitionByExternalReferenceCode(
+							objectDefinition.getExternalReferenceCode(),
+							contextCompany.getCompanyId());
+
+			if (serviceBuilderObjectDefinition != null) {
+				deleteObjectDefinition(
+					serviceBuilderObjectDefinition.getObjectDefinitionId());
+
+				return;
+			}
+
+			deleteObjectDefinition(objectDefinition.getId());
+		}
+	}
+
+	@Override
 	public void deleteObjectDefinition(Long objectDefinitionId)
 		throws Exception {
 
