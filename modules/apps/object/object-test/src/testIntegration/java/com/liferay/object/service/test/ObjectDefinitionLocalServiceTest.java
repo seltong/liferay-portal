@@ -1842,7 +1842,7 @@ public class ObjectDefinitionLocalServiceTest {
 
 		// Before update, assert validations criterias
 
-		ObjectDefinition objectDefinition =
+		ObjectDefinition modifiableSystemObjectDefinition =
 			ObjectDefinitionTestUtil.addModifiableSystemObjectDefinition(
 				TestPropsValues.getUserId(), null,
 				LocalizedMapUtil.getLocalizedMap(RandomTestUtil.randomString()),
@@ -1858,78 +1858,74 @@ public class ObjectDefinitionLocalServiceTest {
 
 		// Modifiable system object definition must be published to be actived
 
-		_assertFailure(
+		AssertUtils.assertFailure(
 			ObjectDefinitionActiveException.class,
 			"Object definitions must be published before being activated",
-			objectDefinition,
-			objectDefinitionId ->
-				_objectDefinitionLocalService.updateCustomObjectDefinition(
-					null, objectDefinitionId, 0, 0, 0, 0, false, true, false,
-					true, false, false, false,
-					LocalizedMapUtil.getLocalizedMap("Charlie"), "Charlie",
-					null, null, false,
-					LocalizedMapUtil.getLocalizedMap("Charlies"),
-					ObjectDefinitionConstants.SCOPE_SITE));
+			() -> _objectDefinitionLocalService.updateCustomObjectDefinition(
+				null, modifiableSystemObjectDefinition.getObjectDefinitionId(),
+				0, 0, 0, 0, false, true, false, true, false, false, false,
+				LocalizedMapUtil.getLocalizedMap("Charlie"), "Charlie", null,
+				null, false, LocalizedMapUtil.getLocalizedMap("Charlies"),
+				ObjectDefinitionConstants.SCOPE_SITE));
 
 		// Label is null
 
-		_assertFailure(
+		AssertUtils.assertFailure(
 			ObjectDefinitionLabelException.class,
 			"Label is null for locale " + LocaleUtil.US.getDisplayName(),
-			objectDefinition,
-			objectDefinitionId ->
-				_objectDefinitionLocalService.updateCustomObjectDefinition(
-					null, objectDefinitionId, 0, 0, 0, 0, false, false, false,
-					true, false, false, false, null, "Charlie", null, null,
-					false, LocalizedMapUtil.getLocalizedMap("Charlie"),
-					ObjectDefinitionConstants.SCOPE_SITE));
+			() -> _objectDefinitionLocalService.updateCustomObjectDefinition(
+				null, modifiableSystemObjectDefinition.getObjectDefinitionId(),
+				0, 0, 0, 0, false, false, false, true, false, false, false,
+				null, "Charlie", null, null, false,
+				LocalizedMapUtil.getLocalizedMap("Charlie"),
+				ObjectDefinitionConstants.SCOPE_SITE));
 
 		// Plural label is null
 
-		_assertFailure(
+		AssertUtils.assertFailure(
 			ObjectDefinitionPluralLabelException.class,
 			"Plural label is null for locale " + LocaleUtil.US.getDisplayName(),
-			objectDefinition,
-			objectDefinitionId ->
-				_objectDefinitionLocalService.updateCustomObjectDefinition(
-					null, objectDefinitionId, 0, 0, 0, 0, false, false, false,
-					true, false, false, false,
-					LocalizedMapUtil.getLocalizedMap("Charlie"), "Charlie",
-					null, null, false, null,
-					ObjectDefinitionConstants.SCOPE_SITE));
+			() -> _objectDefinitionLocalService.updateCustomObjectDefinition(
+				null, modifiableSystemObjectDefinition.getObjectDefinitionId(),
+				0, 0, 0, 0, false, false, false, true, false, false, false,
+				LocalizedMapUtil.getLocalizedMap("Charlie"), "Charlie", null,
+				null, false, null, ObjectDefinitionConstants.SCOPE_SITE));
 
 		// After Update a modifiable system object definition check its
 		// properties
 
-		objectDefinition =
-			_objectDefinitionLocalService.publishSystemObjectDefinition(
-				TestPropsValues.getUserId(),
-				objectDefinition.getObjectDefinitionId());
+		_objectDefinitionLocalService.publishSystemObjectDefinition(
+			TestPropsValues.getUserId(),
+			modifiableSystemObjectDefinition.getObjectDefinitionId());
 
-		objectDefinition =
+		ObjectDefinition updatedModifiableSystemObjectDefinition =
 			_objectDefinitionLocalService.updateCustomObjectDefinition(
-				null, objectDefinition.getObjectDefinitionId(), 0, 0, 0, 0,
-				false, true, false, true, false, false, false,
+				null, modifiableSystemObjectDefinition.getObjectDefinitionId(),
+				0, 0, 0, 0, false, true, false, true, false, false, false,
 				LocalizedMapUtil.getLocalizedMap("Charlie"), "Charlie", null,
 				null, false, LocalizedMapUtil.getLocalizedMap("Charlies"),
-				objectDefinition.getScope());
+				modifiableSystemObjectDefinition.getScope());
 
-		Assert.assertFalse(objectDefinition.isEnableCategorization());
-		Assert.assertTrue(objectDefinition.isEnableComments());
+		Assert.assertFalse(
+			updatedModifiableSystemObjectDefinition.isEnableCategorization());
+		Assert.assertTrue(
+			updatedModifiableSystemObjectDefinition.isEnableComments());
 		Assert.assertEquals(
 			LocalizedMapUtil.getLocalizedMap("Charlie"),
-			objectDefinition.getLabelMap());
-		Assert.assertEquals("Test", objectDefinition.getName());
+			updatedModifiableSystemObjectDefinition.getLabelMap());
+		Assert.assertEquals(
+			"Test", updatedModifiableSystemObjectDefinition.getName());
 		Assert.assertEquals(
 			LocalizedMapUtil.getLocalizedMap("Charlies"),
-			objectDefinition.getPluralLabelMap());
+			updatedModifiableSystemObjectDefinition.getPluralLabelMap());
 
-		_objectDefinitionLocalService.deleteObjectDefinition(objectDefinition);
+		_objectDefinitionLocalService.deleteObjectDefinition(
+			updatedModifiableSystemObjectDefinition);
 
 		// After Update an unmodifiable system object definition check its
 		// properties
 
-		objectDefinition =
+		ObjectDefinition unmodifiableSystemObjectDefinition =
 			ObjectDefinitionTestUtil.addUnmodifiableSystemObjectDefinition(
 				null, TestPropsValues.getUserId(), "Test", null,
 				LocalizedMapUtil.getLocalizedMap(RandomTestUtil.randomString()),
@@ -1948,26 +1944,29 @@ public class ObjectDefinitionLocalServiceTest {
 			).name(
 				"able"
 			).objectDefinitionId(
-				objectDefinition.getObjectDefinitionId()
+				unmodifiableSystemObjectDefinition.getObjectDefinitionId()
 			).required(
 				true
 			).build());
 
 		String externalReferenceCode = RandomTestUtil.randomString();
 
-		objectDefinition =
+		unmodifiableSystemObjectDefinition =
 			_objectDefinitionLocalService.updateSystemObjectDefinition(
-				externalReferenceCode, objectDefinition.getObjectDefinitionId(),
-				0, objectField.getObjectFieldId());
+				externalReferenceCode,
+				unmodifiableSystemObjectDefinition.getObjectDefinitionId(), 0,
+				objectField.getObjectFieldId());
 
 		Assert.assertEquals(
 			objectField.getObjectFieldId(),
-			objectDefinition.getTitleObjectFieldId());
+			unmodifiableSystemObjectDefinition.getTitleObjectFieldId());
 
 		Assert.assertEquals(
-			externalReferenceCode, objectDefinition.getExternalReferenceCode());
+			externalReferenceCode,
+			unmodifiableSystemObjectDefinition.getExternalReferenceCode());
 
-		_objectDefinitionLocalService.deleteObjectDefinition(objectDefinition);
+		_objectDefinitionLocalService.deleteObjectDefinition(
+			unmodifiableSystemObjectDefinition);
 	}
 
 	@Test
@@ -2062,21 +2061,6 @@ public class ObjectDefinitionLocalServiceTest {
 				).name(
 					StringUtil.randomId()
 				).build()));
-	}
-
-	private void _assertFailure(
-		Class<?> clazz, String message, ObjectDefinition objectDefinition,
-		UnsafeConsumer<Long, Exception> unsafeConsumer) {
-
-		try {
-			unsafeConsumer.accept(objectDefinition.getObjectDefinitionId());
-
-			Assert.fail();
-		}
-		catch (Exception exception) {
-			Assert.assertTrue(clazz.isInstance(exception));
-			Assert.assertEquals(exception.getMessage(), message);
-		}
 	}
 
 	private void _assertNodeObjectDefinitions(
