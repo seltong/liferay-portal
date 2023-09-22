@@ -1,0 +1,62 @@
+{
+	"actions": {
+		"createBatch": {
+			"href": "/o/object-admin/v1.0/import-task/com.liferay.notification.rest.dto.v1_0.NotificationTemplate",
+			"method": "POST"
+		}
+	},
+	"configuration": {
+		"className": "com.liferay.notification.rest.dto.v1_0.NotificationTemplate",
+		"companyId": 0,
+		"parameters": {
+			"containsHeaders": "true",
+			"createStrategy": "UPSERT",
+			"featureFlag": "LPS-167253",
+			"importStrategy": "ON_ERROR_FAIL",
+			"taskItemDelegateName": "DEFAULT",
+			"updateStrategy": "UPDATE"
+		},
+		"userId": 0,
+		"version": "v1.0"
+	},
+	"items": [
+		{
+			"attachmentObjectFieldExternalReferenceCodes": [
+			],
+			"attachmentObjectFieldIds": [
+			],
+			"body": {
+			},
+			"dateCreated": "2023-09-22T17:16:25Z",
+			"dateModified": "2023-09-22T17:24:18Z",
+			"description": "",
+			"editorType": "richText",
+			"externalReferenceCode": "NOTIFICATION_TEMPLATE",
+			"name": "emailNotification",
+			"name_i18n": {
+				"en_US": "Email Notification"
+			},
+			"objectDefinitionExternalReferenceCode": "",
+			"objectDefinitionId": 0,
+			"recipientType": "",
+			"recipients": [
+				{
+					"bcc": "",
+					"cc": "",
+					"from": "test@liferay.com",
+					"fromName": {
+						"en_US": "test@liferay.com"
+					},
+					"to": {
+						"en_US": "test@liferay.com,test@liferay.com"
+					}
+				}
+			],
+			"subject": {
+				"en_US": "test@liferay.com"
+			},
+			"type": "email",
+			"typeLabel": "Email"
+		}
+	]
+}

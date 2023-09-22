@@ -28,6 +28,76 @@
 			},
 			"modifiable": true,
 			"name": "Bookmark",
+			"objectActions": [
+				{
+					"active": true,
+					"conditionExpression": "",
+					"description": "",
+					"errorMessage": {
+					},
+					"externalReferenceCode": "de92b599-c8de-e6fd-2256-41ed6d5ca9b9",
+					"label": {
+						"en_US": "My actions updated"
+					},
+					"name": "myActions",
+					"objectActionExecutorKey": "add-object-entry",
+					"objectActionTriggerKey": "onAfterAdd",
+					"parameters": {
+						"objectDefinitionExternalReferenceCode": "L_BOOKMARK",
+						"predefinedValues": [
+							{
+								"businessType": "Text",
+								"inputAsValue": false,
+								"label": {
+									"en_US": "Name"
+								},
+								"name": "name",
+								"value": "name"
+							},
+							{
+								"businessType": "Text",
+								"inputAsValue": false,
+								"label": {
+									"en_US": "URL"
+								},
+								"name": "url",
+								"value": "url"
+							}
+						],
+						"system": "true"
+					},
+					"status": {
+						"code": 0,
+						"label": "never-ran",
+						"label_i18n": "Never Ran"
+					},
+					"system": true
+				},
+				{
+					"active": true,
+					"conditionExpression": "",
+					"description": "",
+					"errorMessage": {
+					},
+					"externalReferenceCode": "systemNotification",
+					"label": {
+						"en_US": "system notification"
+					},
+					"name": "systemNotification",
+					"objectActionExecutorKey": "notification",
+					"objectActionTriggerKey": "onAfterUpdate",
+					"parameters": {
+						"notificationTemplateExternalReferenceCode": "NOTIFICATION_TEMPLATE",
+						"type": "email"
+					},
+					"status": {
+						"code": 0,
+						"label": "never-ran",
+						"label_i18n": "Never Ran"
+					},
+					"system": true
+				}
+			],
 			"objectFields": [
 				{
 					"DBType": "Clob",
