@@ -41,6 +41,11 @@ else {
 }
 %>
 
+<clay:alert
+	displayType="warning"
+	message="dynamically-data-lists-are-deprecated-x-and-will-be-discontinued-at-end-of-2024-please-move-your-data-to-x-by-then"
+/>
+
 <clay:container-fluid>
 	<c:if test="<%= recordVersion != null %>">
 		<aui:model-context bean="<%= recordVersion %>" model="<%= DDLRecordVersion.class %>" />

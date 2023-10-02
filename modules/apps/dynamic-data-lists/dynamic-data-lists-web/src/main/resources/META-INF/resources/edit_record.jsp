@@ -101,6 +101,11 @@ else {
 	/>
 </c:if>
 
+<clay:alert
+	displayType="warning"
+	message="dynamically-data-lists-are-deprecated-x-and-will-be-discontinued-at-end-of-2024-please-move-your-data-to-x-by-then"
+/>
+
 <div class="closed sidenav-container sidenav-right" id="<portlet:namespace />infoPanelId">
 	<c:if test="<%= recordVersion != null %>">
 		<div class="sidenav-menu-slider">

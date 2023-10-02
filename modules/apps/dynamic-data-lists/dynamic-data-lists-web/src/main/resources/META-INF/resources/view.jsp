@@ -17,6 +17,11 @@ String displayStyle = ddlDisplayContext.getDisplayStyle();
 
 <liferay-util:include page="/management_bar.jsp" servletContext="<%= application %>" />
 
+<clay:alert
+	displayType="warning"
+	message="dynamically-data-lists-are-deprecated-x-and-will-be-discontinued-at-end-of-2024-please-move-your-data-to-x-by-then"
+/>
+
 <clay:container-fluid
 	id='<%= liferayPortletResponse.getNamespace() + "formContainer" %>'
 >

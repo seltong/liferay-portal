@@ -59,6 +59,11 @@ if (ddlDisplayContext.isAdminPortlet()) {
 	<portlet:param name="mvcPath" value="/edit_record_set.jsp" />
 </portlet:actionURL>
 
+<clay:alert
+	displayType="warning"
+	message="dynamically-data-lists-are-deprecated-x-and-will-be-discontinued-at-end-of-2024-please-move-your-data-to-x-by-then"
+/>
+
 <clay:container-fluid
 	cssClass="container-form-lg"
 >

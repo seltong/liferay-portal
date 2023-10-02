@@ -54,6 +54,11 @@ if (!ddlDisplayContext.isAdminPortlet()) {
 	sortingURL="<%= ddlViewRecordsDisplayContext.getSortingURL() %>"
 />
 
+<clay:alert
+	displayType="warning"
+	message="dynamically-data-lists-are-deprecated-x-and-will-be-discontinued-at-end-of-2024-please-move-your-data-to-x-by-then"
+/>
+
 <clay:container-fluid
 	cssClass="view-records-container"
 	id='<%= liferayPortletResponse.getNamespace() + "formContainer" %>'
