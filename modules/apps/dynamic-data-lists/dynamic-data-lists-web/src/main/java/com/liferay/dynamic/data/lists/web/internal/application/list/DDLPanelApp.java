@@ -9,10 +9,18 @@ import com.liferay.application.list.BasePanelApp;
 import com.liferay.application.list.PanelApp;
 import com.liferay.application.list.constants.PanelCategoryKeys;
 import com.liferay.dynamic.data.lists.constants.DDLPortletKeys;
+import com.liferay.petra.string.StringPool;
+import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.model.Portlet;
 
+import com.liferay.portal.kernel.util.JavaConstants;
+import com.liferay.portal.kernel.util.ResourceBundleUtil;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+
+import java.util.Locale;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 
 /**
  * @author Eudaldo Alonso
@@ -25,6 +33,13 @@ import org.osgi.service.component.annotations.Reference;
 	service = PanelApp.class
 )
 public class DDLPanelApp extends BasePanelApp {
+
+	@Override
+	public String getLabel(Locale locale) {
+		String label = super.getLabel(locale);
+
+		return label + " (DEPRECATED)";
+	}
 
 	@Override
 	public Portlet getPortlet() {
