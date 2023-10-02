@@ -11,10 +11,6 @@
 PortletURL portletURL = ddlDisplayContext.getPortletURL();
 
 String displayStyle = ddlDisplayContext.getDisplayStyle();
-
-JSONObject learnResources = LearnMessageUtil.getReactDataJSONObject("object-web");
-
-HashMap<String, JSONObject> since73 = learnResources.get("liferay-objects");
 %>
 
 <liferay-util:include page="/navigation_bar.jsp" servletContext="<%= application %>" />
@@ -24,20 +20,17 @@ HashMap<String, JSONObject> since73 = learnResources.get("liferay-objects");
 <clay:alert
 	displayType="warning"
 >
-	LanguageUtil.format(request,
-	"dynamically-data-lists-are-deprecated-x-and-will-be-discontinued-at-end-of-2024-please-move-your-data-to-x-by-then",
-	)
-	<liferay-ui:message key="dynamically-data-lists-are-deprecated-x-and-will-be-discontinued-at-end-of-2024-please-move-your-data-to-x-by-then" />
+	<liferay-ui:message key="dynamically-data-lists-are-deprecated" />
 	<liferay-learn:message
 		key="since-7-3"
 		resource="object-web"
 	/>
+	<liferay-ui:message key="and-will-be-discontinued-at-end-of-2024-please-move-your-data-to" />
 	<liferay-learn:message
 		key="liferay-objects"
 		resource="object-web"
 	/>
-
-
+	<liferay-ui:message key="by-then" />
 </clay:alert>
 
 <clay:container-fluid
