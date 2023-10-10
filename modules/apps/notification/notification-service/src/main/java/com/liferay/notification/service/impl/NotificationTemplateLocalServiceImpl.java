@@ -20,6 +20,8 @@ import com.liferay.notification.service.persistence.NotificationQueueEntryPersis
 import com.liferay.notification.service.persistence.NotificationTemplateAttachmentPersistence;
 import com.liferay.notification.type.NotificationType;
 import com.liferay.notification.type.NotificationTypeServiceTracker;
+import com.liferay.object.definition.util.ObjectDefinitionUtil;
+import com.liferay.object.exception.ObjectActionSystemException;
 import com.liferay.portal.aop.AopService;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.ResourceConstants;
