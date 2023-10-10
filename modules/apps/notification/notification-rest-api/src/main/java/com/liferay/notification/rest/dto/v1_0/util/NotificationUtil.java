@@ -172,6 +172,8 @@ public class NotificationUtil {
 		serviceBuilderNotificationTemplate.setSubjectMap(
 			LocalizedMapUtil.getLocalizedMap(
 				notificationTemplate.getSubject()));
+		serviceBuilderNotificationTemplate.setSystem(
+			notificationTemplate.getSystem());
 		serviceBuilderNotificationTemplate.setType(
 			notificationTemplate.getType());
 
