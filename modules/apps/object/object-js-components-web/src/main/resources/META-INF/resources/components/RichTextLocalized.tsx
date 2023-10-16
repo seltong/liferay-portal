@@ -38,6 +38,7 @@ export function RichTextLocalized({
 	label,
 	onSelectedLocaleChange,
 	onTranslationsChange,
+	readOnly = false,
 	selectedLocale,
 	translations,
 }: IProps) {
@@ -64,7 +65,12 @@ export function RichTextLocalized({
 	}, [selectedLocale]);
 
 	return (
-		<FieldBase helpMessage={helpMessage} label={label}>
+		<FieldBase
+			disabled={readOnly}
+			helpMessage={helpMessage}
+			label={label}
+			style={readOnly ? {pointerEvents: 'none'} : undefined}
+		>
 			<div className="lfr-notification__rich-text-localized">
 				<div className="lfr-notification__rich-text-localized-editor">
 					<ClassicEditor
@@ -77,6 +83,7 @@ export function RichTextLocalized({
 								[selectedLocale]: content,
 							});
 						}}
+						readOnly={readOnly}
 						ref={editorRef}
 					/>
 				</div>
@@ -183,6 +190,7 @@ interface IProps extends React.InputHTMLAttributes<HTMLInputElement> {
 	label: string;
 	onSelectedLocaleChange: (val: IItem) => void;
 	onTranslationsChange: (val: LocalizedValue<string>) => void;
+	readOnly?: boolean;
 	selectedLocale: Liferay.Language.Locale;
 	translations: LocalizedValue<string>;
 }
