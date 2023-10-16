@@ -48,7 +48,9 @@ import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Group;
+import com.liferay.portal.kernel.model.StagedGroupedModel;
 import com.liferay.portal.kernel.service.GroupLocalService;
+import com.liferay.portal.kernel.service.GroupLocalServiceUtil;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.util.ArrayUtil;
@@ -185,7 +187,12 @@ public class DDMStructureStagedModelDataHandler
 			referenceElement.attributeValue("preloaded"));
 
 		if (!preloaded) {
-			return super.validateMissingReference(uuid, groupId);
+			if (super.validateMissingReference(uuid, groupId)) {
+				return true;
+			}
+
+			return super.validateMissingReference(uuid, GetterUtil.getLong(
+				referenceElement.attributeValue("group-id")));
 		}
 
 		long classNameId = _portal.getClassNameId(
