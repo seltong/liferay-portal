@@ -8,6 +8,7 @@ import ClayDropDown from '@clayui/drop-down';
 import ClayIcon from '@clayui/icon';
 import ClayLabel from '@clayui/label';
 import ClayLayout from '@clayui/layout';
+import classNames from 'classnames';
 
 // @ts-ignore
 
@@ -66,10 +67,12 @@ export function RichTextLocalized({
 
 	return (
 		<FieldBase
+			className={classNames({
+				'lfr-notification__rich-text-localized-readonly': readOnly,
+			})}
 			disabled={readOnly}
 			helpMessage={helpMessage}
 			label={label}
-			style={readOnly ? {pointerEvents: 'none'} : undefined}
 		>
 			<div className="lfr-notification__rich-text-localized">
 				<div className="lfr-notification__rich-text-localized-editor">
