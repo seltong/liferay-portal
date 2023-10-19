@@ -14,7 +14,12 @@ import com.liferay.item.selector.ItemSelector;
 import com.liferay.item.selector.criteria.FileEntryItemSelectorReturnType;
 import com.liferay.item.selector.criteria.file.criterion.FileItemSelectorCriterion;
 import com.liferay.object.configuration.ObjectConfiguration;
+import com.liferay.object.constants.ObjectDefinitionConstants;
 import com.liferay.object.dynamic.data.mapping.form.field.type.constants.ObjectDDMFormFieldTypeConstants;
+import com.liferay.object.model.ObjectDefinition;
+import com.liferay.object.model.ObjectField;
+import com.liferay.object.service.ObjectDefinitionLocalService;
+import com.liferay.object.service.ObjectFieldLocalService;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -31,6 +36,7 @@ import com.liferay.portal.kernel.upload.configuration.UploadServletRequestConfig
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.HttpComponentsUtil;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 
@@ -152,13 +158,31 @@ public class AttachmentDDMFormFieldTemplateContextContributor
 	}
 
 	private long _getGroupId(
-		DDMFormFieldRenderingContext ddmFormFieldRenderingContext) {
+		DDMFormFieldRenderingContext ddmFormFieldRenderingContext,
+		long objectFieldId) {
 
-		long groupId = GetterUtil.getLong(
-			ddmFormFieldRenderingContext.getProperty("groupId"));
+		ObjectDefinition objectDefinition = null;
 
-		if (groupId != 0) {
-			return groupId;
+		ObjectField objectField = _objectFieldLocalService.fetchObjectField(
+			objectFieldId);
+
+		if (objectField != null) {
+			objectDefinition =
+				_objectDefinitionLocalService.fetchObjectDefinition(
+					objectField.getObjectDefinitionId());
+		}
+
+		if ((objectDefinition != null) &&
+			StringUtil.equals(
+				objectDefinition.getScope(),
+				ObjectDefinitionConstants.SCOPE_SITE)) {
+
+			long groupId = GetterUtil.getLong(
+				ddmFormFieldRenderingContext.getProperty("groupId"));
+
+			if (groupId != 0) {
+				return groupId;
+			}
 		}
 
 		HttpServletRequest httpServletRequest =
@@ -228,7 +252,10 @@ public class AttachmentDDMFormFieldTemplateContextContributor
 
 		if (Objects.equals(fileSource, "documentsAndMedia")) {
 			return _getItemSelectorURL(
-				_getGroupId(ddmFormFieldRenderingContext),
+				_getGroupId(
+					ddmFormFieldRenderingContext,
+					GetterUtil.getLong(
+						ddmFormField.getProperty("objectFieldId"))),
 				ddmFormFieldRenderingContext.getPortletNamespace(),
 				requestBackedPortletURLFactory);
 		}
@@ -266,6 +293,12 @@ public class AttachmentDDMFormFieldTemplateContextContributor
 	private Language _language;
 
 	private volatile ObjectConfiguration _objectConfiguration;
+
+	@Reference
+	private ObjectDefinitionLocalService _objectDefinitionLocalService;
+
+	@Reference
+	private ObjectFieldLocalService _objectFieldLocalService;
 
 	@Reference
 	private UploadServletRequestConfigurationProvider
