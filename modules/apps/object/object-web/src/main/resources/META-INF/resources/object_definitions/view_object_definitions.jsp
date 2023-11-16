@@ -22,6 +22,8 @@ ViewObjectDefinitionsDisplayContext viewObjectDefinitionsDisplayContext = (ViewO
 			).put(
 				"editObjectDefinitionURL", viewObjectDefinitionsDisplayContext.getEditObjectDefinitionURL()
 			).put(
+				"listTypeDefinitionsURL", viewObjectDefinitionsDisplayContext.getListTypeDefinitionsURL()
+			).put(
 				"modelBuilderURL", viewObjectDefinitionsDisplayContext.getModelBuilderURL()
 			).put(
 				"objectDefinitionsAPIURL", viewObjectDefinitionsDisplayContext.getAPIURL()

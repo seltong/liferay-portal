@@ -147,6 +147,14 @@ public class ViewObjectDefinitionsDisplayContext {
 		return fdsActionDropdownItems;
 	}
 
+	public String getListTypeDefinitionsURL() throws Exception {
+		return PortletURLBuilder.create(
+			getPortletURL()
+		).setMVCRenderCommandName(
+			"/object_definitions/view_list_type_definition"
+		).buildString();
+	}
+
 	public String getModelBuilderURL() throws Exception {
 		return PortletURLBuilder.create(
 			getPortletURL()
