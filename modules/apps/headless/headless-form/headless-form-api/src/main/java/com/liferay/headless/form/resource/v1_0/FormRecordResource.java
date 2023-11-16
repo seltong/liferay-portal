@@ -57,11 +57,11 @@ public interface FormRecordResource {
 		throws Exception;
 
 	public Page<FormRecord> getFormFormRecordsPage(
-			Long formId, Pagination pagination)
+			Long formId, Filter filter, Pagination pagination)
 		throws Exception;
 
 	public Response postFormFormRecordsPageExportBatch(
-			Long formId, String callbackURL, String contentType,
+			Long formId, Filter filter, String callbackURL, String contentType,
 			String fieldNames)
 		throws Exception;
 

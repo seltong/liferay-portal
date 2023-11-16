@@ -38,6 +38,7 @@ import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.odata.entity.EntityField;
 import com.liferay.portal.odata.entity.EntityModel;
+import com.liferay.portal.search.test.util.SearchTestRule;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.vulcan.resource.EntityModelResource;
@@ -274,7 +275,7 @@ public abstract class BaseFormRecordResourceTestCase {
 			testGetFormFormRecordsPage_getIrrelevantFormId();
 
 		Page<FormRecord> page = formRecordResource.getFormFormRecordsPage(
-			formId, Pagination.of(1, 10));
+			formId, null, Pagination.of(1, 10));
 
 		long totalCount = page.getTotalCount();
 
@@ -284,7 +285,7 @@ public abstract class BaseFormRecordResourceTestCase {
 					irrelevantFormId, randomIrrelevantFormRecord());
 
 			page = formRecordResource.getFormFormRecordsPage(
-				irrelevantFormId, Pagination.of(1, (int)totalCount + 1));
+				irrelevantFormId, null, Pagination.of(1, (int)totalCount + 1));
 
 			Assert.assertEquals(totalCount + 1, page.getTotalCount());
 
@@ -303,7 +304,7 @@ public abstract class BaseFormRecordResourceTestCase {
 			formId, randomFormRecord());
 
 		page = formRecordResource.getFormFormRecordsPage(
-			formId, Pagination.of(1, 10));
+			formId, null, Pagination.of(1, 10));
 
 		Assert.assertEquals(totalCount + 2, page.getTotalCount());
 
@@ -332,11 +333,100 @@ public abstract class BaseFormRecordResourceTestCase {
 	}
 
 	@Test
+	public void testGetFormFormRecordsPageWithFilterDateTimeEquals()
+		throws Exception {
+
+		List<EntityField> entityFields = getEntityFields(
+			EntityField.Type.DATE_TIME);
+
+		if (entityFields.isEmpty()) {
+			return;
+		}
+
+		Long formId = testGetFormFormRecordsPage_getFormId();
+
+		FormRecord formRecord1 = randomFormRecord();
+
+		formRecord1 = testGetFormFormRecordsPage_addFormRecord(
+			formId, formRecord1);
+
+		for (EntityField entityField : entityFields) {
+			Page<FormRecord> page = formRecordResource.getFormFormRecordsPage(
+				formId, getFilterString(entityField, "between", formRecord1),
+				Pagination.of(1, 2));
+
+			assertEquals(
+				Collections.singletonList(formRecord1),
+				(List<FormRecord>)page.getItems());
+		}
+	}
+
+	@Test
+	public void testGetFormFormRecordsPageWithFilterDoubleEquals()
+		throws Exception {
+
+		testGetFormFormRecordsPageWithFilter("eq", EntityField.Type.DOUBLE);
+	}
+
+	@Test
+	public void testGetFormFormRecordsPageWithFilterStringContains()
+		throws Exception {
+
+		testGetFormFormRecordsPageWithFilter(
+			"contains", EntityField.Type.STRING);
+	}
+
+	@Test
+	public void testGetFormFormRecordsPageWithFilterStringEquals()
+		throws Exception {
+
+		testGetFormFormRecordsPageWithFilter("eq", EntityField.Type.STRING);
+	}
+
+	@Test
+	public void testGetFormFormRecordsPageWithFilterStringStartsWith()
+		throws Exception {
+
+		testGetFormFormRecordsPageWithFilter(
+			"startswith", EntityField.Type.STRING);
+	}
+
+	protected void testGetFormFormRecordsPageWithFilter(
+			String operator, EntityField.Type type)
+		throws Exception {
+
+		List<EntityField> entityFields = getEntityFields(type);
+
+		if (entityFields.isEmpty()) {
+			return;
+		}
+
+		Long formId = testGetFormFormRecordsPage_getFormId();
+
+		FormRecord formRecord1 = testGetFormFormRecordsPage_addFormRecord(
+			formId, randomFormRecord());
+
+		@SuppressWarnings("PMD.UnusedLocalVariable")
+		FormRecord formRecord2 = testGetFormFormRecordsPage_addFormRecord(
+			formId, randomFormRecord());
+
+		for (EntityField entityField : entityFields) {
+			Page<FormRecord> page = formRecordResource.getFormFormRecordsPage(
+				formId, getFilterString(entityField, operator, formRecord1),
+				Pagination.of(1, 2));
+
+			assertEquals(
+				Collections.singletonList(formRecord1),
+				(List<FormRecord>)page.getItems());
+		}
+	}
+
+	@Test
 	public void testGetFormFormRecordsPageWithPagination() throws Exception {
 		Long formId = testGetFormFormRecordsPage_getFormId();
 
 		Page<FormRecord> formRecordPage =
-			formRecordResource.getFormFormRecordsPage(formId, null);
+			formRecordResource.getFormFormRecordsPage(formId, null, null);
 
 		int totalCount = GetterUtil.getInteger(formRecordPage.getTotalCount());
 
@@ -350,7 +440,7 @@ public abstract class BaseFormRecordResourceTestCase {
 			formId, randomFormRecord());
 
 		Page<FormRecord> page1 = formRecordResource.getFormFormRecordsPage(
-			formId, Pagination.of(1, totalCount + 2));
+			formId, null, Pagination.of(1, totalCount + 2));
 
 		List<FormRecord> formRecords1 = (List<FormRecord>)page1.getItems();
 
@@ -358,7 +448,7 @@ public abstract class BaseFormRecordResourceTestCase {
 			formRecords1.toString(), totalCount + 2, formRecords1.size());
 
 		Page<FormRecord> page2 = formRecordResource.getFormFormRecordsPage(
-			formId, Pagination.of(2, totalCount + 2));
+			formId, null, Pagination.of(2, totalCount + 2));
 
 		Assert.assertEquals(totalCount + 3, page2.getTotalCount());
 
@@ -367,7 +457,7 @@ public abstract class BaseFormRecordResourceTestCase {
 		Assert.assertEquals(formRecords2.toString(), 1, formRecords2.size());
 
 		Page<FormRecord> page3 = formRecordResource.getFormFormRecordsPage(
-			formId, Pagination.of(1, (int)totalCount + 3));
+			formId, null, Pagination.of(1, (int)totalCount + 3));
 
 		assertContains(formRecord1, (List<FormRecord>)page3.getItems());
 		assertContains(formRecord2, (List<FormRecord>)page3.getItems());
@@ -499,6 +589,9 @@ public abstract class BaseFormRecordResourceTestCase {
 
 		return testGraphQLFormRecord_addFormRecord();
 	}
+
+	@Rule
+	public SearchTestRule searchTestRule = new SearchTestRule();
 
 	protected FormRecord testGraphQLFormRecord_addFormRecord()
 		throws Exception {

@@ -200,6 +200,10 @@ public abstract class BaseFormRecordResourceImpl
 			),
 			@io.swagger.v3.oas.annotations.Parameter(
 				in = io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY,
+				name = "filter"
+			),
+			@io.swagger.v3.oas.annotations.Parameter(
+				in = io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY,
 				name = "page"
 			),
 			@io.swagger.v3.oas.annotations.Parameter(
@@ -220,6 +224,7 @@ public abstract class BaseFormRecordResourceImpl
 			@javax.validation.constraints.NotNull
 			@javax.ws.rs.PathParam("formId")
 			Long formId,
+			@javax.ws.rs.core.Context Filter filter,
 			@javax.ws.rs.core.Context Pagination pagination)
 		throws Exception {
 
@@ -238,6 +243,10 @@ public abstract class BaseFormRecordResourceImpl
 			@io.swagger.v3.oas.annotations.Parameter(
 				in = io.swagger.v3.oas.annotations.enums.ParameterIn.PATH,
 				name = "formId"
+			),
+			@io.swagger.v3.oas.annotations.Parameter(
+				in = io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY,
+				name = "filter"
 			),
 			@io.swagger.v3.oas.annotations.Parameter(
 				in = io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY,
@@ -266,6 +275,7 @@ public abstract class BaseFormRecordResourceImpl
 			@javax.validation.constraints.NotNull
 			@javax.ws.rs.PathParam("formId")
 			Long formId,
+			@javax.ws.rs.core.Context Filter filter,
 			@io.swagger.v3.oas.annotations.Parameter(hidden = true)
 			@javax.ws.rs.QueryParam("callbackURL")
 			String callbackURL,
@@ -507,7 +517,8 @@ public abstract class BaseFormRecordResourceImpl
 
 		if (parameters.containsKey("formId")) {
 			return getFormFormRecordsPage(
-				_parseLong((String)parameters.get("formId")), pagination);
+				_parseLong((String)parameters.get("formId")), filter,
+				pagination);
 		}
 		else {
 			throw new NotSupportedException(

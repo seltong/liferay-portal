@@ -15,6 +15,7 @@ import com.liferay.headless.form.resource.v1_0.FormStructureResource;
 import com.liferay.petra.function.UnsafeConsumer;
 import com.liferay.petra.function.UnsafeFunction;
 import com.liferay.portal.kernel.search.Sort;
+import com.liferay.portal.kernel.search.filter.Filter;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.service.RoleLocalService;
 import com.liferay.portal.vulcan.accept.language.AcceptLanguage;
@@ -178,6 +179,7 @@ public class Mutation {
 	@GraphQLField
 	public Response createFormFormRecordsPageExportBatch(
 			@GraphQLName("formId") Long formId,
+			@GraphQLName("filter") String filterString,
 			@GraphQLName("callbackURL") String callbackURL,
 			@GraphQLName("contentType") String contentType,
 			@GraphQLName("fieldNames") String fieldNames)
@@ -188,7 +190,9 @@ public class Mutation {
 			this::_populateResourceContext,
 			formRecordResource ->
 				formRecordResource.postFormFormRecordsPageExportBatch(
-					formId, callbackURL, contentType, fieldNames));
+					formId,
+					_filterBiFunction.apply(formRecordResource, filterString),
+					callbackURL, contentType, fieldNames));
 	}
 
 	@GraphQLField
@@ -364,6 +368,7 @@ public class Mutation {
 
 	private AcceptLanguage _acceptLanguage;
 	private com.liferay.portal.kernel.model.Company _company;
+	private BiFunction<Object, String, Filter> _filterBiFunction;
 	private GroupLocalService _groupLocalService;
 	private HttpServletRequest _httpServletRequest;
 	private HttpServletResponse _httpServletResponse;
