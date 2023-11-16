@@ -32,6 +32,7 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.search.Field;
+import com.liferay.portal.kernel.search.Sort;
 import com.liferay.portal.kernel.search.filter.Filter;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextFactory;
@@ -87,7 +88,7 @@ public class FormRecordResourceImpl extends BaseFormRecordResourceImpl {
 
 	@Override
 	public Page<FormRecord> getFormFormRecordsPage(
-			Long formId, Filter filter, Pagination pagination)
+			Long formId, Filter filter, Pagination pagination, Sort[] sorts)
 		throws Exception {
 
 		return SearchUtil.search(
@@ -100,7 +101,7 @@ public class FormRecordResourceImpl extends BaseFormRecordResourceImpl {
 				Field.ENTRY_CLASS_PK),
 			searchContext -> searchContext.setCompanyId(
 				contextCompany.getCompanyId()),
-			null,
+			sorts,
 			document ->
 				_toFormRecord(
 				_ddmFormInstanceRecordService.getFormInstanceRecord(
@@ -126,7 +127,7 @@ public class FormRecordResourceImpl extends BaseFormRecordResourceImpl {
 		return FormRecordUtil.toFormRecord(
 			ddmFormInstanceRecord, _dlAppService, _dlurlHelper,
 			contextAcceptLanguage.getPreferredLocale(), _portal,
-			_userLocalService)
+			_userLocalService);
 	}
 
 	@Override
