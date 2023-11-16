@@ -7,7 +7,7 @@ package com.liferay.object.web.internal.object.definitions.portlet.action;
 
 import com.liferay.list.type.model.ListTypeDefinition;
 import com.liferay.object.constants.ObjectPortletKeys;
-import com.liferay.object.web.internal.list.type.display.context.ViewListTypeEntriesDisplayContext;
+import com.liferay.object.web.internal.list.type.display.context.ViewListTypeDefinitionsDisplayContext;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCRenderCommand;
 import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermission;
 import com.liferay.portal.kernel.util.Portal;
@@ -26,11 +26,11 @@ import org.osgi.service.component.annotations.Reference;
 @Component(
 	property = {
 		"javax.portlet.name=" + ObjectPortletKeys.LIST_TYPE_DEFINITIONS,
-		"mvc.command.name=/object_definitions/view_list_type_definition"
+		"mvc.command.name=/object_definitions/view_list_type_definitions"
 	},
 	service = MVCRenderCommand.class
 )
-public class ViewListTypeDefinitionMVCRenderCommand
+public class ViewListTypeDefinitionsMVCRenderCommand
 	implements MVCRenderCommand {
 
 	@Override
@@ -40,7 +40,7 @@ public class ViewListTypeDefinitionMVCRenderCommand
 
 		renderRequest.setAttribute(
 			WebKeys.PORTLET_DISPLAY_CONTEXT,
-			new ViewListTypeEntriesDisplayContext(
+			new ViewListTypeDefinitionsDisplayContext(
 				_portal.getHttpServletRequest(renderRequest),
 				_listTypeDefinitionModelResourcePermission));
 

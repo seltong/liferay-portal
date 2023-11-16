@@ -8,6 +8,7 @@ package com.liferay.object.web.internal.object.definitions.display.context;
 import com.liferay.frontend.data.set.model.FDSActionDropdownItem;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.CreationMenu;
 import com.liferay.object.constants.ObjectActionKeys;
+import com.liferay.object.constants.ObjectPortletKeys;
 import com.liferay.object.model.ObjectDefinition;
 import com.liferay.object.rest.manager.v1_0.ObjectEntryManagerRegistry;
 import com.liferay.object.service.ObjectFolderLocalService;
@@ -19,11 +20,14 @@ import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.portlet.LiferayWindowState;
 import com.liferay.portal.kernel.portlet.PortletURLUtil;
+import com.liferay.portal.kernel.portlet.RequestBackedPortletURLFactory;
+import com.liferay.portal.kernel.portlet.RequestBackedPortletURLFactoryUtil;
 import com.liferay.portal.kernel.portlet.url.builder.PortletURLBuilder;
 import com.liferay.portal.kernel.portlet.url.builder.ResourceURLBuilder;
 import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermission;
 import com.liferay.portal.kernel.security.permission.resource.PortletResourcePermission;
 import com.liferay.portal.kernel.util.ListUtil;
+import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.PortalUtil;
 
 import java.util.List;
@@ -46,12 +50,13 @@ public class ViewObjectDefinitionsDisplayContext {
 		ModelResourcePermission<ObjectDefinition>
 			objectDefinitionModelResourcePermission,
 		ObjectEntryManagerRegistry objectEntryManagerRegistry,
-		ObjectFolderLocalService objectFolderLocalService) {
+		ObjectFolderLocalService objectFolderLocalService, Portal portal) {
 
 		_objectDefinitionModelResourcePermission =
 			objectDefinitionModelResourcePermission;
 		_objectEntryManagerRegistry = objectEntryManagerRegistry;
 		_objectFolderLocalService = objectFolderLocalService;
+		_portal = portal;
 
 		_objectRequestHelper = new ObjectRequestHelper(httpServletRequest);
 	}
@@ -148,10 +153,15 @@ public class ViewObjectDefinitionsDisplayContext {
 	}
 
 	public String getListTypeDefinitionsURL() throws Exception {
+		RequestBackedPortletURLFactory requestBackedPortletURLFactory =
+			RequestBackedPortletURLFactoryUtil.create(
+				_objectRequestHelper.getRequest());
+
 		return PortletURLBuilder.create(
-			getPortletURL()
+			requestBackedPortletURLFactory.createControlPanelRenderURL(
+				ObjectPortletKeys.LIST_TYPE_DEFINITIONS, null, 0, 0)
 		).setMVCRenderCommandName(
-			"/object_definitions/view_list_type_definition"
+			"/object_definitions/view_list_type_definitions"
 		).buildString();
 	}
 
@@ -228,5 +238,6 @@ public class ViewObjectDefinitionsDisplayContext {
 	private final ObjectEntryManagerRegistry _objectEntryManagerRegistry;
 	private final ObjectFolderLocalService _objectFolderLocalService;
 	private final ObjectRequestHelper _objectRequestHelper;
+	private final Portal _portal;
 
 }

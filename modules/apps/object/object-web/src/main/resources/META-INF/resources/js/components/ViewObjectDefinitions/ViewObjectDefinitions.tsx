@@ -44,6 +44,7 @@ import './ViewObjectDefinitions.scss';
 interface ViewObjectDefinitionsProps extends IFDSTableProps {
 	baseResourceURL: string;
 	editObjectDefinitionURL: string;
+	listTypeDefinitionsURL: string;
 	modelBuilderURL: string;
 	objectDefinitionsAPIURL: any;
 	objectDefinitionsCreationMenu: {
@@ -66,6 +67,7 @@ export interface DeletedObjectDefinition {
 export default function ViewObjectDefinitions({
 	baseResourceURL,
 	editObjectDefinitionURL,
+	listTypeDefinitionsURL,
 	modelBuilderURL,
 	objectDefinitionsAPIURL,
 	objectDefinitionsCreationMenu,
