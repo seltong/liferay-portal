@@ -24,24 +24,30 @@ import com.liferay.headless.form.dto.v1_0.FormRecord;
 import com.liferay.headless.form.dto.v1_0.util.FormRecordUtil;
 import com.liferay.headless.form.internal.dto.v1_0.util.DDMFormValuesUtil;
 import com.liferay.headless.form.resource.v1_0.FormRecordResource;
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.repository.model.FileEntry;
+import com.liferay.portal.kernel.search.Field;
+import com.liferay.portal.kernel.search.filter.Filter;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextFactory;
 import com.liferay.portal.kernel.service.UserLocalService;
+import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.vulcan.pagination.Page;
 import com.liferay.portal.vulcan.pagination.Pagination;
 
+import java.util.Collections;
 import java.util.Objects;
 
 import javax.ws.rs.BadRequestException;
 
+import com.liferay.portal.vulcan.util.SearchUtil;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ServiceScope;
@@ -81,21 +87,46 @@ public class FormRecordResourceImpl extends BaseFormRecordResourceImpl {
 
 	@Override
 	public Page<FormRecord> getFormFormRecordsPage(
-			Long formId, Pagination pagination)
+			Long formId, Filter filter, Pagination pagination)
 		throws Exception {
 
-		return Page.of(
-			transform(
-				_ddmFormInstanceRecordService.getFormInstanceRecords(
-					formId, WorkflowConstants.STATUS_ANY,
-					pagination.getStartPosition(), pagination.getEndPosition(),
-					null),
-				formRecord -> FormRecordUtil.toFormRecord(
-					formRecord, _dlAppService, _dlurlHelper,
-					contextAcceptLanguage.getPreferredLocale(), _portal,
-					_userLocalService)),
-			pagination,
-			_ddmFormInstanceRecordService.getFormInstanceRecordsCount(formId));
+		return SearchUtil.search(
+			Collections.emptyMap(),
+			booleanQuery -> {
+			},
+			filter, com.liferay.headless.form.dto.v1_0.FormRecord.class.getName(),
+			StringPool.BLANK, pagination,
+			queryConfig -> queryConfig.setSelectedFieldNames(
+				Field.ENTRY_CLASS_PK),
+			searchContext -> searchContext.setCompanyId(
+				contextCompany.getCompanyId()),
+			null,
+			document ->
+				_toFormRecord(
+				_ddmFormInstanceRecordService.getFormInstanceRecord(
+					GetterUtil.getLong(document.get(Field.ENTRY_CLASS_PK)))));
+
+//		return Page.of(
+//			transform(
+//				_ddmFormInstanceRecordService.getFormInstanceRecords(
+//					formId, WorkflowConstants.STATUS_ANY,
+//					pagination.getStartPosition(), pagination.getEndPosition(),
+//					null),
+//				formRecord -> FormRecordUtil.toFormRecord(
+//					formRecord, _dlAppService, _dlurlHelper,
+//					contextAcceptLanguage.getPreferredLocale(), _portal,
+//					_userLocalService)),
+//			pagination,
+//			_ddmFormInstanceRecordService.getFormInstanceRecordsCount(formId));
+	}
+
+	private FormRecord _toFormRecord(
+		DDMFormInstanceRecord ddmFormInstanceRecord) throws Exception {
+
+		return FormRecordUtil.toFormRecord(
+			ddmFormInstanceRecord, _dlAppService, _dlurlHelper,
+			contextAcceptLanguage.getPreferredLocale(), _portal,
+			_userLocalService)
 	}
 
 	@Override
