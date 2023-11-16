@@ -180,6 +180,7 @@ public class Mutation {
 	public Response createFormFormRecordsPageExportBatch(
 			@GraphQLName("formId") Long formId,
 			@GraphQLName("filter") String filterString,
+			@GraphQLName("sort") String sortsString,
 			@GraphQLName("callbackURL") String callbackURL,
 			@GraphQLName("contentType") String contentType,
 			@GraphQLName("fieldNames") String fieldNames)
@@ -192,6 +193,7 @@ public class Mutation {
 				formRecordResource.postFormFormRecordsPageExportBatch(
 					formId,
 					_filterBiFunction.apply(formRecordResource, filterString),
+					_sortsBiFunction.apply(formRecordResource, sortsString),
 					callbackURL, contentType, fieldNames));
 	}
 

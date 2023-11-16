@@ -209,6 +209,10 @@ public abstract class BaseFormRecordResourceImpl
 			@io.swagger.v3.oas.annotations.Parameter(
 				in = io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY,
 				name = "pageSize"
+			),
+			@io.swagger.v3.oas.annotations.Parameter(
+				in = io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY,
+				name = "sort"
 			)
 		}
 	)
@@ -225,7 +229,8 @@ public abstract class BaseFormRecordResourceImpl
 			@javax.ws.rs.PathParam("formId")
 			Long formId,
 			@javax.ws.rs.core.Context Filter filter,
-			@javax.ws.rs.core.Context Pagination pagination)
+			@javax.ws.rs.core.Context Pagination pagination,
+			@javax.ws.rs.core.Context Sort[] sorts)
 		throws Exception {
 
 		return Page.of(Collections.emptyList());
@@ -247,6 +252,10 @@ public abstract class BaseFormRecordResourceImpl
 			@io.swagger.v3.oas.annotations.Parameter(
 				in = io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY,
 				name = "filter"
+			),
+			@io.swagger.v3.oas.annotations.Parameter(
+				in = io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY,
+				name = "sort"
 			),
 			@io.swagger.v3.oas.annotations.Parameter(
 				in = io.swagger.v3.oas.annotations.enums.ParameterIn.QUERY,
@@ -276,6 +285,7 @@ public abstract class BaseFormRecordResourceImpl
 			@javax.ws.rs.PathParam("formId")
 			Long formId,
 			@javax.ws.rs.core.Context Filter filter,
+			@javax.ws.rs.core.Context Sort[] sorts,
 			@io.swagger.v3.oas.annotations.Parameter(hidden = true)
 			@javax.ws.rs.QueryParam("callbackURL")
 			String callbackURL,
@@ -518,7 +528,7 @@ public abstract class BaseFormRecordResourceImpl
 		if (parameters.containsKey("formId")) {
 			return getFormFormRecordsPage(
 				_parseLong((String)parameters.get("formId")), filter,
-				pagination);
+				pagination, sorts);
 		}
 		else {
 			throw new NotSupportedException(

@@ -19,6 +19,7 @@ import com.liferay.headless.form.client.pagination.Page;
 import com.liferay.headless.form.client.pagination.Pagination;
 import com.liferay.headless.form.client.resource.v1_0.FormRecordResource;
 import com.liferay.headless.form.client.serdes.v1_0.FormRecordSerDes;
+import com.liferay.petra.function.UnsafeTriConsumer;
 import com.liferay.petra.function.transform.TransformUtil;
 import com.liferay.petra.reflect.ReflectionUtil;
 import com.liferay.petra.string.StringBundler;
@@ -275,7 +276,7 @@ public abstract class BaseFormRecordResourceTestCase {
 			testGetFormFormRecordsPage_getIrrelevantFormId();
 
 		Page<FormRecord> page = formRecordResource.getFormFormRecordsPage(
-			formId, null, Pagination.of(1, 10));
+			formId, null, Pagination.of(1, 10), null);
 
 		long totalCount = page.getTotalCount();
 
@@ -285,7 +286,8 @@ public abstract class BaseFormRecordResourceTestCase {
 					irrelevantFormId, randomIrrelevantFormRecord());
 
 			page = formRecordResource.getFormFormRecordsPage(
-				irrelevantFormId, null, Pagination.of(1, (int)totalCount + 1));
+				irrelevantFormId, null, Pagination.of(1, (int)totalCount + 1),
+				null);
 
 			Assert.assertEquals(totalCount + 1, page.getTotalCount());
 
@@ -304,7 +306,7 @@ public abstract class BaseFormRecordResourceTestCase {
 			formId, randomFormRecord());
 
 		page = formRecordResource.getFormFormRecordsPage(
-			formId, null, Pagination.of(1, 10));
+			formId, null, Pagination.of(1, 10), null);
 
 		Assert.assertEquals(totalCount + 2, page.getTotalCount());
 
@@ -353,7 +355,7 @@ public abstract class BaseFormRecordResourceTestCase {
 		for (EntityField entityField : entityFields) {
 			Page<FormRecord> page = formRecordResource.getFormFormRecordsPage(
 				formId, getFilterString(entityField, "between", formRecord1),
-				Pagination.of(1, 2));
+				Pagination.of(1, 2), null);
 
 			assertEquals(
 				Collections.singletonList(formRecord1),
@@ -413,7 +415,7 @@ public abstract class BaseFormRecordResourceTestCase {
 		for (EntityField entityField : entityFields) {
 			Page<FormRecord> page = formRecordResource.getFormFormRecordsPage(
 				formId, getFilterString(entityField, operator, formRecord1),
-				Pagination.of(1, 2));
+				Pagination.of(1, 2), null);
 
 			assertEquals(
 				Collections.singletonList(formRecord1),
@@ -426,7 +428,7 @@ public abstract class BaseFormRecordResourceTestCase {
 		Long formId = testGetFormFormRecordsPage_getFormId();
 
 		Page<FormRecord> formRecordPage =
-			formRecordResource.getFormFormRecordsPage(formId, null, null);
+			formRecordResource.getFormFormRecordsPage(formId, null, null, null);
 
 		int totalCount = GetterUtil.getInteger(formRecordPage.getTotalCount());
 
@@ -440,7 +442,7 @@ public abstract class BaseFormRecordResourceTestCase {
 			formId, randomFormRecord());
 
 		Page<FormRecord> page1 = formRecordResource.getFormFormRecordsPage(
-			formId, null, Pagination.of(1, totalCount + 2));
+			formId, null, Pagination.of(1, totalCount + 2), null);
 
 		List<FormRecord> formRecords1 = (List<FormRecord>)page1.getItems();
 
@@ -448,7 +450,7 @@ public abstract class BaseFormRecordResourceTestCase {
 			formRecords1.toString(), totalCount + 2, formRecords1.size());
 
 		Page<FormRecord> page2 = formRecordResource.getFormFormRecordsPage(
-			formId, null, Pagination.of(2, totalCount + 2));
+			formId, null, Pagination.of(2, totalCount + 2), null);
 
 		Assert.assertEquals(totalCount + 3, page2.getTotalCount());
 
@@ -457,11 +459,146 @@ public abstract class BaseFormRecordResourceTestCase {
 		Assert.assertEquals(formRecords2.toString(), 1, formRecords2.size());
 
 		Page<FormRecord> page3 = formRecordResource.getFormFormRecordsPage(
-			formId, null, Pagination.of(1, (int)totalCount + 3));
+			formId, null, Pagination.of(1, (int)totalCount + 3), null);
 
 		assertContains(formRecord1, (List<FormRecord>)page3.getItems());
 		assertContains(formRecord2, (List<FormRecord>)page3.getItems());
 		assertContains(formRecord3, (List<FormRecord>)page3.getItems());
+	}
+
+	@Test
+	public void testGetFormFormRecordsPageWithSortDateTime() throws Exception {
+		testGetFormFormRecordsPageWithSort(
+			EntityField.Type.DATE_TIME,
+			(entityField, formRecord1, formRecord2) -> {
+				BeanTestUtil.setProperty(
+					formRecord1, entityField.getName(),
+					DateUtils.addMinutes(new Date(), -2));
+			});
+	}
+
+	@Test
+	public void testGetFormFormRecordsPageWithSortDouble() throws Exception {
+		testGetFormFormRecordsPageWithSort(
+			EntityField.Type.DOUBLE,
+			(entityField, formRecord1, formRecord2) -> {
+				BeanTestUtil.setProperty(
+					formRecord1, entityField.getName(), 0.1);
+				BeanTestUtil.setProperty(
+					formRecord2, entityField.getName(), 0.5);
+			});
+	}
+
+	@Test
+	public void testGetFormFormRecordsPageWithSortInteger() throws Exception {
+		testGetFormFormRecordsPageWithSort(
+			EntityField.Type.INTEGER,
+			(entityField, formRecord1, formRecord2) -> {
+				BeanTestUtil.setProperty(formRecord1, entityField.getName(), 0);
+				BeanTestUtil.setProperty(formRecord2, entityField.getName(), 1);
+			});
+	}
+
+	@Test
+	public void testGetFormFormRecordsPageWithSortString() throws Exception {
+		testGetFormFormRecordsPageWithSort(
+			EntityField.Type.STRING,
+			(entityField, formRecord1, formRecord2) -> {
+				Class<?> clazz = formRecord1.getClass();
+
+				String entityFieldName = entityField.getName();
+
+				Method method = clazz.getMethod(
+					"get" + StringUtil.upperCaseFirstLetter(entityFieldName));
+
+				Class<?> returnType = method.getReturnType();
+
+				if (returnType.isAssignableFrom(Map.class)) {
+					BeanTestUtil.setProperty(
+						formRecord1, entityFieldName,
+						Collections.singletonMap("Aaa", "Aaa"));
+					BeanTestUtil.setProperty(
+						formRecord2, entityFieldName,
+						Collections.singletonMap("Bbb", "Bbb"));
+				}
+				else if (entityFieldName.contains("email")) {
+					BeanTestUtil.setProperty(
+						formRecord1, entityFieldName,
+						"aaa" +
+							StringUtil.toLowerCase(
+								RandomTestUtil.randomString()) +
+									"@liferay.com");
+					BeanTestUtil.setProperty(
+						formRecord2, entityFieldName,
+						"bbb" +
+							StringUtil.toLowerCase(
+								RandomTestUtil.randomString()) +
+									"@liferay.com");
+				}
+				else {
+					BeanTestUtil.setProperty(
+						formRecord1, entityFieldName,
+						"aaa" +
+							StringUtil.toLowerCase(
+								RandomTestUtil.randomString()));
+					BeanTestUtil.setProperty(
+						formRecord2, entityFieldName,
+						"bbb" +
+							StringUtil.toLowerCase(
+								RandomTestUtil.randomString()));
+				}
+			});
+	}
+
+	protected void testGetFormFormRecordsPageWithSort(
+			EntityField.Type type,
+			UnsafeTriConsumer<EntityField, FormRecord, FormRecord, Exception>
+				unsafeTriConsumer)
+		throws Exception {
+
+		List<EntityField> entityFields = getEntityFields(type);
+
+		if (entityFields.isEmpty()) {
+			return;
+		}
+
+		Long formId = testGetFormFormRecordsPage_getFormId();
+
+		FormRecord formRecord1 = randomFormRecord();
+		FormRecord formRecord2 = randomFormRecord();
+
+		for (EntityField entityField : entityFields) {
+			unsafeTriConsumer.accept(entityField, formRecord1, formRecord2);
+		}
+
+		formRecord1 = testGetFormFormRecordsPage_addFormRecord(
+			formId, formRecord1);
+
+		formRecord2 = testGetFormFormRecordsPage_addFormRecord(
+			formId, formRecord2);
+
+		Page<FormRecord> page = formRecordResource.getFormFormRecordsPage(
+			formId, null, null, null);
+
+		for (EntityField entityField : entityFields) {
+			Page<FormRecord> ascPage =
+				formRecordResource.getFormFormRecordsPage(
+					formId, null,
+					Pagination.of(1, (int)page.getTotalCount() + 1),
+					entityField.getName() + ":asc");
+
+			assertContains(formRecord1, (List<FormRecord>)ascPage.getItems());
+			assertContains(formRecord2, (List<FormRecord>)ascPage.getItems());
+
+			Page<FormRecord> descPage =
+				formRecordResource.getFormFormRecordsPage(
+					formId, null,
+					Pagination.of(1, (int)page.getTotalCount() + 1),
+					entityField.getName() + ":desc");
+
+			assertContains(formRecord2, (List<FormRecord>)descPage.getItems());
+			assertContains(formRecord1, (List<FormRecord>)descPage.getItems());
+		}
 	}
 
 	protected FormRecord testGetFormFormRecordsPage_addFormRecord(

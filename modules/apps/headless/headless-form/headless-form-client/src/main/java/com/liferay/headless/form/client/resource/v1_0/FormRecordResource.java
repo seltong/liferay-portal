@@ -54,22 +54,24 @@ public interface FormRecordResource {
 		throws Exception;
 
 	public Page<FormRecord> getFormFormRecordsPage(
-			Long formId, String filterString, Pagination pagination)
+			Long formId, String filterString, Pagination pagination,
+			String sortString)
 		throws Exception;
 
 	public HttpInvoker.HttpResponse getFormFormRecordsPageHttpResponse(
-			Long formId, String filterString, Pagination pagination)
+			Long formId, String filterString, Pagination pagination,
+			String sortString)
 		throws Exception;
 
 	public void postFormFormRecordsPageExportBatch(
-			Long formId, String filterString, String callbackURL,
-			String contentType, String fieldNames)
+			Long formId, String filterString, String sortString,
+			String callbackURL, String contentType, String fieldNames)
 		throws Exception;
 
 	public HttpInvoker.HttpResponse
 			postFormFormRecordsPageExportBatchHttpResponse(
-				Long formId, String filterString, String callbackURL,
-				String contentType, String fieldNames)
+				Long formId, String filterString, String sortString,
+				String callbackURL, String contentType, String fieldNames)
 		throws Exception;
 
 	public FormRecord postFormFormRecord(Long formId, FormRecord formRecord)
@@ -507,12 +509,13 @@ public interface FormRecordResource {
 		}
 
 		public Page<FormRecord> getFormFormRecordsPage(
-				Long formId, String filterString, Pagination pagination)
+				Long formId, String filterString, Pagination pagination,
+				String sortString)
 			throws Exception {
 
 			HttpInvoker.HttpResponse httpResponse =
 				getFormFormRecordsPageHttpResponse(
-					formId, filterString, pagination);
+					formId, filterString, pagination, sortString);
 
 			String content = httpResponse.getContent();
 
@@ -574,7 +577,8 @@ public interface FormRecordResource {
 		}
 
 		public HttpInvoker.HttpResponse getFormFormRecordsPageHttpResponse(
-				Long formId, String filterString, Pagination pagination)
+				Long formId, String filterString, Pagination pagination,
+				String sortString)
 			throws Exception {
 
 			HttpInvoker httpInvoker = HttpInvoker.newHttpInvoker();
@@ -609,6 +613,10 @@ public interface FormRecordResource {
 					"pageSize", String.valueOf(pagination.getPageSize()));
 			}
 
+			if (sortString != null) {
+				httpInvoker.parameter("sort", sortString);
+			}
+
 			httpInvoker.path(
 				_builder._scheme + "://" + _builder._host + ":" +
 					_builder._port + _builder._contextPath +
@@ -623,13 +631,14 @@ public interface FormRecordResource {
 		}
 
 		public void postFormFormRecordsPageExportBatch(
-				Long formId, String filterString, String callbackURL,
-				String contentType, String fieldNames)
+				Long formId, String filterString, String sortString,
+				String callbackURL, String contentType, String fieldNames)
 			throws Exception {
 
 			HttpInvoker.HttpResponse httpResponse =
 				postFormFormRecordsPageExportBatchHttpResponse(
-					formId, filterString, callbackURL, contentType, fieldNames);
+					formId, filterString, sortString, callbackURL, contentType,
+					fieldNames);
 
 			String content = httpResponse.getContent();
 
@@ -681,8 +690,8 @@ public interface FormRecordResource {
 
 		public HttpInvoker.HttpResponse
 				postFormFormRecordsPageExportBatchHttpResponse(
-					Long formId, String filterString, String callbackURL,
-					String contentType, String fieldNames)
+					Long formId, String filterString, String sortString,
+					String callbackURL, String contentType, String fieldNames)
 			throws Exception {
 
 			HttpInvoker httpInvoker = HttpInvoker.newHttpInvoker();
@@ -710,6 +719,10 @@ public interface FormRecordResource {
 
 			if (filterString != null) {
 				httpInvoker.parameter("filter", filterString);
+			}
+
+			if (sortString != null) {
+				httpInvoker.parameter("sort", sortString);
 			}
 
 			if (callbackURL != null) {
