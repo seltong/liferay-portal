@@ -16,6 +16,8 @@ import {BasicInfoTab} from './Tabs/BasicInfo/BasicInfoTab';
 
 import './EditObjectFieldContent.scss';
 
+import Button from '@clayui/button';
+
 interface EditObjectFieldContentProps
 	extends Omit<
 		EditObjectFieldProps,
@@ -54,6 +56,7 @@ export function EditObjectFieldContent({
 	workflowStatuses,
 }: EditObjectFieldContentProps) {
 	const [activeIndex, setActiveIndex] = useState(0);
+	const [listTypeDefinitionsURL, setListTypeDefinitionsURL] = useState<string>("");
 	const [objectFieldTypes, setObjectFieldTypes] = useState<ObjectFieldType[]>(
 		[]
 	);
@@ -86,11 +89,18 @@ export function EditObjectFieldContent({
 				});
 
 				const objectFieldInfoJSON = (await objectFieldInfoResponse.json()) as {
+					listTypeDefinitionsURL: string;
 					objectFieldTypes: ObjectFieldType[];
 					objectRelationshipId: number;
 					readOnlySidebarElements: SidebarCategory[];
 					sidebarElements: SidebarCategory[];
 				};
+
+				if (values.businessType === 'Picklist') {
+					setListTypeDefinitionsURL(
+						objectFieldInfoJSON.listTypeDefinitionsURL
+					);
+				}
 
 				if (values.businessType === 'Relationship') {
 					setObjectRelationshipId(
@@ -125,6 +135,14 @@ export function EditObjectFieldContent({
 							</ClayTabs.Item>
 						))}
 					</ClayTabs>
+
+					<Button
+					formTarget='_blank'
+						onClick={() => {
+							window.open(`${listTypeDefinitionsURL}`,'_blank');
+						}}>
+							Oi
+					</Button>
 
 					<ClayTabs.Content activeIndex={activeIndex} fade>
 						<ClayTabs.TabPane
