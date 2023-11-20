@@ -13,6 +13,7 @@ import com.liferay.dynamic.data.mapping.io.exporter.DDMFormInstanceRecordExporte
 import com.liferay.dynamic.data.mapping.model.DDMFormInstance;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstanceRecord;
 import com.liferay.dynamic.data.mapping.service.DDMFormInstanceService;
+import com.liferay.dynamic.data.mapping.util.comparator.DDMFormInstanceRecordCreateDateComparator;
 import com.liferay.dynamic.data.mapping.util.comparator.DDMFormInstanceRecordIdComparator;
 import com.liferay.dynamic.data.mapping.util.comparator.DDMFormInstanceRecordModifiedDateComparator;
 import com.liferay.petra.string.CharPool;
@@ -138,6 +139,14 @@ public class ExportFormInstanceMVCResourceCommand
 		}
 
 		String orderByCol = SearchOrderByUtil.getOrderByCol(
+			resourceRequest, DDMPortletKeys.DYNAMIC_DATA_MAPPING_FORM_ADMIN,
+			"view-entries-order-by-col", "create-date");
+
+		if (orderByCol.equals("create-date")) {
+			return new DDMFormInstanceRecordCreateDateComparator(orderByAsc);
+		}
+
+		orderByCol = SearchOrderByUtil.getOrderByCol(
 			resourceRequest, DDMPortletKeys.DYNAMIC_DATA_MAPPING_FORM_ADMIN,
 			"view-entries-order-by-col", "modified-date");
 

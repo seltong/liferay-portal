@@ -7,6 +7,7 @@ package com.liferay.dynamic.data.mapping.form.web.internal.search;
 
 import com.liferay.dynamic.data.mapping.constants.DDMPortletKeys;
 import com.liferay.dynamic.data.mapping.model.DDMFormInstanceRecord;
+import com.liferay.dynamic.data.mapping.util.comparator.DDMFormInstanceRecordCreateDateComparator;
 import com.liferay.dynamic.data.mapping.util.comparator.DDMFormInstanceRecordIdComparator;
 import com.liferay.dynamic.data.mapping.util.comparator.DDMFormInstanceRecordModifiedDateComparator;
 import com.liferay.portal.kernel.dao.search.DisplayTerms;
@@ -49,7 +50,11 @@ public class DDMFormInstanceRecordSearch
 
 		OrderByComparator<DDMFormInstanceRecord> orderByComparator = null;
 
-		if (orderByCol.equals("modified-date")) {
+		if (orderByCol.equals("create-date")) {
+			orderByComparator = new DDMFormInstanceRecordCreateDateComparator(
+				orderByAsc);
+		}
+		else if (orderByCol.equals("modified-date")) {
 			orderByComparator = new DDMFormInstanceRecordModifiedDateComparator(
 				orderByAsc);
 		}
