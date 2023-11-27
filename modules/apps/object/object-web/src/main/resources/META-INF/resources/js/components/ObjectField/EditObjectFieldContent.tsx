@@ -16,6 +16,8 @@ import {BasicInfoTab} from './Tabs/BasicInfo/BasicInfoTab';
 
 import './EditObjectFieldContent.scss';
 
+import Button from '@clayui/button';
+
 interface EditObjectFieldContentProps
 	extends Omit<
 		EditObjectFieldProps,
@@ -54,6 +56,7 @@ export function EditObjectFieldContent({
 	workflowStatuses,
 }: EditObjectFieldContentProps) {
 	const [activeIndex, setActiveIndex] = useState(0);
+	const [list_type_definitionsURL, setListTypeDefinitionsURL] = useState<string>("");
 	const [objectFieldTypes, setObjectFieldTypes] = useState<ObjectFieldType[]>(
 		[]
 	);
@@ -81,7 +84,16 @@ export function EditObjectFieldContent({
 						'/object_definitions/get_object_field_info',
 				}).href;
 
+				const list_type_definitionsURL = createResourceURL(baseResourceURL, {
+					p_p_resource_id:
+						'/object_definitions/get_view_list_type_definitions_url',
+				}).href;
+
 				const objectFieldInfoResponse = await fetch(url, {
+					method: 'GET',
+				});
+
+				const list_type_definitionsResponse = await fetch(list_type_definitionsURL, {
 					method: 'GET',
 				});
 
@@ -91,6 +103,12 @@ export function EditObjectFieldContent({
 					readOnlySidebarElements: SidebarCategory[];
 					sidebarElements: SidebarCategory[];
 				};
+
+				const list_type_definitionsJSON = (await list_type_definitionsResponse.json()) as {
+					url: string;
+				};
+
+				setListTypeDefinitionsURL(list_type_definitionsJSON.url);
 
 				if (values.businessType === 'Relationship') {
 					setObjectRelationshipId(
@@ -125,6 +143,13 @@ export function EditObjectFieldContent({
 							</ClayTabs.Item>
 						))}
 					</ClayTabs>
+
+					<Button onClick={() => {
+						window.open(`${list_type_definitionsURL}`, "_blank");
+						}}
+					>
+						Oi
+					</Button>
 
 					<ClayTabs.Content activeIndex={activeIndex} fade>
 						<ClayTabs.TabPane
