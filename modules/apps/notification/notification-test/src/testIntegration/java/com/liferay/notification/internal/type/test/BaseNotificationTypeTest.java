@@ -106,6 +106,8 @@ public class BaseNotificationTypeTest {
 					LocaleUtil.US, RandomTestUtil.randomString()),
 				false, Collections.singletonList(listTypeEntry));
 
+		Date date = RandomTestUtil.nextDate();
+
 		childObjectEntryValues = LinkedHashMapBuilder.<String, Object>put(
 			"booleanObjectField", RandomTestUtil.randomBoolean()
 		).put(
@@ -114,7 +116,7 @@ public class BaseNotificationTypeTest {
 				SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
 					"yyyy-MM-dd");
 
-				return simpleDateFormat.format(RandomTestUtil.nextDate());
+				return simpleDateFormat.format(date);
 			}
 		).put(
 			"dateTimeObjectField",
@@ -122,7 +124,7 @@ public class BaseNotificationTypeTest {
 				SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
 					"yyyy-MM-dd 00:00:00.0");
 
-				return simpleDateFormat.format(RandomTestUtil.nextDate());
+				return simpleDateFormat.format(date);
 			}
 		).put(
 			"emailTextObjectField",
@@ -140,6 +142,39 @@ public class BaseNotificationTypeTest {
 			}
 		).put(
 			"textObjectField", RandomTestUtil.randomString()
+		).build();
+
+		freeMarkTermValues = LinkedHashMapBuilder.<String, Object>put(
+			"${ObjectField_booleanObjectField.getData()}",
+			childObjectEntryValues.get("booleanObjectField")
+		).put(
+			"${ObjectField_dateObjectField.getData()}",
+			() -> {
+				SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
+					"MM/dd/yy");
+
+				return simpleDateFormat.format(date) + " 12:00 AM";
+			}
+		).put(
+			"${ObjectField_dateTimeObjectField.getData()}",
+			() -> {
+				SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
+					"yyyy-MM-dd");
+
+				return simpleDateFormat.format(date) + "T00:00";
+			}
+		).put(
+			"${ObjectField_emailTextObjectField.getData()}",
+			childObjectEntryValues.get("emailTextObjectField")
+		).put(
+			"${ObjectField_integerObjectField.getData()}",
+			childObjectEntryValues.get("integerObjectField")
+		).put(
+			"${ObjectField_picklistObjectField.getData()}",
+			listTypeEntry.getName(LocaleUtil.US)
+		).put(
+			"${ObjectField_textObjectField.getData()}",
+			childObjectEntryValues.get("textObjectField")
 		).build();
 
 		parentObjectEntryValues = LinkedHashMapBuilder.<String, Object>put(
@@ -496,6 +531,7 @@ public class BaseNotificationTypeTest {
 
 	protected static LinkedHashMap<String, Object> childObjectEntryValues;
 	protected static DTOConverterContext dtoConverterContext;
+	protected static LinkedHashMap<String, Object> freeMarkTermValues;
 
 	@Inject
 	protected static ObjectFieldLocalService objectFieldLocalService;

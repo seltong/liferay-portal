@@ -11,6 +11,7 @@ import com.liferay.document.library.kernel.model.DLFolderConstants;
 import com.liferay.notification.constants.NotificationConstants;
 import com.liferay.notification.constants.NotificationPortletKeys;
 import com.liferay.notification.constants.NotificationQueueEntryConstants;
+import com.liferay.notification.constants.NotificationTemplateConstants;
 import com.liferay.notification.model.NotificationQueueEntry;
 import com.liferay.notification.model.NotificationQueueEntryAttachment;
 import com.liferay.notification.model.NotificationTemplate;
@@ -25,6 +26,7 @@ import com.liferay.object.model.ObjectField;
 import com.liferay.object.rest.dto.v1_0.ObjectEntry;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
+import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Repository;
 import com.liferay.portal.kernel.portletfilerepository.PortletFileRepository;
@@ -41,6 +43,7 @@ import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
+import com.liferay.portal.kernel.util.LocalizationUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.TempFileEntryUtil;
 import com.liferay.portal.kernel.util.UnicodePropertiesBuilder;
@@ -50,6 +53,7 @@ import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.SynchronousMailTestRule;
 import com.liferay.portal.vulcan.util.LocalizedMapUtil;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -172,19 +176,37 @@ public class EmailNotificationTypeTest extends BaseNotificationTypeTest {
 	}
 
 	private NotificationTemplate _addNotificationTemplate(
-			boolean singleRecipient, Map<Locale, String> to)
+			String editorType, boolean singleRecipient, Map<Locale, String> to)
 		throws Exception {
 
 		ObjectField objectField = objectFieldLocalService.getObjectField(
 			childObjectDefinition.getObjectDefinitionId(),
 			"attachmentObjectField");
 
+		String body = null;
+
+		if (StringUtil.equals(
+				editorType,
+				NotificationTemplateConstants.EDITOR_TYPE_RICH_TEXT)) {
+
+			body = ListUtil.toString(getTermNames(), StringPool.BLANK);
+		}
+		else {
+			body = LocalizationUtil.updateLocalization(
+				LocalizedMapUtil.getLocalizedMap(
+					HashMapBuilder.put(
+						LanguageUtil.getLanguageId(LocaleUtil.US),
+						StringUtil.merge(
+							freeMarkTermValues.keySet(), StringPool.COMMA)
+					).build()),
+				null, "Body", LanguageUtil.getLanguageId(LocaleUtil.US));
+		}
+
 		return notificationTemplateLocalService.addNotificationTemplate(
 			NotificationTemplateUtil.createNotificationContext(
 				TestPropsValues.getUser(),
-				childObjectDefinition.getObjectDefinitionId(),
-				ListUtil.toString(getTermNames(), StringPool.BLANK),
-				RandomTestUtil.randomString(),
+				childObjectDefinition.getObjectDefinitionId(), body,
+				RandomTestUtil.randomString(), editorType,
 				Arrays.asList(
 					createNotificationRecipientSetting(
 						"bcc",
@@ -206,18 +228,31 @@ public class EmailNotificationTypeTest extends BaseNotificationTypeTest {
 	}
 
 	private void _assertNotificationQueueEntry(
-			String expectedFileName, boolean expectedSingleRecipient,
-			String expectedToEmailAddress,
+			String editorType, String expectedFileName,
+			boolean expectedSingleRecipient, String expectedToEmailAddress,
 			NotificationQueueEntry notificationQueueEntry)
 		throws Exception {
 
 		Assert.assertNotNull(
 			MailServiceTestUtil.getMailMessages("To", expectedToEmailAddress));
 
-		assertTermValues(
-			getTermValues(),
-			ListUtil.fromString(
-				notificationQueueEntry.getBody(), StringPool.COMMA));
+		if (StringUtil.equals(
+				editorType,
+				NotificationTemplateConstants.EDITOR_TYPE_RICH_TEXT)) {
+
+			assertTermValues(
+				getTermValues(),
+				ListUtil.fromString(
+					notificationQueueEntry.getBody(), StringPool.COMMA));
+		}
+		else {
+			assertTermValues(
+				new ArrayList<>(freeMarkTermValues.values()),
+				Arrays.asList(
+					StringUtil.split(
+						notificationQueueEntry.getBody(), StringPool.COMMA)));
+		}
+
 		assertTermValues(
 			getTermValues(),
 			ListUtil.fromString(
@@ -345,6 +380,23 @@ public class EmailNotificationTypeTest extends BaseNotificationTypeTest {
 			String to)
 		throws Exception {
 
+		_testSendNotification(
+			NotificationTemplateConstants.EDITOR_TYPE_FREEMARKER,
+			expectedNotificationQueueEntriesCount, expectedToEmailAddresses,
+			singleRecipient, to);
+
+		_testSendNotification(
+			NotificationTemplateConstants.EDITOR_TYPE_RICH_TEXT,
+			expectedNotificationQueueEntriesCount, expectedToEmailAddresses,
+			singleRecipient, to);
+	}
+
+	private void _testSendNotification(
+			String editorType, int expectedNotificationQueueEntriesCount,
+			List<String> expectedToEmailAddresses, boolean singleRecipient,
+			String to)
+		throws Exception {
+
 		FileEntry fileEntry = TempFileEntryUtil.addTempFileEntry(
 			TestPropsValues.getGroupId(), TestPropsValues.getUserId(),
 			StringUtil.randomString(),
@@ -356,7 +408,8 @@ public class EmailNotificationTypeTest extends BaseNotificationTypeTest {
 		_executeNotificationObjectAction(
 			fileEntry.getFileEntryId(),
 			_addNotificationTemplate(
-				singleRecipient, Collections.singletonMap(LocaleUtil.US, to)));
+				editorType, singleRecipient,
+				Collections.singletonMap(LocaleUtil.US, to)));
 
 		List<NotificationQueueEntry> notificationQueueEntries = ListUtil.sort(
 			notificationQueueEntryLocalService.getNotificationEntries(
@@ -379,12 +432,14 @@ public class EmailNotificationTypeTest extends BaseNotificationTypeTest {
 			notificationQueueEntries.size());
 
 		_assertNotificationQueueEntry(
+			editorType,
 			TempFileEntryUtil.getOriginalTempFileName(fileEntry.getFileName()),
 			singleRecipient, expectedToEmailAddresses.get(0),
 			notificationQueueEntries.get(0));
 
 		if (singleRecipient) {
 			_assertNotificationQueueEntry(
+				editorType,
 				TempFileEntryUtil.getOriginalTempFileName(
 					fileEntry.getFileName()),
 				singleRecipient, expectedToEmailAddresses.get(1),
