@@ -12,6 +12,7 @@ import com.liferay.item.selector.ItemSelectorViewDescriptor;
 import com.liferay.item.selector.ItemSelectorViewDescriptorRenderer;
 import com.liferay.item.selector.criteria.info.item.criterion.InfoItemItemSelectorCriterion;
 import com.liferay.object.model.ObjectDefinition;
+import com.liferay.object.model.ObjectField;
 import com.liferay.object.related.models.ObjectRelatedModelsProviderRegistry;
 import com.liferay.object.service.ObjectDefinitionLocalService;
 import com.liferay.object.service.ObjectFieldLocalService;
@@ -20,6 +21,7 @@ import com.liferay.object.system.SystemObjectDefinitionManagerRegistry;
 import com.liferay.portal.kernel.model.BaseModel;
 import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.model.Group;
+import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
 import com.liferay.portal.kernel.service.CompanyLocalService;
 import com.liferay.portal.kernel.service.CompanyLocalServiceUtil;
@@ -33,6 +35,7 @@ import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
 import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.TestPropsValues;
+import com.liferay.portal.kernel.test.util.UserTestUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.HashMapBuilder;
 import com.liferay.portal.kernel.util.JavaConstants;
@@ -55,6 +58,7 @@ import java.util.Queue;
 
 import javax.servlet.ServletRequest;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -97,10 +101,11 @@ public class SystemObjectEntryItemSelectorViewTest {
 
 	@Test
 	public void testGetTitle() throws Exception {
-		Iterator<ServiceReference<ItemSelectorView>> iterator =
-			_serviceReferences.iterator();
+		Object[] iterator =
+			_serviceReferences.toArray();
 
-		ServiceReference<ItemSelectorView> serviceReference = iterator.next();
+		ServiceReference<ItemSelectorView> serviceReference =
+			(ServiceReference<ItemSelectorView>) iterator[3];
 
 		ItemSelectorView itemSelectorView = _bundleContext.getService(
 			serviceReference);
@@ -148,17 +153,34 @@ public class SystemObjectEntryItemSelectorViewTest {
 			_systemObjectDefinitionManagerRegistry.
 				getSystemObjectDefinitionManager(objectDefinition.getName());
 
-		BaseModel<?> baseModelMock = null;
-
-		long baseModelId = systemObjectDefinitionManager.addBaseModel(
-			TestPropsValues.getUser(), baseModelMock.getModelAttributes());
+		User user = UserTestUtil.addUser();
 
 		ItemSelectorViewDescriptor.ItemDescriptor itemDescriptor =
 			itemSelectorViewDescriptor.getItemDescriptor(
-				systemObjectDefinitionManager.getBaseModelExternalReferenceCode(
-					baseModelId));
+				systemObjectDefinitionManager.getBaseModelByExternalReferenceCode(
+					systemObjectDefinitionManager.getBaseModelExternalReferenceCode(
+						user.getPrimaryKey()), _group.getCompanyId()));
 
-		itemDescriptor.getTitle(Locale.getDefault());
+		long originalTitleObjectFieldId =
+			objectDefinition.getTitleObjectFieldId();
+
+		Assert.assertEquals(
+			user.getFirstName(), itemDescriptor.getTitle(Locale.getDefault()));
+
+		ObjectField objectField = _objectFieldLocalService.getObjectField(
+			objectDefinition.getObjectDefinitionId(), "emailAddress");
+
+		_objectDefinitionLocalService.updateTitleObjectFieldId(
+			objectDefinition.getObjectDefinitionId(),
+			objectField.getObjectFieldId());
+
+		Assert.assertEquals(
+			user.getEmailAddress(),
+			itemDescriptor.getTitle(Locale.getDefault()));
+
+		_objectDefinitionLocalService.updateTitleObjectFieldId(
+			objectDefinition.getObjectDefinitionId(),
+			originalTitleObjectFieldId);
 
 		ReflectionTestUtil.setFieldValue(
 			itemSelectorView, "_itemSelectorViewDescriptorRenderer",
@@ -270,7 +292,7 @@ public class SystemObjectEntryItemSelectorViewTest {
 		).put(
 			"Postal Address", "L_POSTAL_ADDRESS"
 		).put(
-			"User", "L_USER"
+			"Users", "L_USER"
 		).build();
 
 }
