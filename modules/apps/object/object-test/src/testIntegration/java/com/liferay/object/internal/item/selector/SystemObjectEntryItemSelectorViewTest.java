@@ -17,6 +17,7 @@ import com.liferay.object.service.ObjectDefinitionLocalService;
 import com.liferay.object.service.ObjectFieldLocalService;
 import com.liferay.object.system.SystemObjectDefinitionManager;
 import com.liferay.object.system.SystemObjectDefinitionManagerRegistry;
+import com.liferay.portal.kernel.model.BaseModel;
 import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
@@ -44,27 +45,29 @@ import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PermissionCheckerMethodTestRule;
 import com.liferay.portal.vulcan.dto.converter.DTOConverterRegistry;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.framework.ServiceReference;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse;
 
-import javax.servlet.ServletRequest;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Queue;
-import java.util.concurrent.atomic.AtomicReference;
+
+import javax.servlet.ServletRequest;
+
+import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.ServiceReference;
+
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 /**
  * @author Selton Guedes
@@ -86,9 +89,8 @@ public class SystemObjectEntryItemSelectorViewTest {
 
 		_bundleContext = bundle.getBundleContext();
 
-		_serviceReferences =
-			_bundleContext.getServiceReferences(
-				ItemSelectorView.class, "(item.selector.view.order=500)");
+		_serviceReferences = _bundleContext.getServiceReferences(
+			ItemSelectorView.class, "(item.selector.view.order=500)");
 
 		_group = GroupTestUtil.addGroup();
 	}
@@ -100,25 +102,32 @@ public class SystemObjectEntryItemSelectorViewTest {
 
 		ServiceReference<ItemSelectorView> serviceReference = iterator.next();
 
-		ItemSelectorView itemSelectorView = _bundleContext.getService(serviceReference);
+		ItemSelectorView itemSelectorView = _bundleContext.getService(
+			serviceReference);
 
-		Queue<ItemSelectorViewDescriptor> itemSelectorViewDescriptors = new LinkedList<>();
+		Queue<ItemSelectorViewDescriptor> itemSelectorViewDescriptors =
+			new LinkedList<>();
 
 		ItemSelectorViewDescriptorRenderer itemSelectorViewDescriptorRenderer =
-			(ItemSelectorViewDescriptorRenderer) ReflectionTestUtil.getAndSetFieldValue(
-				itemSelectorView, "_itemSelectorViewDescriptorRenderer",
-				ProxyUtil.newProxyInstance(
-					ItemSelectorViewDescriptorRenderer.class.getClassLoader(),
-					new Class<?>[] {ItemSelectorViewDescriptorRenderer.class},
-					(proxy, method, arguments) -> {
-						if(StringUtil.equals(method.getName(), "renderHTML")){
+			(ItemSelectorViewDescriptorRenderer)
+				ReflectionTestUtil.getAndSetFieldValue(
+					itemSelectorView, "_itemSelectorViewDescriptorRenderer",
+					ProxyUtil.newProxyInstance(
+						ItemSelectorViewDescriptorRenderer.class.
+							getClassLoader(),
+						new Class<?>[] {
+							ItemSelectorViewDescriptorRenderer.class
+						},
+						(proxy, method, arguments) -> {
+							if (StringUtil.equals(
+									method.getName(), "renderHTML")) {
 
-							itemSelectorViewDescriptors.add(
-								(ItemSelectorViewDescriptor)arguments[6]);
-						}
+								itemSelectorViewDescriptors.add(
+									(ItemSelectorViewDescriptor)arguments[6]);
+							}
 
-						return null;
-					}));
+							return null;
+						}));
 
 		itemSelectorView.renderHTML(
 			_mockHttpServletRequest(), new MockHttpServletResponse(),
@@ -128,23 +137,32 @@ public class SystemObjectEntryItemSelectorViewTest {
 		ItemSelectorViewDescriptor itemSelectorViewDescriptor =
 			itemSelectorViewDescriptors.poll();
 
-		ObjectDefinition objectDefinition = _objectDefinitionLocalService.getObjectDefinitionByExternalReferenceCode(
-			_systemObjectDefinitionsERCs.get(itemSelectorView.getTitle(Locale.getDefault())), _group.getCompanyId());
+		ObjectDefinition objectDefinition =
+			_objectDefinitionLocalService.
+				getObjectDefinitionByExternalReferenceCode(
+					_systemObjectDefinitionsERCs.get(
+						itemSelectorView.getTitle(Locale.getDefault())),
+					_group.getCompanyId());
 
 		SystemObjectDefinitionManager systemObjectDefinitionManager =
 			_systemObjectDefinitionManagerRegistry.
-				getSystemObjectDefinitionManager(
-					objectDefinition.getName());
+				getSystemObjectDefinitionManager(objectDefinition.getName());
+
+		BaseModel<?> baseModelMock = null;
+
+		long baseModelId = systemObjectDefinitionManager.addBaseModel(
+			TestPropsValues.getUser(), baseModelMock.getModelAttributes());
 
 		ItemSelectorViewDescriptor.ItemDescriptor itemDescriptor =
 			itemSelectorViewDescriptor.getItemDescriptor(
-				systemObjectDefinitionManager.
-			);
+				systemObjectDefinitionManager.getBaseModelExternalReferenceCode(
+					baseModelId));
 
 		itemDescriptor.getTitle(Locale.getDefault());
 
 		ReflectionTestUtil.setFieldValue(
-			itemSelectorView, "_itemSelectorViewDescriptorRenderer", itemSelectorViewDescriptorRenderer);
+			itemSelectorView, "_itemSelectorViewDescriptorRenderer",
+			itemSelectorViewDescriptorRenderer);
 	}
 
 	private ThemeDisplay _getThemeDisplay(Group group) throws Exception {
@@ -159,6 +177,11 @@ public class SystemObjectEntryItemSelectorViewTest {
 		themeDisplay.setUser(TestPropsValues.getUser());
 
 		return themeDisplay;
+	}
+
+	private ObjectDefinition _getUserSystemObjectDefinition() {
+		return _objectDefinitionLocalService.fetchObjectDefinition(
+			_company.getCompanyId(), "L_USER");
 	}
 
 	private ServletRequest _mockHttpServletRequest() throws Exception {
@@ -190,33 +213,22 @@ public class SystemObjectEntryItemSelectorViewTest {
 		return mockHttpServletRequest;
 	}
 
-	private ObjectDefinition _getUserSystemObjectDefinition() {
-		return _objectDefinitionLocalService.fetchObjectDefinition(
-			_company.getCompanyId(), "L_USER");
-	}
-
-	private final Map<String, String> _systemObjectDefinitionsERCs =
-		HashMapBuilder.<String, String>put(
-			"Postal Address", "L_POSTAL_ADDRESS"
-	).put(
-			"Account", "L_ACCOUNT"
-		).put(
-			"Organization", "L_ORGANIZATION"
-		).put(
-			"User", "L_USER"
-		).put(
-			"Commerce Product Group", "L_COMMERCE_PRODUCT_GROUP"
-		).put(
-			"Commerce Product", "L_COMMERCE_PRODUCT_DEFINITION"
-		).put(
-			"Commerce Order", "L_COMMERCE_ORDER"
-		).build();
-
 	private static BundleContext _bundleContext;
-	@DeleteAfterTestRun
-	private Group _group;
-	private static Collection<ServiceReference<ItemSelectorView>> _serviceReferences;
 	private static Company _company;
+	private static String _originalName;
+
+	@Inject
+	private static Portal _portal;
+
+	private static Collection<ServiceReference<ItemSelectorView>>
+		_serviceReferences;
+
+	@Inject
+	private static SystemObjectDefinitionManagerRegistry
+		_systemObjectDefinitionManagerRegistry;
+
+	@Inject
+	private static UserLocalService _userLocalService;
 
 	@Inject
 	private CompanyLocalService _companyLocalService;
@@ -224,12 +236,15 @@ public class SystemObjectEntryItemSelectorViewTest {
 	@Inject
 	private DTOConverterRegistry _dtoConverterRegistry;
 
+	@DeleteAfterTestRun
+	private Group _group;
+
 	@Inject
 	private ItemSelector _itemSelector;
 
 	@Inject
-	private ItemSelectorViewDescriptorRenderer
-		<InfoItemItemSelectorCriterion> _itemSelectorViewDescriptorRenderer;
+	private ItemSelectorViewDescriptorRenderer<InfoItemItemSelectorCriterion>
+		_itemSelectorViewDescriptorRenderer;
 
 	@Inject
 	private ObjectDefinitionLocalService _objectDefinitionLocalService;
@@ -241,15 +256,21 @@ public class SystemObjectEntryItemSelectorViewTest {
 	private ObjectRelatedModelsProviderRegistry
 		_objectRelatedModelsProviderRegistry;
 
-	private static String _originalName;
+	private final Map<String, String> _systemObjectDefinitionsERCs =
+		HashMapBuilder.put(
+			"Account", "L_ACCOUNT"
+		).put(
+			"Commerce Order", "L_COMMERCE_ORDER"
+		).put(
+			"Commerce Product", "L_COMMERCE_PRODUCT_DEFINITION"
+		).put(
+			"Commerce Product Group", "L_COMMERCE_PRODUCT_GROUP"
+		).put(
+			"Organization", "L_ORGANIZATION"
+		).put(
+			"Postal Address", "L_POSTAL_ADDRESS"
+		).put(
+			"User", "L_USER"
+		).build();
 
-	@Inject
-	private static Portal _portal;
-
-	@Inject
-	private static SystemObjectDefinitionManagerRegistry
-		_systemObjectDefinitionManagerRegistry;
-
-	@Inject
-	private static UserLocalService _userLocalService;
 }
