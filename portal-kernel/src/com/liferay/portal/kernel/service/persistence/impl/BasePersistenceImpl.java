@@ -273,14 +273,6 @@ public class BasePersistenceImpl<T extends BaseModel<T>>
 
 						sqlQuery.addScalar(column.getName(), _getType(column));
 					}
-					else if (expression instanceof ScalarDSLQueryAlias) {
-						ScalarDSLQueryAlias<?> scalarDSLQueryAlias =
-							(ScalarDSLQueryAlias<?>)expression;
-
-						sqlQuery.addScalar(
-							scalarDSLQueryAlias.getName(),
-							_types.get(scalarDSLQueryAlias.getJavaType()));
-					}
 					else {
 						throw new IllegalArgumentException(
 							"Unnamed projection expression " + expression);
