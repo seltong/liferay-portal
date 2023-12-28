@@ -3076,13 +3076,6 @@ public class ObjectEntryLocalServiceImpl
 						dynamicObjectDefinitionTable, objectDefinition);
 				}
 
-				//				if (StringUtil.equals(
-				//						String.valueOf(objectFieldSettingsValues.get("output")),
-				//						ObjectFieldConstants.BUSINESS_TYPE_DECIMAL)) {
-				//
-				//					script = "0.0 + " + script;
-				//				}
-
 				DDMExpression<Expression<?>> ddmExpression =
 					_ddmExpressionFactory.createExpression(
 						CreateExpressionRequest.Builder.newBuilder(
@@ -3091,29 +3084,10 @@ public class ObjectEntryLocalServiceImpl
 
 				ddmExpression.setVariables(columns);
 
-				String dbType = null;
-
-				if (StringUtil.equals(
-						String.valueOf(objectFieldSettingsValues.get("output")),
-						ObjectFieldConstants.BUSINESS_TYPE_DECIMAL)) {
-
-					dbType = ObjectFieldConstants.DB_TYPE_DOUBLE;
-				}
-				else {
-					dbType = ObjectFieldConstants.DB_TYPE_INTEGER;
-				}
-
 				try {
 					Expression<?> expression = ddmExpression.getDSLExpression();
 
-					selectExpressions.add(
-						DSLQueryFactoryUtil.scalarSubDSLQuery(
-							DSLQueryFactoryUtil.select(expression),
-							DynamicObjectDefinitionTableUtil.getJavaClass(
-								dbType),
-							objectField.getName(),
-							DynamicObjectDefinitionTableUtil.getSQLType(
-								dbType)));
+					selectExpressions.add(expression.as(objectField.getName()));
 				}
 				catch (Exception exception) {
 					_log.error(exception);
