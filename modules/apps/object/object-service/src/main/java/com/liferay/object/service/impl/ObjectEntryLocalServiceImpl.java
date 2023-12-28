@@ -3088,6 +3088,14 @@ public class ObjectEntryLocalServiceImpl
 					Expression<?> expression = ddmExpression.getDSLExpression();
 
 					selectExpressions.add(expression.as(objectField.getName()));
+//					selectExpressions.add(
+//						DSLQueryFactoryUtil.scalarSubDSLQuery(
+//							DSLQueryFactoryUtil.select(expression),
+//							DynamicObjectDefinitionTableUtil.getJavaClass(
+//								ObjectFieldConstants.DB_TYPE_STRING),
+//							objectField.getName(),
+//							DynamicObjectDefinitionTableUtil.getSQLType(
+//								ObjectFieldConstants.DB_TYPE_STRING)));
 				}
 				catch (Exception exception) {
 					_log.error(exception);
