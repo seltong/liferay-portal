@@ -54,7 +54,7 @@ public interface DefaultOrderByStep extends DefaultLimitStep, OrderByStep {
 				else {
 					orderByExpressions.add(
 						new DefaultOrderByExpression(
-							new DefaultAlias<>(column, field),
+							new DefaultAlias<>(column, field, null),
 							orderByInfo.isAscending(field)));
 				}
 			}

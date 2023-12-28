@@ -16,7 +16,7 @@ public class DefaultColumnAlias<T extends Table<T>, C>
 	extends DefaultAlias<C> implements ColumnAlias<T, C> {
 
 	public DefaultColumnAlias(Column<T, C> column, String name) {
-		super(column, name);
+		super(column, name, null);
 
 		_table = column.getTable();
 	}

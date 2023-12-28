@@ -19,9 +19,10 @@ import java.util.function.Consumer;
 public class DefaultAlias<T>
 	extends BaseASTNode implements Alias<T>, DefaultExpression<T> {
 
-	public DefaultAlias(Expression<T> expression, String name) {
+	public DefaultAlias(Expression<T> expression, String name, String type) {
 		_expression = Objects.requireNonNull(expression);
 		_name = Objects.requireNonNull(name);
+		_type = type;
 	}
 
 	@Override
@@ -34,6 +35,10 @@ public class DefaultAlias<T>
 		return _name;
 	}
 
+	public String getType() {
+		return _type;
+	}
+
 	@Override
 	protected void doToSQL(
 		Consumer<String> consumer, ASTNodeListener astNodeListener) {
@@ -43,5 +48,7 @@ public class DefaultAlias<T>
 
 	private final Expression<T> _expression;
 	private final String _name;
+
+	private final String _type;
 
 }

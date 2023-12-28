@@ -22,6 +22,7 @@ import com.liferay.petra.sql.dsl.spi.ast.DefaultASTNodeListener;
 import com.liferay.petra.sql.dsl.spi.expression.AggregateExpression;
 import com.liferay.petra.sql.dsl.spi.expression.DSLFunction;
 import com.liferay.petra.sql.dsl.spi.expression.DSLFunctionType;
+import com.liferay.petra.sql.dsl.spi.expression.DefaultAlias;
 import com.liferay.petra.sql.dsl.spi.expression.Scalar;
 import com.liferay.petra.sql.dsl.spi.expression.TableStar;
 import com.liferay.petra.sql.dsl.spi.query.QueryTable;
@@ -73,6 +74,7 @@ import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.ProxyFactory;
+import com.liferay.portal.kernel.util.Validator;
 
 import java.io.Serializable;
 
@@ -257,8 +259,24 @@ public class BasePersistenceImpl<T extends BaseModel<T>>
 					if (expression instanceof Alias) {
 						Alias<?> alias = (Alias<?>)expression;
 
-						sqlQuery.addScalar(
-							alias.getName(), _getType(alias.getExpression()));
+						Type type = null;
+
+						if (alias instanceof DefaultAlias) {
+							DefaultAlias<?> defaultAlias =
+								(DefaultAlias<?>)alias;
+
+							if (Validator.isNotNull(defaultAlias.getType())) {
+								type = _types.get(defaultAlias.getType());
+							}
+							else {
+								type = _getType(alias.getExpression());
+							}
+						}
+						else {
+							type = _getType(alias.getExpression());
+						}
+
+						sqlQuery.addScalar(alias.getName(), type);
 					}
 					else if (expression instanceof Column) {
 						Column<?, ?> column = (Column<?, ?>)expression;

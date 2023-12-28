@@ -36,7 +36,7 @@ public class DefaultDSLQueryFactory implements DSLQueryFactory {
 			Collections.singletonList(
 				new DefaultAlias<>(
 					new AggregateExpression<>(true, expression, "count"),
-					"COUNT_VALUE")));
+					"COUNT_VALUE", null)));
 	}
 
 	@Override
@@ -77,7 +77,7 @@ public class DefaultDSLQueryFactory implements DSLQueryFactory {
 		Collections.singletonList(
 			new DefaultAlias<>(
 				new AggregateExpression<>(false, null, "count"),
-				"COUNT_VALUE")));
+				"COUNT_VALUE", null)));
 
 	private static final FromStep _SELECT_STAR = new Select(
 		false, Collections.emptyList());
