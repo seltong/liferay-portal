@@ -3180,21 +3180,18 @@ public class ObjectEntryLocalServiceImpl
 
 				columnName = alias.getName();
 
-				javaTypeClass = DynamicObjectDefinitionTableUtil.getJavaClass(
-					_getDBType(alias, objectDefinitionId));
+				if (Validator.isNull(alias.getJavaType())) {
+					javaTypeClass = DynamicObjectDefinitionTableUtil.getJavaClass(
+						_getDBType(alias, objectDefinitionId));
+				} else {
+					javaTypeClass = alias.getJavaType();
+				}
 			}
 			else if (selectExpression instanceof Column) {
 				Column<?, ?> column = (Column<?, ?>)selectExpressions[i];
 
 				columnName = column.getName();
 				javaTypeClass = column.getJavaType();
-			}
-			else if (selectExpression instanceof ScalarDSLQueryAlias) {
-				ScalarDSLQueryAlias scalarDSLQueryAlias =
-					(ScalarDSLQueryAlias)selectExpressions[i];
-
-				columnName = scalarDSLQueryAlias.getName();
-				javaTypeClass = scalarDSLQueryAlias.getJavaType();
 			}
 
 			if (columnName.endsWith(StringPool.UNDERLINE)) {
