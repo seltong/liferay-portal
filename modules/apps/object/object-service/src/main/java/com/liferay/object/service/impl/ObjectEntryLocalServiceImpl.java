@@ -98,7 +98,6 @@ import com.liferay.petra.sql.dsl.query.FromStep;
 import com.liferay.petra.sql.dsl.query.GroupByStep;
 import com.liferay.petra.sql.dsl.query.JoinStep;
 import com.liferay.petra.sql.dsl.query.sort.OrderByExpression;
-import com.liferay.petra.sql.dsl.spi.expression.DSLFunction;
 import com.liferay.petra.sql.dsl.spi.expression.Scalar;
 import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringBundler;
@@ -3080,7 +3079,7 @@ public class ObjectEntryLocalServiceImpl
 						dynamicObjectDefinitionTable, objectDefinition);
 				}
 
-				DDMExpression<DSLFunction> ddmExpression =
+				DDMExpression<Expression<?>> ddmExpression =
 					_ddmExpressionFactory.createExpression(
 						CreateExpressionRequest.Builder.newBuilder(
 							String.valueOf(script)
@@ -3089,23 +3088,31 @@ public class ObjectEntryLocalServiceImpl
 				ddmExpression.setVariables(columns);
 
 				try {
-					int sqlType = 0;
+					Alias<?> alias = null;
 
 					if (StringUtil.equals(
-						String.valueOf(objectFieldSettingsValues.get("output")),
-						ObjectFieldConstants.BUSINESS_TYPE_DECIMAL)) {
+							String.valueOf(
+								objectFieldSettingsValues.get("output")),
+							ObjectFieldConstants.BUSINESS_TYPE_DECIMAL)) {
 
-						sqlType = DynamicObjectDefinitionTableUtil.getSQLType(
-							ObjectFieldConstants.DB_TYPE_DOUBLE);
+						Expression<Double> expression =
+							(Expression<Double>)
+								ddmExpression.getDSLExpression();
+
+						alias = expression.as(
+							Double.class, objectField.getName(), Types.DOUBLE);
 					}
 					else {
-						sqlType = DynamicObjectDefinitionTableUtil.getSQLType(
-							ObjectFieldConstants.DB_TYPE_INTEGER);
+						Expression<Integer> expression =
+							(Expression<Integer>)
+								ddmExpression.getDSLExpression();
+
+						alias = expression.as(
+							Integer.class, objectField.getName(),
+							Types.INTEGER);
 					}
 
-					Expression<?> expression = ddmExpression.getDSLExpression();
-
-					selectExpressions.add(expression.as(objectField.getName(), sqlType));
+					selectExpressions.add(alias);
 				}
 				catch (Exception exception) {
 					_log.error(exception);
