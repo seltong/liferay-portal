@@ -98,6 +98,7 @@ import com.liferay.petra.sql.dsl.query.FromStep;
 import com.liferay.petra.sql.dsl.query.GroupByStep;
 import com.liferay.petra.sql.dsl.query.JoinStep;
 import com.liferay.petra.sql.dsl.query.sort.OrderByExpression;
+import com.liferay.petra.sql.dsl.spi.expression.DSLFunction;
 import com.liferay.petra.sql.dsl.spi.expression.Scalar;
 import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringBundler;
@@ -3079,7 +3080,7 @@ public class ObjectEntryLocalServiceImpl
 						dynamicObjectDefinitionTable, objectDefinition);
 				}
 
-				DDMExpression<Expression<?>> ddmExpression =
+				DDMExpression<DSLFunction> ddmExpression =
 					_ddmExpressionFactory.createExpression(
 						CreateExpressionRequest.Builder.newBuilder(
 							String.valueOf(script)
@@ -3087,29 +3088,24 @@ public class ObjectEntryLocalServiceImpl
 
 				ddmExpression.setVariables(columns);
 
-				String dbType = null;
-
-				if (StringUtil.equals(
-					String.valueOf(objectFieldSettingsValues.get("output")),
-					ObjectFieldConstants.BUSINESS_TYPE_DECIMAL)) {
-
-					dbType = ObjectFieldConstants.DB_TYPE_DOUBLE;
-				}
-				else {
-					dbType = ObjectFieldConstants.DB_TYPE_INTEGER;
-				}
-
 				try {
+					int sqlType = 0;
+
+					if (StringUtil.equals(
+						String.valueOf(objectFieldSettingsValues.get("output")),
+						ObjectFieldConstants.BUSINESS_TYPE_DECIMAL)) {
+
+						sqlType = DynamicObjectDefinitionTableUtil.getSQLType(
+							ObjectFieldConstants.DB_TYPE_DOUBLE);
+					}
+					else {
+						sqlType = DynamicObjectDefinitionTableUtil.getSQLType(
+							ObjectFieldConstants.DB_TYPE_INTEGER);
+					}
+
 					Expression<?> expression = ddmExpression.getDSLExpression();
 
-					selectExpressions.add(
-						expression.as(objectField.getName()));
-					//expression.as(
-					//	DynamicObjectDefinitionTableUtil.getJavaClass(
-					//		dbType),
-					//	objectField.getName(),
-					//	DynamicObjectDefinitionTableUtil.getSQLType(
-					//		dbType)));
+					selectExpressions.add(expression.as(objectField.getName(), sqlType));
 				}
 				catch (Exception exception) {
 					_log.error(exception);
