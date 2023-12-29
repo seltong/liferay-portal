@@ -3104,12 +3104,12 @@ public class ObjectEntryLocalServiceImpl
 
 					selectExpressions.add(
 						expression.as(objectField.getName()));
-//						expression.as(
-//							DynamicObjectDefinitionTableUtil.getJavaClass(
-//								dbType),
-//							objectField.getName(),
-//							DynamicObjectDefinitionTableUtil.getSQLType(
-//								dbType)));
+					//expression.as(
+					//	DynamicObjectDefinitionTableUtil.getJavaClass(
+					//		dbType),
+					//	objectField.getName(),
+					//	DynamicObjectDefinitionTableUtil.getSQLType(
+					//		dbType)));
 				}
 				catch (Exception exception) {
 					_log.error(exception);
