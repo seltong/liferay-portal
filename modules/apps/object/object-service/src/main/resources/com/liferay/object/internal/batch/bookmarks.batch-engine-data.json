@@ -228,6 +228,105 @@
 			},
 			"system": true,
 			"titleObjectFieldName": "name"
+		},
+		{
+			"accountEntryRestricted": false,
+			"externalReferenceCode": "L_MODIFIABLE",
+			"label": {
+				"en_US": "Modifiable"
+			},
+			"modifiable": true,
+			"name": "Modifiable",
+			"objectFields": [
+				{
+					"DBType": "Clob",
+					"businessType": "LongText",
+					"defaultValue": "",
+					"externalReferenceCode": "DESCRIPTION",
+					"indexed": true,
+					"indexedAsKeyword": false,
+					"indexedLanguageId": "",
+					"label": {
+						"en_US": "Description"
+					},
+					"listTypeDefinitionExternalReferenceCode": "",
+					"name": "description",
+					"objectFieldSettings": [
+						{
+							"name": "showCounter",
+							"value": "false"
+						}
+					],
+					"required": false,
+					"state": false,
+					"system": true,
+					"type": "Clob"
+				},
+				{
+					"DBType": "String",
+					"businessType": "Text",
+					"defaultValue": "",
+					"externalReferenceCode": "NAME",
+					"indexed": true,
+					"indexedAsKeyword": false,
+					"indexedLanguageId": "en_US",
+					"label": {
+						"en_US": "Name"
+					},
+					"listTypeDefinitionExternalReferenceCode": "",
+					"name": "name",
+					"objectFieldSettings": [
+						{
+							"name": "showCounter",
+							"value": "false"
+						}
+					],
+					"required": false,
+					"state": false,
+					"system": true,
+					"type": "String"
+				},
+				{
+					"DBType": "String",
+					"businessType": "Text",
+					"defaultValue": "",
+					"externalReferenceCode": "URL",
+					"indexed": true,
+					"indexedAsKeyword": false,
+					"indexedLanguageId": "en_US",
+					"label": {
+						"en_US": "URL"
+					},
+					"listTypeDefinitionExternalReferenceCode": "",
+					"name": "url",
+					"objectFieldSettings": [
+						{
+							"name": "showCounter",
+							"value": "false"
+						}
+					],
+					"required": true,
+					"state": false,
+					"system": true,
+					"type": "String"
+				}
+			],
+			"objectLayouts": [
+			],
+			"objectValidationRules": [
+			],
+			"objectViews": [
+			],
+			"panelCategoryKey": "site_administration.content",
+			"pluralLabel": {
+				"en_US": "Modifiables"
+			},
+			"scope": "site",
+			"status": {
+				"code": 0
+			},
+			"system": true,
+			"titleObjectFieldName": "name"
 		}
 	]
 }

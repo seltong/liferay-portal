@@ -122,6 +122,8 @@ public class ObjectDefinitionUtil {
 			"FDSSort", "/data-set-manager/sorts"
 		).put(
 			"FDSView", "/data-set-manager/views"
+		).put(
+			"Modifiable", "/modifiable"
 		).build();
 	private static final Map<String, String>
 		_allowedUnmodifiableSystemObjectDefinitionNames = HashMapBuilder.put(
