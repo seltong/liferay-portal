@@ -256,14 +256,14 @@ public class CalendarUtilTest {
 
 		Set<Long> actualCalendarBookingIds = getCalendarBookingIds(jsonArray);
 
-		Set<Long> excpectedCalendarBookingIds = getCalendarBookingIds(
+		Set<Long> expectedCalendarBookingIds = getCalendarBookingIds(
 			calendarBookings);
 
-		excpectedCalendarBookingIds.remove(
+		expectedCalendarBookingIds.remove(
 			anotherUserDraft.getCalendarBookingId());
 
 		Assert.assertEquals(
-			excpectedCalendarBookingIds, actualCalendarBookingIds);
+			expectedCalendarBookingIds, actualCalendarBookingIds);
 	}
 
 	@Test
