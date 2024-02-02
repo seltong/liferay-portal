@@ -10,7 +10,6 @@ import com.liferay.calendar.model.Calendar;
 import com.liferay.calendar.model.CalendarBooking;
 import com.liferay.calendar.model.CalendarResource;
 import com.liferay.calendar.recurrence.Frequency;
-import com.liferay.calendar.recurrence.PositionalWeekday;
 import com.liferay.calendar.recurrence.Recurrence;
 import com.liferay.calendar.recurrence.RecurrenceSerializer;
 import com.liferay.calendar.service.CalendarBookingLocalService;
@@ -57,7 +56,6 @@ import java.lang.reflect.Method;
 
 import java.time.LocalDateTime;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -256,12 +254,12 @@ public class CalendarUtilTest {
 			approved, sameUserDraft, anotherUserDraft);
 
 		Method method = _calendarUtilClass.getMethod(
-			"toCalendarBookingsJSONArray", ThemeDisplay.class, List.class,
-			TimeZone.class);
+			"toCalendarBookingsJSONArray", ThemeDisplay.class, List.class);
+
+		_user.setTimeZoneId("PST");
 
 		JSONArray jsonArray = (JSONArray)method.invoke(
-			null, createThemeDisplay(), calendarBookings,
-			TimeZoneUtil.getDefault());
+			null, createThemeDisplay(), calendarBookings);
 
 		Assert.assertEquals(2, jsonArray.length());
 
@@ -276,65 +274,62 @@ public class CalendarUtilTest {
 		Assert.assertEquals(
 			expectedCalendarBookingIds, actualCalendarBookingIds);
 
-		// Meu teste
+		ServiceContext serviceContext = createServiceContext();
 
-		ServiceContext serviceContext = new ServiceContext();
-
-		serviceContext.setCompanyId(_user.getCompanyId());
 		serviceContext.setWorkflowAction(WorkflowConstants.ACTION_PUBLISH);
 
 		CalendarResource calendarResource =
 			CalendarResourceUtil.getUserCalendarResource(
 				_user.getUserId(), serviceContext);
 
-		LocalDateTime actualDate = LocalDateTime.now();
+		LocalDateTime currentDate = LocalDateTime.now();
 
 		java.util.Calendar calendar = JCalendarUtil.getJCalendar(
-			actualDate.getYear() + 1, 2, 9, 8, 0, 0, 0,
+			currentDate.getYear() + 1, 2, 9, 8, 0, 0, 0,
 			TimeZoneUtil.getTimeZone("PST"));
 
 		long startTime = calendar.getTimeInMillis();
 
 		long endTime = startTime + Time.HOUR;
 
-		java.util.Calendar untilCalendar =
-			(java.util.Calendar) calendar.clone();
+		java.util.Calendar untilCalendar = (java.util.Calendar)calendar.clone();
 
-		untilCalendar.set(actualDate.getYear() + 1, 2, 11);
-
-		Recurrence recurrence = new Recurrence();
-
-		recurrence.setCount(0);
-		recurrence.setFrequency(Frequency.DAILY);
-		recurrence.setInterval(1);
-		recurrence.setPositionalWeekdays(new ArrayList<PositionalWeekday>());
-		recurrence.setTimeZone(TimeZoneUtil.getTimeZone("PST"));
-		recurrence.setUntilJCalendar(untilCalendar);
+		untilCalendar.set(currentDate.getYear() + 1, 2, 10);
 
 		CalendarBooking calendarBooking =
 			CalendarBookingTestUtil.addCalendarBooking(
 				_user, calendarResource.getDefaultCalendar(), new long[0],
 				RandomTestUtil.randomLocaleStringMap(),
 				RandomTestUtil.randomLocaleStringMap(), startTime, endTime,
-				recurrence, 0, null, 0, null, serviceContext);
+				RecurrenceTestUtil.getRecurrence(
+					0, Frequency.DAILY, TimeZoneUtil.getTimeZone("PST"),
+					untilCalendar),
+				0, null, 0, null, serviceContext);
 
-		_calendarBookingLocalService.getRecurringCalendarBookings(calendarBooking);
+		_calendarBookingLocalService.getRecurringCalendarBookings(
+			calendarBooking);
 
 		calendarBookings = _calendarBookingLocalService.search(
 			_user.getCompanyId(), new long[0],
 			new long[] {calendarBooking.getCalendarId()}, new long[0], -1, null,
 			startTime, endTime, TimeZoneUtil.getTimeZone("PST"), true,
-			new int[] {WorkflowConstants.STATUS_APPROVED, WorkflowConstants.STATUS_DENIED, WorkflowConstants.STATUS_DRAFT, WorkflowConstants.STATUS_PENDING}, QueryUtil.ALL_POS,
-			QueryUtil.ALL_POS, new CalendarBookingStartTimeComparator(true));
+			new int[] {
+				WorkflowConstants.STATUS_APPROVED,
+				WorkflowConstants.STATUS_DENIED, WorkflowConstants.STATUS_DRAFT,
+				WorkflowConstants.STATUS_PENDING
+			},
+			QueryUtil.ALL_POS, QueryUtil.ALL_POS,
+			new CalendarBookingStartTimeComparator(true));
+
+		_user.setTimeZoneId(StringPool.UTC);
 
 		jsonArray = (JSONArray)method.invoke(
-			null, createThemeDisplay(), calendarBookings,
-			TimeZoneUtil.getDefault());
+			null, createThemeDisplay(), calendarBookings);
 
 		JSONObject jsonObject = (JSONObject)jsonArray.get(0);
 
-		Assert.assertEquals(jsonObject.get("startTimeHour"), 15);
-		Assert.assertEquals(jsonObject.get("endTimeHour"), 16);
+		Assert.assertEquals(15, jsonObject.get("startTimeHour"));
+		Assert.assertEquals(16, jsonObject.get("endTimeHour"));
 	}
 
 	@Test
