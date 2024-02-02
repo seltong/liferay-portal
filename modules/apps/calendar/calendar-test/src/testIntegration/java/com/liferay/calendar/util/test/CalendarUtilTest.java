@@ -21,6 +21,7 @@ import com.liferay.calendar.test.util.RecurrenceTestUtil;
 import com.liferay.calendar.util.CalendarResourceUtil;
 import com.liferay.calendar.util.JCalendarUtil;
 import com.liferay.calendar.util.comparator.CalendarBookingStartTimeComparator;
+import com.liferay.calendar.workflow.constants.CalendarBookingWorkflowConstants;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -256,8 +257,6 @@ public class CalendarUtilTest {
 		Method method = _calendarUtilClass.getMethod(
 			"toCalendarBookingsJSONArray", ThemeDisplay.class, List.class);
 
-		_user.setTimeZoneId("PST");
-
 		JSONArray jsonArray = (JSONArray)method.invoke(
 			null, createThemeDisplay(), calendarBookings);
 
@@ -274,6 +273,13 @@ public class CalendarUtilTest {
 		Assert.assertEquals(
 			expectedCalendarBookingIds, actualCalendarBookingIds);
 
+		_calendarBookingLocalService.deleteCalendarBooking(
+			anotherUserDraft.getCalendarBookingId());
+		_calendarBookingLocalService.deleteCalendarBooking(
+			approved.getCalendarBookingId());
+		_calendarBookingLocalService.deleteCalendarBooking(
+			sameUserDraft.getCalendarBookingId());
+
 		ServiceContext serviceContext = createServiceContext();
 
 		serviceContext.setWorkflowAction(WorkflowConstants.ACTION_PUBLISH);
@@ -284,9 +290,11 @@ public class CalendarUtilTest {
 
 		LocalDateTime currentDate = LocalDateTime.now();
 
+		TimeZone timeZone = TimeZoneUtil.getTimeZone("PST");
+
 		java.util.Calendar calendar = JCalendarUtil.getJCalendar(
-			currentDate.getYear() + 1, 2, 9, 8, 0, 0, 0,
-			TimeZoneUtil.getTimeZone("PST"));
+			currentDate.getYear(), 2, 9, 8, 0, 0, 0,
+			timeZone);
 
 		long startTime = calendar.getTimeInMillis();
 
@@ -294,7 +302,7 @@ public class CalendarUtilTest {
 
 		java.util.Calendar untilCalendar = (java.util.Calendar)calendar.clone();
 
-		untilCalendar.set(currentDate.getYear() + 1, 2, 10);
+		untilCalendar.set(currentDate.getYear(), 2, 11);
 
 		CalendarBooking calendarBooking =
 			CalendarBookingTestUtil.addCalendarBooking(
@@ -302,7 +310,7 @@ public class CalendarUtilTest {
 				RandomTestUtil.randomLocaleStringMap(),
 				RandomTestUtil.randomLocaleStringMap(), startTime, endTime,
 				RecurrenceTestUtil.getRecurrence(
-					0, Frequency.DAILY, TimeZoneUtil.getTimeZone("PST"),
+					0, Frequency.DAILY, timeZone,
 					untilCalendar),
 				0, null, 0, null, serviceContext);
 
@@ -312,24 +320,45 @@ public class CalendarUtilTest {
 		calendarBookings = _calendarBookingLocalService.search(
 			_user.getCompanyId(), new long[0],
 			new long[] {calendarBooking.getCalendarId()}, new long[0], -1, null,
-			startTime, endTime, TimeZoneUtil.getTimeZone("PST"), true,
+			startTime, endTime, timeZone, true,
 			new int[] {
 				WorkflowConstants.STATUS_APPROVED,
 				WorkflowConstants.STATUS_DENIED, WorkflowConstants.STATUS_DRAFT,
-				WorkflowConstants.STATUS_PENDING
+				WorkflowConstants.STATUS_PENDING,
+				CalendarBookingWorkflowConstants.STATUS_MAYBE
 			},
 			QueryUtil.ALL_POS, QueryUtil.ALL_POS,
 			new CalendarBookingStartTimeComparator(true));
 
-		_user.setTimeZoneId(StringPool.UTC);
+		_user.setTimeZoneId(timeZone.getID());
 
 		jsonArray = (JSONArray)method.invoke(
 			null, createThemeDisplay(), calendarBookings);
 
 		JSONObject jsonObject = (JSONObject)jsonArray.get(0);
 
+		Assert.assertEquals(8, jsonObject.get("startTimeHour"));
+		Assert.assertEquals(9, jsonObject.get("endTimeHour"));
+
+//		jsonObject = (JSONObject)jsonArray.get(1);
+//
+//		Assert.assertEquals(8, jsonObject.get("startTimeHour"));
+//		Assert.assertEquals(9, jsonObject.get("endTimeHour"));
+
+		_user.setTimeZoneId(StringPool.UTC);
+
+		jsonArray = (JSONArray)method.invoke(
+			null, createThemeDisplay(), calendarBookings);
+
+		jsonObject = (JSONObject)jsonArray.get(0);
+
 		Assert.assertEquals(15, jsonObject.get("startTimeHour"));
 		Assert.assertEquals(16, jsonObject.get("endTimeHour"));
+
+//		jsonObject = (JSONObject)jsonArray.get(1);
+//
+//		Assert.assertEquals(14, jsonObject.get("startTimeHour"));
+//		Assert.assertEquals(15, jsonObject.get("endTimeHour"));
 	}
 
 	@Test
