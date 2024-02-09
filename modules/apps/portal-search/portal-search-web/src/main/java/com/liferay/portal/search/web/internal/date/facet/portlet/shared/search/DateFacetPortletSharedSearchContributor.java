@@ -151,7 +151,8 @@ public class DateFacetPortletSharedSearchContributor
 		_contributeWithNestedFieldFacet(
 			dateFacetPortletPreferences,
 			_ddmIndexer.getValueFieldName(
-				ddmFieldParts[1], _getLocaleFromSuffix(ddmFieldParts[3])),
+				ddmFieldParts[1], _getLocaleFromSuffix(ddmFieldParts[3]),
+				false),
 			DDMIndexer.DDM_FIELD_NAME,
 			dateFacetPortletPreferences.getAggregationField(),
 			DDMIndexer.DDM_FIELD_ARRAY, portletSharedSearchSettings,

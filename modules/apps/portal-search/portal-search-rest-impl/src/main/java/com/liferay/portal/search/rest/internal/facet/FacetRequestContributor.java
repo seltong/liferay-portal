@@ -491,7 +491,7 @@ public class FacetRequestContributor {
 
 	private String _getDDMDateValueFieldName(String indexType, String suffix) {
 		String valueFieldName = _ddmIndexer.getValueFieldName(
-			indexType, _getLocaleFromSuffix(suffix));
+			indexType, _getLocaleFromSuffix(suffix), false);
 
 		return valueFieldName + "_date";
 	}

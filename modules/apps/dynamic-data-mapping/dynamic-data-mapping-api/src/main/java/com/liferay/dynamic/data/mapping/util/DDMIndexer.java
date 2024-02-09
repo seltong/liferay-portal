@@ -70,7 +70,9 @@ public interface DDMIndexer {
 	public String extractIndexableAttributes(
 		DDMStructure ddmStructure, DDMFormValues ddmFormValues, Locale locale);
 
-	public default String getValueFieldName(String indexType, Locale locale) {
+	public default String getValueFieldName(
+		String indexType, Locale locale, boolean localizable) {
+
 		throw new UnsupportedOperationException();
 	}
 

@@ -180,7 +180,10 @@ public class DDMIndexerImpl implements DDMIndexer {
 		DDMFormField ddmFormField =
 			ddmStructure.getDDMFormFieldByFieldReference(fieldReference);
 
-		if (GetterUtil.getBoolean(ddmFormField.getProperty("localizable"))) {
+		boolean localizable = GetterUtil.getBoolean(
+			ddmFormField.getProperty("localizable"));
+
+		if (localizable) {
 			if (locale == null) {
 				throw new IllegalArgumentException(
 					"Locale cannot be null if the dynamic data mapping form " +
@@ -205,7 +208,7 @@ public class DDMIndexerImpl implements DDMIndexer {
 			String indexType = ddmStructure.getFieldPropertyByFieldReference(
 				fieldReference, "indexType");
 
-			sb.append(getValueFieldName(indexType, locale));
+			sb.append(getValueFieldName(indexType, locale, localizable));
 		}
 
 		sb.append(StringPool.UNDERLINE);
@@ -367,7 +370,9 @@ public class DDMIndexerImpl implements DDMIndexer {
 	}
 
 	@Override
-	public String getValueFieldName(String indexType, Locale locale) {
+	public String getValueFieldName(
+		String indexType, Locale locale, boolean localizable) {
+
 		String valueFieldName = DDM_VALUE_FIELD_NAME_PREFIX;
 
 		if (indexType != null) {
@@ -415,7 +420,9 @@ public class DDMIndexerImpl implements DDMIndexer {
 
 		Document document = new DocumentImpl();
 
-		String valueFieldName = getValueFieldName(indexType, locale);
+		String valueFieldName = getValueFieldName(
+			indexType, locale,
+			GetterUtil.getBoolean(ddmFormField.getProperty("localizable")));
 
 		_addToDocument(
 			document, ddmStructureField, indexType, valueFieldName,
@@ -479,7 +486,7 @@ public class DDMIndexerImpl implements DDMIndexer {
 			booleanQuery,
 			StringBundler.concat(
 				DDM_FIELD_ARRAY, StringPool.PERIOD,
-				getValueFieldName(indexType, locale)),
+				getValueFieldName(indexType, locale, localizable)),
 			ddmStructureFieldValue);
 
 		return new QueryFilter(new NestedQuery(DDM_FIELD_ARRAY, booleanQuery));

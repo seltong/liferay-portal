@@ -121,7 +121,8 @@ public class CustomFacetPortletSharedSearchContributor
 		_contributeWithNestedFieldFacet(
 			customFacetPortletPreferences,
 			ddmIndexer.getValueFieldName(
-				ddmFieldParts[1], _getSuffixLocale(ddmFieldParts[3])),
+				ddmFieldParts[1], _getSuffixLocale(ddmFieldParts[3]),
+				false),
 			DDMIndexer.DDM_FIELD_NAME, fieldToAggregate,
 			DDMIndexer.DDM_FIELD_ARRAY, portletSharedSearchSettings);
 	}
