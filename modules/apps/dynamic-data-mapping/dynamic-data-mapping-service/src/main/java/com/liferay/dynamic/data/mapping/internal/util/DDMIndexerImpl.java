@@ -367,11 +367,6 @@ public class DDMIndexerImpl implements DDMIndexer {
 	}
 
 	@Override
-	public String getValueFieldName(String indexType) {
-		return getValueFieldName(indexType, null);
-	}
-
-	@Override
 	public String getValueFieldName(String indexType, Locale locale) {
 		String valueFieldName = DDM_VALUE_FIELD_NAME_PREFIX;
 
