@@ -380,7 +380,7 @@ public class DDMIndexerImpl implements DDMIndexer {
 				StringUtil.upperCaseFirstLetter(indexType));
 		}
 
-		if (locale != null) {
+		if (localizable && (locale != null)) {
 			valueFieldName = StringBundler.concat(
 				valueFieldName, StringPool.UNDERLINE,
 				LocaleUtil.toLanguageId(locale));
