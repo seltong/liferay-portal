@@ -893,6 +893,10 @@ public class DDMIndexerImpl implements DDMIndexer {
 
 		Map<String, LocalizedValue> map = ddmFormFieldOptions.getOptions();
 
+		if (GetterUtil.getBoolean(ddmFormField.getProperty("localizable"))) {
+			locale = null;
+		}
+
 		for (Map.Entry<String, LocalizedValue> entry : map.entrySet()) {
 			LocalizedValue localizedValue = entry.getValue();
 
