@@ -1327,7 +1327,11 @@ public class EditFileEntryMVCActionCommand extends BaseMVCActionCommand {
 				fileEntry = _dlAppService.addFileEntry(
 					null, repositoryId, folderId, sourceFileName, contentType,
 					title, urlTitle, description, changeLog, inputStream, size,
+<<<<<<< HEAD
 					expirationDate, reviewDate, serviceContext);
+=======
+					null, expirationDate, reviewDate, serviceContext);
+>>>>>>> parent of 71b0dd7 (LPD-6960 obtain the date from the input)
 			}
 			else if (cmd.equals(Constants.ADD_DYNAMIC)) {
 
@@ -1344,7 +1348,11 @@ public class EditFileEntryMVCActionCommand extends BaseMVCActionCommand {
 				fileEntry = _dlAppService.addFileEntry(
 					null, repositoryId, folderId, uniqueFileName, contentType,
 					uniqueFileTitle, StringPool.BLANK, description, changeLog,
+<<<<<<< HEAD
 					inputStream, size, expirationDate, reviewDate,
+=======
+					inputStream, size, null, expirationDate, reviewDate,
+>>>>>>> parent of 71b0dd7 (LPD-6960 obtain the date from the input)
 					serviceContext);
 
 				JSONObject jsonObject = JSONUtil.put(
