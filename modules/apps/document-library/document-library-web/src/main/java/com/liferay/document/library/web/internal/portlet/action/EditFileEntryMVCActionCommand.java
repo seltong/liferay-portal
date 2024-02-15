@@ -1328,10 +1328,14 @@ public class EditFileEntryMVCActionCommand extends BaseMVCActionCommand {
 					null, repositoryId, folderId, sourceFileName, contentType,
 					title, urlTitle, description, changeLog, inputStream, size,
 <<<<<<< HEAD
+<<<<<<< HEAD
 					expirationDate, reviewDate, serviceContext);
 =======
 					null, expirationDate, reviewDate, serviceContext);
 >>>>>>> parent of 71b0dd7 (LPD-6960 obtain the date from the input)
+=======
+					expirationDate, reviewDate, serviceContext);
+>>>>>>> parent of f182f5e (LPD-6960 fix calls to addFileEntry methods in most of the cases with a null value)
 			}
 			else if (cmd.equals(Constants.ADD_DYNAMIC)) {
 
@@ -1349,10 +1353,14 @@ public class EditFileEntryMVCActionCommand extends BaseMVCActionCommand {
 					null, repositoryId, folderId, uniqueFileName, contentType,
 					uniqueFileTitle, StringPool.BLANK, description, changeLog,
 <<<<<<< HEAD
+<<<<<<< HEAD
 					inputStream, size, expirationDate, reviewDate,
 =======
 					inputStream, size, null, expirationDate, reviewDate,
 >>>>>>> parent of 71b0dd7 (LPD-6960 obtain the date from the input)
+=======
+					inputStream, size, expirationDate, reviewDate,
+>>>>>>> parent of f182f5e (LPD-6960 fix calls to addFileEntry methods in most of the cases with a null value)
 					serviceContext);
 
 				JSONObject jsonObject = JSONUtil.put(
