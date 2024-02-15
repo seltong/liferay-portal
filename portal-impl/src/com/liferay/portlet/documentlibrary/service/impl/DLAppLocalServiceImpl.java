@@ -354,8 +354,8 @@ public class DLAppLocalServiceImpl extends DLAppLocalServiceBaseImpl {
 
 		return localRepository.addFileEntry(
 			externalReferenceCode, userId, folderId, sourceFileName, mimeType,
-			title, urlTitle, description, changeLog, inputStream, size, null,
-			expirationDate, reviewDate, serviceContext);
+			title, urlTitle, description, changeLog, inputStream, size,
+			null, expirationDate, reviewDate, serviceContext);
 	}
 
 	/**

@@ -388,7 +388,7 @@ public class DLAppServiceImpl extends DLAppServiceBaseImpl {
 		return repository.addFileEntry(
 			externalReferenceCode, getUserId(), folderId, sourceFileName,
 			mimeType, title, urlTitle, description, changeLog, inputStream,
-			size, null, expirationDate, reviewDate, serviceContext);
+			size, expirationDate, reviewDate, serviceContext);
 	}
 
 	/**
