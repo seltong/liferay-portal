@@ -135,6 +135,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -4993,17 +4994,20 @@ public class ObjectEntryResourceTest {
 				"code"
 			));
 
-		JSONArray nestedObjectEntriesJSONArray = jsonObject.getJSONArray(
-			_objectRelationship1.getName());
+		List<Map<String, Object>> sortedObjectEntries =
+			_toSortedObjectEntriesByKey(
+				_OBJECT_FIELD_NAME_2,
+				jsonObject.getJSONArray(_objectRelationship1.getName()));
 
-		Assert.assertEquals(2, nestedObjectEntriesJSONArray.length());
+		Assert.assertEquals(
+			sortedObjectEntries.toString(), 2, sortedObjectEntries.size());
 
 		_assertObjectEntryField(
-			(JSONObject)nestedObjectEntriesJSONArray.get(0),
-			_OBJECT_FIELD_NAME_2, _NEW_OBJECT_FIELD_VALUE_1);
+			sortedObjectEntries.get(0), _OBJECT_FIELD_NAME_2,
+			_NEW_OBJECT_FIELD_VALUE_1);
 		_assertObjectEntryField(
-			(JSONObject)nestedObjectEntriesJSONArray.get(1),
-			_OBJECT_FIELD_NAME_2, _NEW_OBJECT_FIELD_VALUE_2);
+			sortedObjectEntries.get(1), _OBJECT_FIELD_NAME_2,
+			_NEW_OBJECT_FIELD_VALUE_2);
 
 		String objectEntryId = jsonObject.getString("id");
 
@@ -5015,17 +5019,19 @@ public class ObjectEntryResourceTest {
 				_objectRelationship1.getName()),
 			Http.Method.GET);
 
-		nestedObjectEntriesJSONArray = jsonObject.getJSONArray(
-			_objectRelationship1.getName());
+		sortedObjectEntries = _toSortedObjectEntriesByKey(
+			_OBJECT_FIELD_NAME_2,
+			jsonObject.getJSONArray(_objectRelationship1.getName()));
 
-		Assert.assertEquals(2, nestedObjectEntriesJSONArray.length());
+		Assert.assertEquals(
+			sortedObjectEntries.toString(), 2, sortedObjectEntries.size());
 
 		_assertObjectEntryField(
-			(JSONObject)nestedObjectEntriesJSONArray.get(0),
-			_OBJECT_FIELD_NAME_2, _NEW_OBJECT_FIELD_VALUE_1);
+			sortedObjectEntries.get(0), _OBJECT_FIELD_NAME_2,
+			_NEW_OBJECT_FIELD_VALUE_1);
 		_assertObjectEntryField(
-			(JSONObject)nestedObjectEntriesJSONArray.get(1),
-			_OBJECT_FIELD_NAME_2, _NEW_OBJECT_FIELD_VALUE_2);
+			sortedObjectEntries.get(1), _OBJECT_FIELD_NAME_2,
+			_NEW_OBJECT_FIELD_VALUE_2);
 
 		// Site scope
 
@@ -5056,10 +5062,14 @@ public class ObjectEntryResourceTest {
 				"code"
 			));
 
-		nestedObjectEntriesJSONArray = jsonObject.getJSONArray(
+		JSONArray nestedObjectEntriesJSONArray = jsonObject.getJSONArray(
 			_objectRelationship6.getName());
 
-		Assert.assertEquals(2, nestedObjectEntriesJSONArray.length());
+		sortedObjectEntries = _toSortedObjectEntriesByKey(
+			_OBJECT_FIELD_NAME_2, nestedObjectEntriesJSONArray);
+
+		Assert.assertEquals(
+			sortedObjectEntries.toString(), 2, sortedObjectEntries.size());
 
 		JSONAssert.assertEquals(
 			JSONUtil.putAll(
@@ -5089,7 +5099,11 @@ public class ObjectEntryResourceTest {
 		nestedObjectEntriesJSONArray = jsonObject.getJSONArray(
 			_objectRelationship6.getName());
 
-		Assert.assertEquals(2, nestedObjectEntriesJSONArray.length());
+		sortedObjectEntries = _toSortedObjectEntriesByKey(
+			_OBJECT_FIELD_NAME_2, nestedObjectEntriesJSONArray);
+
+		Assert.assertEquals(
+			sortedObjectEntries.toString(), 2, sortedObjectEntries.size());
 
 		JSONAssert.assertEquals(
 			JSONUtil.putAll(
@@ -5144,7 +5158,7 @@ public class ObjectEntryResourceTest {
 					"r_", _objectRelationship1.getName(), "_",
 					StringUtil.replaceLast(
 						_objectDefinition1.getPKObjectFieldName(), "Id", ""))),
-			_OBJECT_FIELD_NAME_1, _NEW_OBJECT_FIELD_VALUE_1);
+			_OBJECT_FIELD_NAME_1);
 
 		String objectEntryId = jsonObject.getString("id");
 
@@ -5165,7 +5179,7 @@ public class ObjectEntryResourceTest {
 					"r_", _objectRelationship1.getName(), "_",
 					StringUtil.removeLast(
 						_objectDefinition1.getPKObjectFieldName(), "Id"))),
-			_OBJECT_FIELD_NAME_1, _NEW_OBJECT_FIELD_VALUE_1);
+			_OBJECT_FIELD_NAME_1);
 
 		// Site scope
 
@@ -5204,7 +5218,7 @@ public class ObjectEntryResourceTest {
 					StringUtil.replaceLast(
 						_siteScopedObjectDefinition1.getPKObjectFieldName(),
 						"Id", ""))),
-			_OBJECT_FIELD_NAME_1, _NEW_OBJECT_FIELD_VALUE_1);
+			_OBJECT_FIELD_NAME_1);
 
 		objectEntryId = jsonObject.getString("id");
 
@@ -5227,7 +5241,7 @@ public class ObjectEntryResourceTest {
 					StringUtil.removeLast(
 						_siteScopedObjectDefinition1.getPKObjectFieldName(),
 						"Id"))),
-			_OBJECT_FIELD_NAME_1, _NEW_OBJECT_FIELD_VALUE_1);
+			_OBJECT_FIELD_NAME_1);
 	}
 
 	@Test
@@ -5260,17 +5274,20 @@ public class ObjectEntryResourceTest {
 				"code"
 			));
 
-		JSONArray nestedObjectEntriesJSONArray = jsonObject.getJSONArray(
-			_objectRelationship1.getName());
+		List<Map<String, Object>> sortedObjectEntries =
+			_toSortedObjectEntriesByKey(
+				_OBJECT_FIELD_NAME_2,
+				jsonObject.getJSONArray(_objectRelationship1.getName()));
 
-		Assert.assertEquals(2, nestedObjectEntriesJSONArray.length());
+		Assert.assertEquals(
+			sortedObjectEntries.toString(), 2, sortedObjectEntries.size());
 
 		_assertObjectEntryField(
-			(JSONObject)nestedObjectEntriesJSONArray.get(0),
-			_OBJECT_FIELD_NAME_2, _NEW_OBJECT_FIELD_VALUE_1);
+			sortedObjectEntries.get(0), _OBJECT_FIELD_NAME_2,
+			_NEW_OBJECT_FIELD_VALUE_1);
 		_assertObjectEntryField(
-			(JSONObject)nestedObjectEntriesJSONArray.get(1),
-			_OBJECT_FIELD_NAME_2, _NEW_OBJECT_FIELD_VALUE_2);
+			sortedObjectEntries.get(1), _OBJECT_FIELD_NAME_2,
+			_NEW_OBJECT_FIELD_VALUE_2);
 
 		String objectEntryId = jsonObject.getString("id");
 
@@ -5282,17 +5299,19 @@ public class ObjectEntryResourceTest {
 				_objectRelationship1.getName()),
 			Http.Method.GET);
 
-		nestedObjectEntriesJSONArray = jsonObject.getJSONArray(
-			_objectRelationship1.getName());
+		sortedObjectEntries = _toSortedObjectEntriesByKey(
+			_OBJECT_FIELD_NAME_2,
+			jsonObject.getJSONArray(_objectRelationship1.getName()));
 
-		Assert.assertEquals(2, nestedObjectEntriesJSONArray.length());
+		Assert.assertEquals(
+			sortedObjectEntries.toString(), 2, sortedObjectEntries.size());
 
 		_assertObjectEntryField(
-			(JSONObject)nestedObjectEntriesJSONArray.get(0),
-			_OBJECT_FIELD_NAME_2, _NEW_OBJECT_FIELD_VALUE_1);
+			sortedObjectEntries.get(0), _OBJECT_FIELD_NAME_2,
+			_NEW_OBJECT_FIELD_VALUE_1);
 		_assertObjectEntryField(
-			(JSONObject)nestedObjectEntriesJSONArray.get(1),
-			_OBJECT_FIELD_NAME_2, _NEW_OBJECT_FIELD_VALUE_2);
+			sortedObjectEntries.get(1), _OBJECT_FIELD_NAME_2,
+			_NEW_OBJECT_FIELD_VALUE_2);
 
 		// Site scope
 
@@ -5323,17 +5342,19 @@ public class ObjectEntryResourceTest {
 				"code"
 			));
 
-		nestedObjectEntriesJSONArray = jsonObject.getJSONArray(
-			_objectRelationship7.getName());
+		sortedObjectEntries = _toSortedObjectEntriesByKey(
+			_OBJECT_FIELD_NAME_2,
+			jsonObject.getJSONArray(_objectRelationship7.getName()));
 
-		Assert.assertEquals(2, nestedObjectEntriesJSONArray.length());
+		Assert.assertEquals(
+			sortedObjectEntries.toString(), 2, sortedObjectEntries.size());
 
 		_assertObjectEntryField(
-			(JSONObject)nestedObjectEntriesJSONArray.get(0),
-			_OBJECT_FIELD_NAME_2, _NEW_OBJECT_FIELD_VALUE_1);
+			sortedObjectEntries.get(0), _OBJECT_FIELD_NAME_2,
+			_NEW_OBJECT_FIELD_VALUE_1);
 		_assertObjectEntryField(
-			(JSONObject)nestedObjectEntriesJSONArray.get(1),
-			_OBJECT_FIELD_NAME_2, _NEW_OBJECT_FIELD_VALUE_2);
+			sortedObjectEntries.get(1), _OBJECT_FIELD_NAME_2,
+			_NEW_OBJECT_FIELD_VALUE_2);
 
 		objectEntryId = jsonObject.getString("id");
 
@@ -5345,17 +5366,19 @@ public class ObjectEntryResourceTest {
 				_objectRelationship7.getName()),
 			Http.Method.GET);
 
-		nestedObjectEntriesJSONArray = jsonObject.getJSONArray(
-			_objectRelationship7.getName());
+		sortedObjectEntries = _toSortedObjectEntriesByKey(
+			_OBJECT_FIELD_NAME_2,
+			jsonObject.getJSONArray(_objectRelationship7.getName()));
 
-		Assert.assertEquals(2, nestedObjectEntriesJSONArray.length());
+		Assert.assertEquals(
+			sortedObjectEntries.toString(), 2, sortedObjectEntries.size());
 
 		_assertObjectEntryField(
-			(JSONObject)nestedObjectEntriesJSONArray.get(0),
-			_OBJECT_FIELD_NAME_2, _NEW_OBJECT_FIELD_VALUE_1);
+			sortedObjectEntries.get(0), _OBJECT_FIELD_NAME_2,
+			_NEW_OBJECT_FIELD_VALUE_1);
 		_assertObjectEntryField(
-			(JSONObject)nestedObjectEntriesJSONArray.get(1),
-			_OBJECT_FIELD_NAME_2, _NEW_OBJECT_FIELD_VALUE_2);
+			sortedObjectEntries.get(1), _OBJECT_FIELD_NAME_2,
+			_NEW_OBJECT_FIELD_VALUE_2);
 	}
 
 	@Test
@@ -6017,7 +6040,7 @@ public class ObjectEntryResourceTest {
 
 		_assertObjectEntryField(
 			(JSONObject)nestedObjectEntriesJSONArray.get(0),
-			_OBJECT_FIELD_NAME_2, _NEW_OBJECT_FIELD_VALUE_1);
+			_OBJECT_FIELD_NAME_2);
 
 		jsonObject = HTTPTestUtil.invokeToJSONObject(
 			null,
@@ -6034,7 +6057,7 @@ public class ObjectEntryResourceTest {
 
 		_assertObjectEntryField(
 			(JSONObject)nestedObjectEntriesJSONArray.get(0),
-			_OBJECT_FIELD_NAME_2, _NEW_OBJECT_FIELD_VALUE_1);
+			_OBJECT_FIELD_NAME_2);
 	}
 
 	@Test
@@ -6090,7 +6113,7 @@ public class ObjectEntryResourceTest {
 					"r_", _objectRelationship1.getName(), "_",
 					StringUtil.replaceLast(
 						_objectDefinition1.getPKObjectFieldName(), "Id", ""))),
-			_OBJECT_FIELD_NAME_1, _NEW_OBJECT_FIELD_VALUE_1);
+			_OBJECT_FIELD_NAME_1);
 
 		jsonObject = HTTPTestUtil.invokeToJSONObject(
 			null,
@@ -6109,7 +6132,7 @@ public class ObjectEntryResourceTest {
 					"r_", _objectRelationship1.getName(), "_",
 					StringUtil.removeLast(
 						_objectDefinition1.getPKObjectFieldName(), "Id"))),
-			_OBJECT_FIELD_NAME_1, _NEW_OBJECT_FIELD_VALUE_1);
+			_OBJECT_FIELD_NAME_1);
 	}
 
 	@Test
@@ -6160,7 +6183,7 @@ public class ObjectEntryResourceTest {
 
 		_assertObjectEntryField(
 			(JSONObject)nestedObjectEntriesJSONArray.get(0),
-			_OBJECT_FIELD_NAME_2, _NEW_OBJECT_FIELD_VALUE_1);
+			_OBJECT_FIELD_NAME_2);
 
 		jsonObject = HTTPTestUtil.invokeToJSONObject(
 			null,
@@ -6177,7 +6200,7 @@ public class ObjectEntryResourceTest {
 
 		_assertObjectEntryField(
 			(JSONObject)nestedObjectEntriesJSONArray.get(0),
-			_OBJECT_FIELD_NAME_2, _NEW_OBJECT_FIELD_VALUE_1);
+			_OBJECT_FIELD_NAME_2);
 	}
 
 	private void _addModelResourcePermissions(
@@ -6431,10 +6454,18 @@ public class ObjectEntryResourceTest {
 	}
 
 	private void _assertObjectEntryField(
-		JSONObject objectEntryJSONObject, String objectFieldName,
+		JSONObject objectEntryJSONObject, String objectFieldName) {
+
+		_assertObjectEntryField(
+			objectEntryJSONObject.toMap(), objectFieldName,
+			ObjectEntryResourceTest._NEW_OBJECT_FIELD_VALUE_1);
+	}
+
+	private void _assertObjectEntryField(
+		Map<String, Object> objectEntryValues, String objectFieldName,
 		String objectFieldValue) {
 
-		int objectEntryId = objectEntryJSONObject.getInt("id");
+		int objectEntryId = GetterUtil.getInteger(objectEntryValues.get("id"));
 
 		ObjectEntry objectEntry = _objectEntryLocalService.fetchObjectEntry(
 			objectEntryId);
@@ -8312,7 +8343,7 @@ public class ObjectEntryResourceTest {
 						StringUtil.replaceLast(
 							_objectDefinition2.getPKObjectFieldName(), "Id",
 							""))),
-				_OBJECT_FIELD_NAME_2, _NEW_OBJECT_FIELD_VALUE_1);
+				_OBJECT_FIELD_NAME_2);
 		}
 		else {
 			JSONArray nestedObjectEntriesJSONArray = jsonObject.getJSONArray(
@@ -8322,7 +8353,7 @@ public class ObjectEntryResourceTest {
 
 			_assertObjectEntryField(
 				(JSONObject)nestedObjectEntriesJSONArray.get(0),
-				_OBJECT_FIELD_NAME_2, _NEW_OBJECT_FIELD_VALUE_1);
+				_OBJECT_FIELD_NAME_2);
 		}
 	}
 
@@ -8438,6 +8469,25 @@ public class ObjectEntryResourceTest {
 		return JSONFactoryUtil.createJSONObject(fileEntry.toString());
 	}
 
+	private List<Map<String, Object>> _toSortedObjectEntriesByKey(
+			String key, JSONArray objectEntriesJSONArray)
+		throws Exception {
+
+		List<Map<String, Object>> objectEntries = JSONUtil.toList(
+			objectEntriesJSONArray, JSONObject::toMap);
+
+		Collections.sort(
+			objectEntries,
+			(Comparator<Map<String, Object>>)(map1, map2) -> {
+				String id1 = GetterUtil.getString(map1.get(key));
+				String id2 = GetterUtil.getString(map2.get(key));
+
+				return id1.compareTo(id2);
+			});
+
+		return objectEntries;
+	}
+
 	private static final String _ERC_VALUE_1 = RandomTestUtil.randomString();
 
 	private static final String _ERC_VALUE_2 = RandomTestUtil.randomString();
@@ -8450,10 +8500,10 @@ public class ObjectEntryResourceTest {
 	private static final int _MAX_FILE_SIZE_VALUE = 1;
 
 	private static final String _NEW_OBJECT_FIELD_VALUE_1 =
-		RandomTestUtil.randomString();
+		"a" + RandomTestUtil.randomString();
 
 	private static final String _NEW_OBJECT_FIELD_VALUE_2 =
-		RandomTestUtil.randomString();
+		"b" + RandomTestUtil.randomString();
 
 	private static final String _NEW_OBJECT_FIELD_VALUE_3 =
 		RandomTestUtil.randomString();
