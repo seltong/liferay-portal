@@ -409,6 +409,8 @@ definition {
 
 		MenuItem.click(menuItem = "Edit");
 
+		Pause(value1 = 5000);
+
 		Select(
 			locator1 = "AssetWorkflow#ALL_STRUCTURES_WORKFLOW_SELECT",
 			value1 = ${workflowDefinition});
