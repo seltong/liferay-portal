@@ -46,6 +46,13 @@ public class KaleoDefinitionServiceImpl extends KaleoDefinitionServiceBaseImpl {
 			name, title, description, content, scope, version, serviceContext);
 	}
 
+	public KaleoDefinition getKaleoDefinition(long kaleoDefinitionId)
+		throws PortalException {
+
+		return _kaleoDefinitionLocalService.getKaleoDefinition(
+			kaleoDefinitionId);
+	}
+
 	@Override
 	public KaleoDefinition updateKaleoDefinition(
 			long kaleoDefinitionId, String title, String description,
