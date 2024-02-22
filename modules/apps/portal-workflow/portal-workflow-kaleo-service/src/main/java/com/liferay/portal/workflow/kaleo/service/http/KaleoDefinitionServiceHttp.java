@@ -87,6 +87,48 @@ public class KaleoDefinitionServiceHttp {
 	}
 
 	public static com.liferay.portal.workflow.kaleo.model.KaleoDefinition
+			getKaleoDefinition(
+				HttpPrincipal httpPrincipal, long kaleoDefinitionId)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		try {
+			MethodKey methodKey = new MethodKey(
+				KaleoDefinitionServiceUtil.class, "getKaleoDefinition",
+				_getKaleoDefinitionParameterTypes1);
+
+			MethodHandler methodHandler = new MethodHandler(
+				methodKey, kaleoDefinitionId);
+
+			Object returnObj = null;
+
+			try {
+				returnObj = TunnelUtil.invoke(httpPrincipal, methodHandler);
+			}
+			catch (Exception exception) {
+				if (exception instanceof
+						com.liferay.portal.kernel.exception.PortalException) {
+
+					throw (com.liferay.portal.kernel.exception.PortalException)
+						exception;
+				}
+
+				throw new com.liferay.portal.kernel.exception.SystemException(
+					exception);
+			}
+
+			return (com.liferay.portal.workflow.kaleo.model.KaleoDefinition)
+				returnObj;
+		}
+		catch (com.liferay.portal.kernel.exception.SystemException
+					systemException) {
+
+			_log.error(systemException, systemException);
+
+			throw systemException;
+		}
+	}
+
+	public static com.liferay.portal.workflow.kaleo.model.KaleoDefinition
 			updateKaleoDefinition(
 				HttpPrincipal httpPrincipal, long kaleoDefinitionId,
 				String title, String description, String content,
@@ -96,7 +138,7 @@ public class KaleoDefinitionServiceHttp {
 		try {
 			MethodKey methodKey = new MethodKey(
 				KaleoDefinitionServiceUtil.class, "updateKaleoDefinition",
-				_updateKaleoDefinitionParameterTypes1);
+				_updateKaleoDefinitionParameterTypes2);
 
 			MethodHandler methodHandler = new MethodHandler(
 				methodKey, kaleoDefinitionId, title, description, content,
@@ -140,7 +182,9 @@ public class KaleoDefinitionServiceHttp {
 			String.class, int.class,
 			com.liferay.portal.kernel.service.ServiceContext.class
 		};
-	private static final Class<?>[] _updateKaleoDefinitionParameterTypes1 =
+	private static final Class<?>[] _getKaleoDefinitionParameterTypes1 =
+		new Class[] {long.class};
+	private static final Class<?>[] _updateKaleoDefinitionParameterTypes2 =
 		new Class[] {
 			long.class, String.class, String.class, String.class,
 			com.liferay.portal.kernel.service.ServiceContext.class

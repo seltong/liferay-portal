@@ -39,6 +39,13 @@ public class KaleoDefinitionServiceWrapper
 			name, title, description, content, scope, version, serviceContext);
 	}
 
+	@Override
+	public KaleoDefinition getKaleoDefinition(long kaleoDefinitionId)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		return _kaleoDefinitionService.getKaleoDefinition(kaleoDefinitionId);
+	}
+
 	/**
 	 * Returns the OSGi service identifier.
 	 *

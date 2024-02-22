@@ -13,6 +13,7 @@ import com.liferay.portal.kernel.security.access.control.AccessControlled;
 import com.liferay.portal.kernel.service.BaseService;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.transaction.Isolation;
+import com.liferay.portal.kernel.transaction.Propagation;
 import com.liferay.portal.kernel.transaction.Transactional;
 import com.liferay.portal.workflow.kaleo.model.KaleoDefinition;
 
@@ -45,6 +46,10 @@ public interface KaleoDefinitionService extends BaseService {
 	public KaleoDefinition addKaleoDefinition(
 			String name, String title, String description, String content,
 			String scope, int version, ServiceContext serviceContext)
+		throws PortalException;
+
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public KaleoDefinition getKaleoDefinition(long kaleoDefinitionId)
 		throws PortalException;
 
 	/**

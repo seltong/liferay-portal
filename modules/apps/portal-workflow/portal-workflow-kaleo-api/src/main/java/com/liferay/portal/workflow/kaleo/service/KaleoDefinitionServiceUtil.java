@@ -37,6 +37,12 @@ public class KaleoDefinitionServiceUtil {
 			name, title, description, content, scope, version, serviceContext);
 	}
 
+	public static KaleoDefinition getKaleoDefinition(long kaleoDefinitionId)
+		throws PortalException {
+
+		return getService().getKaleoDefinition(kaleoDefinitionId);
+	}
+
 	/**
 	 * Returns the OSGi service identifier.
 	 *
