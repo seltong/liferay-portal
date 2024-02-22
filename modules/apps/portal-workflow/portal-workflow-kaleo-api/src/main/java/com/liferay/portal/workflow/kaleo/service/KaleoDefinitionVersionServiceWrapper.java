@@ -6,6 +6,7 @@
 package com.liferay.portal.workflow.kaleo.service;
 
 import com.liferay.portal.kernel.service.ServiceWrapper;
+import com.liferay.portal.workflow.kaleo.model.KaleoDefinitionVersion;
 
 /**
  * Provides a wrapper for {@link KaleoDefinitionVersionService}.
@@ -26,6 +27,15 @@ public class KaleoDefinitionVersionServiceWrapper
 		KaleoDefinitionVersionService kaleoDefinitionVersionService) {
 
 		_kaleoDefinitionVersionService = kaleoDefinitionVersionService;
+	}
+
+	@Override
+	public KaleoDefinitionVersion getKaleoDefinitionVersion(
+			long companyId, String name, String version)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		return _kaleoDefinitionVersionService.getKaleoDefinitionVersion(
+			companyId, name, version);
 	}
 
 	/**

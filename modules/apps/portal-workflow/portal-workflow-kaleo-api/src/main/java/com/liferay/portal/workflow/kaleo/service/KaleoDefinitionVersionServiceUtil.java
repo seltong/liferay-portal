@@ -5,6 +5,9 @@
 
 package com.liferay.portal.workflow.kaleo.service;
 
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.workflow.kaleo.model.KaleoDefinitionVersion;
+
 /**
  * Provides the remote service utility for KaleoDefinitionVersion. This utility wraps
  * <code>com.liferay.portal.workflow.kaleo.service.impl.KaleoDefinitionVersionServiceImpl</code> and is an
@@ -24,13 +27,19 @@ public class KaleoDefinitionVersionServiceUtil {
 	 *
 	 * Never modify this class directly. Add custom service methods to <code>com.liferay.portal.workflow.kaleo.service.impl.KaleoDefinitionVersionServiceImpl</code> and rerun ServiceBuilder to regenerate this class.
 	 */
+	public static KaleoDefinitionVersion getKaleoDefinitionVersion(
+			long companyId, String name, String version)
+		throws PortalException {
+
+		return getService().getKaleoDefinitionVersion(companyId, name, version);
+	}
 
 	/**
 	 * Returns the OSGi service identifier.
 	 *
 	 * @return the OSGi service identifier
 	 */
-	public static java.lang.String getOSGiServiceIdentifier() {
+	public static String getOSGiServiceIdentifier() {
 		return getService().getOSGiServiceIdentifier();
 	}
 
