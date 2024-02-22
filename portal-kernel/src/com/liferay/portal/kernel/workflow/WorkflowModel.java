@@ -5,8 +5,10 @@
 
 package com.liferay.portal.kernel.workflow;
 
+import com.liferay.portal.kernel.model.BaseModel;
+
 /**
  * @author Rafael Praxedes
  */
-public interface WorkflowModel {
+public interface WorkflowModel extends BaseModel<WorkflowDefinition> {
 }
