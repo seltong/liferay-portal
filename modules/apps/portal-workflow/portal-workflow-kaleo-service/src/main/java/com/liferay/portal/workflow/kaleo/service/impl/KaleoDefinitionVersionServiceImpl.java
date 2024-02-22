@@ -29,6 +29,7 @@ import org.osgi.service.component.annotations.Reference;
 public class KaleoDefinitionVersionServiceImpl
 	extends KaleoDefinitionVersionServiceBaseImpl {
 
+	@Override
 	public KaleoDefinitionVersion getKaleoDefinitionVersion(
 			long companyId, String name, String version)
 		throws PortalException {
