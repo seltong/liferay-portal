@@ -11,6 +11,7 @@ import com.liferay.portal.kernel.security.auth.PrincipalException;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.security.permission.PermissionThreadLocal;
+import com.liferay.portal.kernel.security.permission.resource.ModelResourcePermission;
 import com.liferay.portal.kernel.security.permission.resource.PortletResourcePermission;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.util.GetterUtil;
@@ -46,8 +47,12 @@ public class KaleoDefinitionServiceImpl extends KaleoDefinitionServiceBaseImpl {
 			name, title, description, content, scope, version, serviceContext);
 	}
 
+	@Override
 	public KaleoDefinition getKaleoDefinition(long kaleoDefinitionId)
 		throws PortalException {
+
+		_kaleoDefinitionModelResourcePermission.check(
+			getPermissionChecker(), kaleoDefinitionId, ActionKeys.VIEW);
 
 		return _kaleoDefinitionLocalService.getKaleoDefinition(
 			kaleoDefinitionId);
@@ -82,6 +87,12 @@ public class KaleoDefinitionServiceImpl extends KaleoDefinitionServiceBaseImpl {
 			permissionChecker, serviceContext.getScopeGroupId(),
 			ActionKeys.ADD_DEFINITION);
 	}
+
+	@Reference(
+		target = "(model.class.name=com.liferay.portal.workflow.kaleo.model.KaleoDefinition)"
+	)
+	private ModelResourcePermission<KaleoDefinition>
+		_kaleoDefinitionModelResourcePermission;
 
 	@Reference
 	private KaleoDefinitionLocalService _kaleoDefinitionLocalService;
