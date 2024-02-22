@@ -29,6 +29,7 @@ import com.liferay.portal.workflow.kaleo.runtime.WorkflowEngine;
 import com.liferay.portal.workflow.kaleo.runtime.integration.internal.util.WorkflowLockUtil;
 import com.liferay.portal.workflow.kaleo.runtime.util.comparator.KaleoDefinitionOrderByComparator;
 import com.liferay.portal.workflow.kaleo.service.KaleoDefinitionLocalService;
+import com.liferay.portal.workflow.kaleo.service.KaleoDefinitionService;
 import com.liferay.portal.workflow.kaleo.service.KaleoDefinitionVersionLocalService;
 import com.liferay.portal.workflow.manager.WorkflowDefinitionManager;
 
@@ -254,7 +255,7 @@ public class WorkflowDefinitionManagerImpl
 
 		try {
 			return _kaleoWorkflowModelConverter.toWorkflowDefinition(
-				_kaleoDefinitionLocalService.getKaleoDefinition(
+				_kaleoDefinitionService.getKaleoDefinition(
 					workflowDefinitionId));
 		}
 		catch (NoSuchModelException noSuchModelException) {
@@ -494,6 +495,8 @@ public class WorkflowDefinitionManagerImpl
 
 	@Reference
 	private KaleoDefinitionLocalService _kaleoDefinitionLocalService;
+
+	private KaleoDefinitionService _kaleoDefinitionService;
 
 	@Reference
 	private KaleoDefinitionVersionLocalService
